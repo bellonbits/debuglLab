@@ -608,5 +608,157 @@ export const quizzesData: QuizCategory[] = [
         correctAnswerKeywords: ["try:", "except", "ZeroDivisionError:"]
       }
     ]
+  },
+  {
+    id: "python-certification",
+    courseId: "python",
+    title: "Python & Data Science Professional Certification",
+    description: "A comprehensive 15-question evaluation covering object references, library ecosystems, data cleanses, loc/iloc indexing, shallow vs deep copying, broadcasting, hypothesis tests, multicollinearity, and visualization libraries. Passing this with >= 70% unlocks your Python Data Science Certificate!",
+    questions: [
+      {
+        question: "What is the difference between is and == in Python?",
+        options: [
+          "'is' compares object values; '==' compares memory addresses.",
+          "'is' compares the memory location (identity) of two objects to see if they reference the same object, while '==' compares the values of two objects to see if they are equal.",
+          "They are exact functional synonyms and compile to identical CPU registers.",
+          "'is' is only used for strings, while '==' is used for numeric structures."
+        ],
+        answerIndex: 1
+      },
+      {
+        question: "Which Python libraries are standardly used for numerical computing and DataFrame manipulation respectively?",
+        options: [
+          "Matplotlib and NLTK",
+          "TensorFlow and PyTorch",
+          "NumPy for high-performance array operations, and Pandas for dynamic DataFrame manipulation and exploratory analysis.",
+          "SciPy and Statsmodels"
+        ],
+        answerIndex: 2
+      },
+      {
+        question: "How do you standardly remove duplicates from a list in Python to ensure clean datasets?",
+        options: [
+          "By converting the list into a set: unique_list = list(set(original_list)).",
+          "By sorting the list using lists.sort(reverse=True).",
+          "By calling lists.clear() on active indices.",
+          "By using standard zip operations."
+        ],
+        answerIndex: 0
+      },
+      {
+        question: "In Pandas, how do the indexing attributes .loc and .iloc differ?",
+        options: [
+          "There is no difference; they are interchangeable alias keywords.",
+          ".loc accesses rows and columns by integer positions; .iloc accesses them by labels.",
+          ".loc accesses rows and columns by their labels, whereas .iloc accesses them strictly by their integer/index positions.",
+          ".loc converts DataFrames into lists, while .iloc parses JSON payloads."
+        ],
+        answerIndex: 2
+      },
+      {
+        question: "What is the primary difference between a list and a tuple in Python?",
+        options: [
+          "Lists can only contain integers, while tuples store strings exclusively.",
+          "A list is mutable (can be changed after creation), while a tuple is immutable (cannot be changed after creation), which secures datasets during data science processing.",
+          "Lists are declared with parentheses; tuples are declared with curly braces.",
+          "Tuples compile to C arrays, while lists are loaded in standard private heaps."
+        ],
+        answerIndex: 1
+      },
+      {
+        question: "How do a shallow copy and a deep copy differ when duplicating objects?",
+        options: [
+          "A shallow copy duplicates all nested objects completely; a deep copy duplicates only the top-level keys.",
+          "There is no functional difference; they behave identically on reference types.",
+          "A shallow copy creates a new outer object but shares references to the original nested child objects, while a deep copy recursively duplicates everything, producing an entirely independent clone.",
+          "A deep copy is read-only, while a shallow copy is write-only."
+        ],
+        answerIndex: 2
+      },
+      {
+        question: "What does the concept of 'broadcasting' refer to in NumPy?",
+        options: [
+          "Streaming multidimensional matrices over network sockets dynamically.",
+          "NumPy's ability to perform element-wise arithmetic operations on arrays of different shapes by expanding smaller arrays to match larger shapes, without copying data in memory.",
+          "Translating Python list operations into parallel GPU threads automatically.",
+          "Serializing NumPy objects into static CSV documents on disk."
+        ],
+        answerIndex: 1
+      },
+      {
+        question: "In Pandas, which function is standardly used to replace missing or null values in a dataset?",
+        options: [
+          "df.dropna()",
+          "df.groupby()",
+          "df.fillna() which allows replacing missing NaN values with customized values, like the column's mean or median.",
+          "df.iloc()"
+        ],
+        answerIndex: 2
+      },
+      {
+        question: "How does the Seaborn library differ conceptually from Matplotlib in Python data visualization?",
+        options: [
+          "Seaborn is built on top of Matplotlib and offers a premium, high-level interface for creating attractive, statistical graphics out-of-the-box with simpler syntax.",
+          "Seaborn is exclusively for 3D renderings, while Matplotlib handles 2D charts.",
+          "Matplotlib is built on top of Seaborn's high-level components.",
+          "They are completely incompatible visual systems."
+        ],
+        answerIndex: 0
+      },
+      {
+        question: "In Scikit-learn, what is the core difference between a Classifier and a Regressor?",
+        options: [
+          "A classifier works on test subsets, while a regressor is for training segments.",
+          "A classifier predicts discrete category class labels (e.g. spam vs non-spam), while a regressor predicts continuous, numeric values (e.g. housing prices).",
+          "A regressor standardizes variables, while a classifier normalizes them.",
+          "There is no difference; they are exact operational synonyms."
+        ],
+        answerIndex: 1
+      },
+      {
+        question: "What is the primary role of StandardScaler in Scikit-learn preprocessing?",
+        options: [
+          "It counts the number of non-null objects in a database column.",
+          "It standardizes feature columns by removing the mean and scaling to unit variance (mean = 0, std = 1), ensuring features with different scales do not dominate algorithms.",
+          "It converts categoric text vectors into one-hot dummy variables.",
+          "It automatically imputes missing median values."
+        ],
+        answerIndex: 1
+      },
+      {
+        question: "In hypothesis testing, what does a p-value less than 0.05 indicate?",
+        options: [
+          "That the sample size is too small to yield any meaningful predictions.",
+          "Strong statistical evidence to reject the null hypothesis, indicating a statistically significant difference.",
+          "That the dataset is normally distributed.",
+          "That the correlation between the variables is exactly zero."
+        ],
+        answerIndex: 1
+      },
+      {
+        question: "What is multicollinearity, and what metric is commonly used to detect it in Python?",
+        options: [
+          "Multicollinearity is when independent variables are highly correlated; it is detected using VIF (Variance Inflation Factor).",
+          "Multicollinearity represents missing data clusters; it is detected using StandardScaler.",
+          "It is the standard distribution of residual values; it is detected using shapiro tests.",
+          "It represents index columns mapping to primary keys."
+        ],
+        answerIndex: 0
+      },
+      {
+        question: "Write a line of code utilizing NumPy's array scalar multiplication to double every element in array 'arr' and store it in variable 'result'.",
+        options: [],
+        isCode: true,
+        starterCode: "import numpy as np\n\ndef double_array(arr):\n  # Double all elements in the numpy array arr here:\n  result = \n  return result",
+        correctAnswerKeywords: ["arr", "*", "2"]
+      },
+      {
+        question: "Write a Pandas query expression to filter rows in DataFrame 'df' where the 'Age' column is strictly greater than 30.",
+        options: [],
+        isCode: true,
+        starterCode: "import pandas as pd\n\ndef filter_users(df):\n  # Filter rows where Age > 30:\n  filtered_df = \n  return filtered_df",
+        correctAnswerKeywords: ["df[df", "'Age'", ">", "30"]
+      }
+    ]
   }
 ];

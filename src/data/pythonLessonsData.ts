@@ -2059,4 +2059,246 @@ As Python libraries evolved, pip experienced major upgrades regarding how it res
       }
     ]
   }
+  ,
+  {
+    sectionId: "13_Python_Data_Science",
+    sectionTitle: "13. Python for Data Science & Machine Learning",
+    lessons: [
+      {
+        id: "python-ds-intro",
+        title: "Data Science Foundations: is vs == & NumPy",
+        url: "",
+        content: `## Overview
+
+> In data science, we handle large numerical computations and datasets. We will study Python identity vs equality checks and introduce the high-performance numerical array engine, NumPy.
+
+**You will learn:**
+
+- The critical difference between the \`is\` and \`==\` operators
+- Introducing NumPy for numerical computing
+- Creating and manipulating NumPy arrays
+
+---
+
+## Content
+
+### Identity vs Equality: is vs ==
+
+In Python, understanding how objects are compared is vital for tracking dataset memory and logic:
+- **\`is\` (Identity comparison)**: Compares the **memory location** (id) of two objects. It returns \`True\` only if both variables reference the exact same object in private heaps.
+- **\`==\` (Value comparison)**: Compares the **values** of two objects. It returns \`True\` if their values are equivalent, regardless of their physical memory addresses.
+
+\`\`\`python
+>>> a = [1, 2, 3]
+>>> b = [1, 2, 3]
+>>> a == b
+True
+>>> a is b
+False
+>>> c = a
+>>> a is c
+True
+\`\`\`
+
+---
+
+### High-Performance Numerical Computing: NumPy
+
+**NumPy** is the foundation for scientific computing in Python. It offers fast, memory-efficient operations on large arrays and matrices compared to standard Python loops:
+- **Contiguous Memory**: NumPy arrays use contiguous blocks of memory, allowing vectorization and extreme speedups.
+- **Array Creation**: Create arrays using \`np.array()\`, or initialize them using helpers like \`np.zeros()\`, \`np.ones()\`, or \`np.arange()\`:
+
+\`\`\`python
+import numpy as np
+
+# Creating an array from a list
+arr = np.array([1, 2, 3, 4, 5])
+print(arr * 2) # Output: [2 4 6 8 10] (Element-wise broadcasting!)
+
+# Quick helper initializations
+zeros = np.zeros(5)
+print(zeros) # Output: [0. 0. 0. 0. 0.]
+\`\`\`
+
+---
+
+## Assignment
+
+1. Define two lists \`x = [1, 2]\` and \`y = [1, 2]\`. Print the results of \`x == y\` and \`x is y\`.
+2. Create a NumPy array from the list \`[10, 20, 30]\` and double each element using a vectorized expression.
+
+---
+
+## Knowledge Check
+
+- What is the difference between \`is\` and \`==\` in Python?
+- Why is NumPy preferred over standard Python lists for data science matrices?
+- What function initializes a NumPy array with all zero elements?`
+      },
+      {
+        id: "python-ds-pandas-viz",
+        title: "Data Manipulation & Visualization: Pandas & Viz",
+        url: "",
+        content: `## Overview
+
+> Data analysis requires clean structures and visualizations. We will study Pandas DataFrames, row filtering, .loc vs .iloc indexing, list and dictionary comprehensions, and attractive visual libraries.
+
+**You will learn:**
+
+- Handling structured data with Pandas DataFrames
+- Differentiating between \`.loc\` and \`.iloc\` indexing
+- Filtering rows, handling missing data, and merging datasets
+- Beautiful data visualization with Matplotlib and Seaborn
+
+---
+
+## Content
+
+### Data Manipulation: Pandas DataFrames
+
+**Pandas** provides highly intuitive data structures like **Series** and **DataFrames** for handling large structured datasets:
+
+\`\`\`python
+import pandas as pd
+
+# Creating a DataFrame
+data = {'Name': ['John', 'Jane', 'Alice'], 'Age': [28, 32, 24]}
+df = pd.DataFrame(data)
+
+# Filtering rows based on condition
+filtered_df = df[df['Age'] > 25]
+print(filtered_df)
+\`\`\`
+
+#### Differentiating .loc and .iloc
+- **\.loc (Label-based indexing)**: Selects rows and columns based on their active index labels.
+- **\.iloc (Integer/Position-based indexing)**: Selects rows and columns based on their strict integer positions (0-indexed).
+
+\`\`\`python
+# Select first row's Name column by label
+name_loc = df.loc[0, 'Name']
+
+# Select first row, second column (Age) by position
+age_iloc = df.iloc[0, 1]
+\`\`\`
+
+---
+
+### Handling Missing Values & Duplicate Cleanses
+
+Datasets frequently contain redundant values and missing entries:
+- **Remove Duplicates**: Convert lists to sets \`list(set(original_list))\` to drop redundant rows.
+- **Handle Missing Data**: Drop NaN values using \`.dropna()\` or impute them with mean values using \`.fillna(df.mean())\`.
+- **Grouping**: Group values by criteria using \`.groupby('Category').sum()\`.
+
+---
+
+### Data Visualization: Matplotlib & Seaborn
+
+Data visualization presents patterns cleanly:
+- **Matplotlib**: Flexible, low-level charting engine for plots and bars.
+- **Seaborn**: Built on top of Matplotlib, Seaborn provides a high-level statistical visualization interface (e.g. \`sns.heatmap()\` or \`sns.histplot(kde=True)\`).
+
+\`\`\`python
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Create a simple line plot
+plt.plot([1, 2, 3], [10, 20, 30])
+plt.title('Performance Plot')
+plt.xlabel('X-axis')
+plt.ylabel('Y-axis')
+plt.show()
+\`\`\`
+
+---
+
+## Assignment
+
+1. Define a Pandas DataFrame containing column 'Salary' with values \`[50000, 62000, None, 48000]\`.
+2. Fill the missing Salary row with the average salary of the column.
+3. Write a Matplotlib code snippet to plot a scatter line plot.
+
+---
+
+## Knowledge Check
+
+- How does \`.loc\` differ from \`.iloc\` in Pandas?
+- What method replaces missing data values with a specified default or average?
+- Which library offers higher-level statistical chart overlays (like heatmaps) built on top of Matplotlib?`
+      },
+      {
+        id: "python-ds-ml-stats",
+        title: "Machine Learning & Advanced Stats",
+        url: "",
+        content: `## Overview
+
+> Building predictive models requires mathematical scaling and robust statistics. We will study Scikit-learn pipelines, model evaluations, hypothesis testing, and multicollinearity.
+
+**You will learn:**
+
+- Training Classifier and Regressor models in Scikit-learn
+- Standardizing features using StandardScaler
+- Splitting datasets and cross-validation workflows
+- Navigating descriptive/inferential statistics, p-values, and VIF checks
+
+---
+
+## Content
+
+### Machine Learning Pipelines: Scikit-learn
+
+**Scikit-learn** provides robust APIs for training models:
+- **Split Data**: Partition datasets using \`train_test_split()\` to evaluate generalization.
+- **StandardScaler**: Removes the mean and scales features to unit variance (\`mean = 0, std = 1\`), which is critical for distance-sensitive algorithms.
+- **Classification vs Regression**: Classifiers predict discrete categoric classes (e.g. spam/non-spam), while Regressors predict continuous numeric values (e.g. housing prices).
+
+\`\`\`python
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+import numpy as np
+
+# Mock features and continuous labels
+X = np.array([[1], [2], [3]])
+y = np.array([2, 4, 6])
+
+model = LinearRegression().fit(X, y)
+print(f"Coefficient: {model.coef_}")
+\`\`\`
+
+---
+
+### Advanced Statistics: Hypothesis Testing & VIF
+
+Data science relies on rigorous statistics to make claims:
+- **Hypothesis Testing**: Check if two sets are significantly different. A **p-value** below 0.05 rejects the null hypothesis.
+- **Multicollinearity**: Occurs when independent variables are highly correlated, degrading regression stability. We Vett this using **VIF (Variance Inflation Factor)**. VIF values above 5 or 10 indicate significant multicollinearity.
+
+\`\`\`python
+from scipy.stats import ttest_ind
+
+# Perform independent t-test
+t_stat, p_val = ttest_ind([1.2, 2.5, 3.4], [1.1, 2.3, 3.1])
+print("P-value:", p_val)
+\`\`\`
+
+---
+
+## Assignment
+
+1. Import \`StandardScaler\` from \`sklearn.preprocessing\` and scale a mock array.
+2. Describe what a VIF value of 12 indicates in a regression model.
+3. Split features \`X\` and labels \`y\` into 80/20 train/test segments using \`train_test_split\`.
+
+---
+
+## Knowledge Check
+
+- What is the difference between classification and regression in Scikit-learn?
+- What standard statistics metric identifies multicollinearity in features?
+- What does a p-value less than 0.05 tell a data scientist about the null hypothesis?`
+      }
+    ]
+  }
+
 ];

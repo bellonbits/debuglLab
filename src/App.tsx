@@ -870,6 +870,10 @@ export function App() {
         const response = await fetch(`/api/profile?email=${encodeURIComponent(email)}`);
         if (response.ok) {
           profile = await response.json();
+          if (isSignUp && fullName) {
+            profile.devName = fullName;
+            await syncProfileToBackend(email, profile);
+          }
         } else if (response.status === 404) {
           // Profile doesn't exist on server yet, create it
           const defaults: Record<string, string> = {};
@@ -926,6 +930,10 @@ export function App() {
         localStorage.setItem(`debug_society_profile_${email}`, JSON.stringify(profile));
       } else {
         profile = JSON.parse(profileJson);
+        if (isSignUp && fullName) {
+          profile.devName = fullName;
+          localStorage.setItem(`debug_society_profile_${email}`, JSON.stringify(profile));
+        }
       }
     }
 
@@ -1543,6 +1551,13 @@ export function App() {
       if (activeQuizCategory.id === 'react-certification' && percentage >= 70) {
         if (!completedAssignments.includes('react')) {
           setCompletedAssignments(prev => [...prev, 'react']);
+        }
+      }
+
+      // If student passes the Python & Data Science Professional Certification with >= 70%, unlock the Python Certificate!
+      if (activeQuizCategory.id === 'python-certification' && percentage >= 70) {
+        if (!completedAssignments.includes('python')) {
+          setCompletedAssignments(prev => [...prev, 'python']);
         }
       }
 
@@ -4152,6 +4167,22 @@ export function App() {
                     id="settings-username" 
                     value={devName}
                     onChange={(e) => setDevName(e.target.value)}
+                  />
+                </div>
+
+                <div className="input-group">
+                  <label htmlFor="settings-email">Registered Email Address</label>
+                  <input 
+                    type="email" 
+                    id="settings-email" 
+                    value={currentUserEmail || ''}
+                    readOnly
+                    disabled
+                    style={{
+                      backgroundColor: 'var(--bg-input, rgba(0,0,0,0.03))',
+                      cursor: 'not-allowed',
+                      opacity: 0.8
+                    }}
                   />
                 </div>
 
