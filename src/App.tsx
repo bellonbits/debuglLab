@@ -465,7 +465,7 @@ export function App() {
 
   useEffect(() => {
     // Check if the SQLite / Groq backend server is running locally
-    fetch('http://localhost:3001/api/ping')
+    fetch('/api/ping')
       .then(res => res.json())
       .then(data => {
         if (data.status === 'online') {
@@ -861,7 +861,7 @@ export function App() {
 
     if (dbStatus === 'online') {
       setTimeout(() => {
-        fetch('http://localhost:3001/api/grade', {
+        fetch('/api/grade', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -950,7 +950,7 @@ export function App() {
   // Post changes to SQLite if online
   const syncProfileToBackend = async (email: string, profileData: any) => {
     try {
-      await fetch('http://localhost:3001/api/profile', {
+      await fetch('/api/profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, ...profileData })
@@ -976,7 +976,7 @@ export function App() {
 
     if (dbStatus === 'online') {
       try {
-        const response = await fetch(`http://localhost:3001/api/profile?email=${encodeURIComponent(email)}`);
+        const response = await fetch(`/api/profile?email=${encodeURIComponent(email)}`);
         if (response.ok) {
           profile = await response.json();
         } else if (response.status === 404) {
@@ -1734,6 +1734,7 @@ export function App() {
       kind: 'streak'
     });
   }
+  const unreadNotiCount = notifications.filter(n => !notiSeenIds.includes(n.id)).length;
 
   if (!currentUserEmail) {
     return (
