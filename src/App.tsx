@@ -778,7 +778,7 @@ export function App() {
       );
     } else {
       score = Math.round((matchedCount / totalKeywords) * 100);
-      passed = score >= 80;
+      passed = score >= 70;
 
       if (passed) {
         score = Math.floor(Math.random() * 7) + 94; // 94 - 100%
@@ -3609,7 +3609,6 @@ export function App() {
 
                     return tracks.map(track => {
                       const isCompleted = completedAssignments.includes(track.id);
-                      const isEligible = track.progress === 100;
                       const active = aiArenaTrack === track.id;
                       const feedback = aiFeedback[track.id];
 
@@ -3693,7 +3692,7 @@ export function App() {
                           </div>
 
                           {/* Claim Certificate Button */}
-                          {isCompleted && isEligible ? (
+                          {isCompleted ? (
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -3721,8 +3720,8 @@ export function App() {
                               CLAIM CERTIFICATE
                             </button>
                           ) : (
-                            <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontStyle: 'italic', marginTop: '2px', lineHeight: '1.2' }}>
-                              {!isEligible ? 'Complete course curriculum ' : !isCompleted ? 'Pass code assignment ' : ''} to unlock verified credential
+                            <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontStyle: 'italic', marginTop: '4px', lineHeight: '1.2' }}>
+                              Pass code assignment (70% or higher) to unlock verified certificate
                             </div>
                           )}
                         </div>

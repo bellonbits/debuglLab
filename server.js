@@ -215,13 +215,13 @@ ${starterCode}
 Required Validation Keywords (must exist in code): [${validationKeywords.join(', ')}]
 
 Evaluate the code carefully. Calculate a score from 0 to 100.
-To pass, the student must score 80 or above. If they did not modify the starter code, or if the code does not implement the requirements, fail them (score < 80).
+To pass, the student must score 70 or above. If they did not modify the starter code, or if the code does not implement the requirements, fail them (score < 70).
 List the exact missing checkpoints if any are absent.
 
 You MUST reply with a JSON object ONLY. Do not wrap it in markdown formatting backticks. Output exactly this JSON layout:
 {
   "score": number (0 to 100),
-  "passed": boolean (true if score >= 80, otherwise false),
+  "passed": boolean (true if score >= 70, otherwise false),
   "praise": "detailed engineering compliments highlighting what was done well",
   "critique": "constructive criticisms indicating areas of growth, improvements, or missing keywords"
 }`;
