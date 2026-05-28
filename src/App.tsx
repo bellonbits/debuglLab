@@ -1532,6 +1532,13 @@ export function App() {
       if (percentage === 100) rating = "Grandmaster Core";
       else if (percentage >= 70) rating = "Expert Core";
       
+      // If student passes the SQL & DBMS Professional Certification with >= 70%, unlock the SQL Database Certificate!
+      if (activeQuizCategory.id === 'sql-certification' && percentage >= 70) {
+        if (!completedAssignments.includes('sql')) {
+          setCompletedAssignments(prev => [...prev, 'sql']);
+        }
+      }
+
       const newLog: QuizLog = {
         date: new Date().toLocaleDateString(),
         category: activeQuizCategory.title,

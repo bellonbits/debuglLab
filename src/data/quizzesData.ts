@@ -149,6 +149,158 @@ export const quizzesData: QuizCategory[] = [
       }
     ]
   },
+  {
+    id: "sql-certification",
+    courseId: "sql",
+    title: "SQL & DBMS Professional Certification",
+    description: "A comprehensive 15-question certification evaluation covering physical storage, normalization, window aggregates, transactions, and indexing. Passing this with >= 70% unlocks your Database Certificate!",
+    questions: [
+      {
+        question: "What is the key storage difference between CHAR and VARCHAR2 data types?",
+        options: [
+          "CHAR stores numeric data while VARCHAR2 stores alphanumeric characters only.",
+          "CHAR stores fixed-length data padding unused space with trailing spaces, whereas VARCHAR2 stores variable-length data without padding.",
+          "VARCHAR2 can only store binary data while CHAR stores string representation.",
+          "CHAR is processed dynamically on server requests while VARCHAR2 is precompiled."
+        ],
+        answerIndex: 1
+      },
+      {
+        question: "What is a database view in relational SQL environments?",
+        options: [
+          "A physically duplicated table that auto-syncs on insert triggers.",
+          "A graphical diagram representing the foreign key relations.",
+          "A virtual table created from a SELECT query that displays dynamic data without physical storage.",
+          "A secure table partition that isolates memory cache values."
+        ],
+        answerIndex: 2
+      },
+      {
+        question: "Write an aggregate query grouping by customer_id, filtering for order_date in 2025 (>= '2025-01-01' and < '2026-01-01') and having count of orders > 5.",
+        options: [],
+        isCode: true,
+        starterCode: `-- SQL Grouping and Aggregation\nSELECT customer_id, COUNT(*) AS orders_2025\nFROM orders\n-- Write query constraints below\n`,
+        correctAnswerKeywords: ["WHERE", "order_date", "GROUP BY", "customer_id", "HAVING", "COUNT(*) > 5"]
+      },
+      {
+        question: "Which JOIN type returns all rows from the left table and matching rows from the right table, filling with NULL when a match is absent?",
+        options: [
+          "INNER JOIN",
+          "FULL OUTER JOIN",
+          "RIGHT OUTER JOIN",
+          "LEFT OUTER JOIN"
+        ],
+        answerIndex: 3
+      },
+      {
+        question: "Describe how a PRIMARY KEY differs from a UNIQUE key constraint.",
+        options: [
+          "A PRIMARY KEY constraint permits multiple NULL fields while UNIQUE keys restrict them completely.",
+          "A table can have only one PRIMARY KEY (combining UNIQUE + NOT NULL) but multiple UNIQUE constraints (which permit NULLs).",
+          "PRIMARY KEY is parsed only in NoSQL schemas while UNIQUE is standard SQL.",
+          "There is no functional difference; they are direct synonym aliases in all DBMS systems."
+        ],
+        answerIndex: 1
+      },
+      {
+        question: "What is a Common Table Expression (CTE) defined with the WITH keyword?",
+        options: [
+          "A permanent database index cached across system reboots.",
+          "A relational database trigger executed on transaction rollback.",
+          "A temporary, named result set that exists only for the duration of a single execution statement.",
+          "An encrypted schema security key used for authentication."
+        ],
+        answerIndex: 2
+      },
+      {
+        question: "Which database Normal Form (NF) is violated if a non-key column depends on only part of a composite primary key?",
+        options: [
+          "1NF",
+          "2NF",
+          "3NF",
+          "BCNF"
+        ],
+        answerIndex: 1
+      },
+      {
+        question: "What is the structural difference between UNION and UNION ALL commands?",
+        options: [
+          "UNION joins columns horizontally while UNION ALL joins them vertically.",
+          "UNION ALL combines results and removes duplicates, while UNION keeps all duplicates.",
+          "UNION combines query results and removes duplicate rows (slower), while UNION ALL keeps all duplicates (faster).",
+          "UNION operates only on clustered tables while UNION ALL operates on unindexed partitions."
+        ],
+        answerIndex: 2
+      },
+      {
+        question: "How do clustered and non-clustered indexes differ?",
+        options: [
+          "Non-clustered indexes physicalize rows in memory, whereas clustered indexes only exist on temporary directories.",
+          "A clustered index physicalizes the table rows in the index order (max 1 per table); a non-clustered index is a separate pointer structure (can be many).",
+          "A clustered index is used exclusively for key-value document databases.",
+          "Non-clustered indexes must always contain a single unique column."
+        ],
+        answerIndex: 1
+      },
+      {
+        question: "Write a SQL query using the SUM window function to calculate the running total of sales for each product, ordered by sale_date.",
+        options: [],
+        isCode: true,
+        starterCode: `-- Window Function Challenge\nSELECT product_id, sale_date, amount,\n  -- Add SUM analytic window function below\n  \nFROM sales;\n`,
+        correctAnswerKeywords: ["SUM(amount) OVER", "PARTITION BY", "product_id", "ORDER BY", "sale_date"]
+      },
+      {
+        question: "What defines a correlated subquery in SQL?",
+        options: [
+          "A subquery that compiles in parallel with index creation threads.",
+          "A subquery that runs once and stores results in a global temp table.",
+          "A nested query that depends on columns from the outer query, re-evaluating itself for each outer row.",
+          "A subquery that can only contain arithmetic operators."
+        ],
+        answerIndex: 2
+      },
+      {
+        question: "Which window ranking function assigns the same rank to ties but leaves gaps in the ranking sequence?",
+        options: [
+          "ROW_NUMBER()",
+          "DENSE_RANK()",
+          "RANK()",
+          "LAG()"
+        ],
+        answerIndex: 2
+      },
+      {
+        question: "What property of ACID transactions guarantees that all database updates within a transaction succeed or fail together as a single unit?",
+        options: [
+          "Durability",
+          "Atomicity",
+          "Consistency",
+          "Isolation"
+        ],
+        answerIndex: 1
+      },
+      {
+        question: "What is the key structural difference between a standard view and a materialized view?",
+        options: [
+          "A standard view is physicalized on hard storage, while a materialized view is strictly runtime-virtual.",
+          "A standard view is virtual and runs its query on reference; a materialized view is a physical table storing precomputed query results.",
+          "Materialized views can only represent simple tables without joins.",
+          "Standard views are only accessible to administrative users."
+        ],
+        answerIndex: 1
+      },
+      {
+        question: "How do blocking and deadlocking behaviors differ in concurrent DBMS environments?",
+        options: [
+          "Blocking is an active runtime crash, while deadlocking is a logical partition drop.",
+          "Blocking occurs when a transaction waits for a lock release (resolves automatically); deadlocking is a circular wait cycle requiring database engine rollback.",
+          "Deadlocking happens only on read-uncommitted transactions.",
+          "There is no difference; they both represent the identical thread locking state."
+        ],
+        answerIndex: 1
+      }
+    ]
+  },
 
   // ==================== FASTAPI TRACK ====================
   {
