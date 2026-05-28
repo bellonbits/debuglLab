@@ -88,6 +88,58 @@ export const quizzesData: QuizCategory[] = [
     ]
   },
   {
+    id: "react-typescript",
+    courseId: "react",
+    title: "TypeScript Foundations for React",
+    description: "Validate your skills in TypeScript syntax, static typing, advanced union/intersection combinations, generic components, and utility interfaces.",
+    questions: [
+      {
+        question: "Which compiler command is used to compile a TypeScript file (.ts) into a standard JavaScript file (.js)?",
+        options: [
+          "npm run ts-compile",
+          "tsc filename.ts",
+          "typescript compile filename",
+          "node compile-ts"
+        ],
+        answerIndex: 1
+      },
+      {
+        question: "How do you define a Union Type in TypeScript to allow a variable to hold either a string or a number?",
+        options: [
+          "let value: string & number;",
+          "let value: string | number;",
+          "let value: stringOrNumber;",
+          "let value: string && number;"
+        ],
+        answerIndex: 1
+      },
+      {
+        question: "Define a TypeScript interface 'User' with a string property 'name' and an optional number property 'age'.",
+        options: [],
+        isCode: true,
+        starterCode: "// Define the interface User below:\n",
+        correctAnswerKeywords: ["interface", "User", "name:", "string;", "age?:", "number;"]
+      },
+      {
+        question: "Which TypeScript utility type takes an interface T and constructs a new type where all properties of T are optional?",
+        options: [
+          "Readonly<T>",
+          "Pick<T, K>",
+          "Record<K, T>",
+          "Partial<T>"
+        ],
+        answerIndex: 3
+      },
+      {
+        question: "Write an arrow function 'double' that takes a parameter 'x' typed as a number and implicitly returns 'x * 2'.",
+        options: [],
+        isCode: true,
+        starterCode: "// Declare standard double arrow function:\nconst double = ",
+        correctAnswerKeywords: ["(x:", "number)", "=>", "x", "*", "2"]
+      }
+    ]
+  },
+  {
     id: "react-certification",
     courseId: "react",
     title: "React & SPA Professional Certification",

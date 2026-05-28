@@ -313,9 +313,16 @@ const calendarEvents: CalendarEvent[] = [
     time: "11:59 PM"
   },
   {
+    date: 30,
+    title: "Module 8: TypeScript Basics",
+    category: "Module 8",
+    description: "Learn static typing, unions, interfaces, generics, utility types, and modules (3 lessons: Primitives, Advanced & Interfaces, Classes & Generics).",
+    time: "11:59 PM"
+  },
+  {
     date: 31,
     title: "Graduation Capstone & Master Review",
-    category: "Module 8",
+    category: "Module 9",
     description: "Review standard deployment structures and receive your graduation credential from The Debug Society (1 lesson: Conclusion).",
     time: "05:00 PM"
   }
@@ -1574,10 +1581,9 @@ export function App() {
 
   // Unused legacy course tracks clean-up: All navigation and calculations removed
 
-  // Total progression values
-  const totalLessons = 26;
+  const totalLessons = lessonsData.flatMap(s => s.lessons).length;
   const completedCount = completedLessons.length;
-  const progressPercent = Math.round((completedCount / totalLessons) * 100);
+  const progressPercent = totalLessons ? Math.round((completedCount / totalLessons) * 100) : 0;
 
   const totalSqlLessons = sqlLessonsData.flatMap(s => s.lessons).length;
   const completedSqlCount = completedSqlLessons.length;
