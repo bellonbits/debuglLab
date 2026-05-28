@@ -409,9 +409,9 @@ To make an argument optional, append \`?\` after its name. Optional parameters m
 \`\`\`typescript
 function greetUser(name: string, title?: string): string {
   if (title) {
-    return `Hello, ${title} ${name}`;
+    return \`Hello, \${title} \${name}\`;
   }
-  return `Hello, ${name}`;
+  return \`Hello, \${name}\`;
 }
 \`\`\`
 
@@ -460,7 +460,7 @@ const multiply = (x: number, y: number): number => x * y;
 For complex calculations, you can open a block body and write an explicit return statement:
 \`\`\`typescript
 const formatUser = (name: string, age: number): string => {
-  return `Name: ${name}, Age: ${age}`;
+  return \`Name: \${name}, Age: \${age}\`;
 };
 \`\`\`
 
@@ -771,7 +771,7 @@ article = ["TypeScript Basics", 1, true];
 You can extract elements into distinct variables cleanly:
 \`\`\`typescript
 const [id, title, isActive] = article;
-console.log(`ID: ${id}, Title: ${title}`);
+console.log(\`ID: \${id}, Title: \${title}\`);
 \`\`\`
 
 ---
@@ -911,7 +911,7 @@ interface Person {
 const alice: Person = {
   name: "Alice",
   greet(msg) {
-    console.log(`${this.name} says: ${msg}`);
+    console.log(\`\${this.name} says: \${msg}\`);
   }
 };
 \`\`\`
@@ -1164,7 +1164,7 @@ class Book implements Printable {
   }
 
   printInfo(): string {
-    return `Title: ${this.title}`;
+    return \`Title: \${this.title}\`;
   }
 }
 \`\`\`
@@ -1214,7 +1214,7 @@ class Book extends Item {
   }
 
   getInfo(): string {
-    return `Book: ${this.title}`;
+    return \`Book: \${this.title}\`;
   }
 }
 \`\`\`
@@ -1305,7 +1305,7 @@ You can specify multiple generic type parameters simultaneously by separating th
 
 \`\`\`typescript
 function combine<T, S>(first: T, second: S): string {
-  return `${first} & ${second}`;
+  return \`\${first} & \${second}\`;
 }
 \`\`\`
 
