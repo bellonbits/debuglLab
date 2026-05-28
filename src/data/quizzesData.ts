@@ -89,7 +89,7 @@ export const quizzesData: QuizCategory[] = [
   },
   {
     id: "react-typescript",
-    courseId: "react",
+    courseId: "typescript",
     title: "TypeScript Foundations for React",
     description: "Validate your skills in TypeScript syntax, static typing, advanced union/intersection combinations, generic components, and utility interfaces.",
     questions: [
@@ -810,6 +810,164 @@ export const quizzesData: QuizCategory[] = [
         isCode: true,
         starterCode: "import pandas as pd\n\ndef filter_users(df):\n  # Filter rows where Age > 30:\n  filtered_df = \n  return filtered_df",
         correctAnswerKeywords: ["df[df", "'Age'", ">", "30"]
+      }
+    ]
+  },
+  {
+    id: "typescript-certification",
+    courseId: "typescript",
+    title: "TypeScript & Static Typing Professional Certification",
+    description: "A comprehensive 15-question certification evaluation covering static typing compilation, compiler configuration options, literal constraints, function overrides, union-intersection operations, interface reopening, class accessors, abstract classes, and polymorphic generic components. Passing this with >= 70% unlocks your TypeScript Verified Professional Certificate!",
+    questions: [
+      {
+        question: "What is the primary architectural benefit of static typing in TypeScript compared to dynamic typing in JavaScript?",
+        options: [
+          "It permits variables to dynamically mutate their data types at runtime without triggering syntax warnings.",
+          "It requires variable types to be declared or inferred at compile time, enabling the TypeScript compiler to catch type-related errors before the code is executed at runtime.",
+          "It automatically syncs local arrays with in-memory SQLite tables via hidden service workers.",
+          "It compiles all JavaScript variables into high-level WebAssembly registers."
+        ],
+        answerIndex: 1
+      },
+      {
+        question: "In a tsconfig.json configuration file, which two options specify the input source folder and the compiled output folder respectively?",
+        options: [
+          "inputDir and outputDir",
+          "source and build",
+          "rootDir and outDir",
+          "srcPath and distPath"
+        ],
+        answerIndex: 2
+      },
+      {
+        question: "How do literal types differ from standard types (like string or number) in TypeScript?",
+        options: [
+          "Literal types allow variables to hold any alphanumeric characters dynamically.",
+          "Literal types restrict a variable to specific, exact values (e.g., direction: 'left' | 'right' | 'up' | 'down') instead of any generic string or number.",
+          "Literal types can only be utilized within class constructor definitions.",
+          "Literal types automatically convert strings to numbers using the unary plus operator."
+        ],
+        answerIndex: 1
+      },
+      {
+        question: "What is the core difference between the void and never return types in TypeScript?",
+        options: [
+          "void means a function returns null, while never means it returns undefined.",
+          "void indicates that a function performs side effects and returns undefined or no value, whereas never represents values that never occur, such as a function that throws an exception or enters an infinite loop.",
+          "never is only used inside classes, while void is used for global variables.",
+          "They are exact synonyms and can be used interchangeably in all situations."
+        ],
+        answerIndex: 1
+      },
+      {
+        question: "Which operator is used to define an Intersection Type in TypeScript, combining multiple types/interfaces into one?",
+        options: [
+          "The pipe operator (|)",
+          "The double ampersand operator (&&)",
+          "The ampersand operator (&)",
+          "The extends keyword"
+        ],
+        answerIndex: 2
+      },
+      {
+        question: "What is a TypeScript Tuple?",
+        options: [
+          "A dynamic database table structure that synchronizes with the server.",
+          "An array with a fixed number of elements where each element has a pre-defined and specific data type at a given position (e.g., [number, string, boolean]).",
+          "A special function parameter that accepts an unlimited number of arguments.",
+          "A syntax sugar to merge two class instances."
+        ],
+        answerIndex: 1
+      },
+      {
+        question: "How do you declare a rest parameter in a TypeScript function to capture multiple numeric arguments into an array?",
+        options: [
+          "function addAll(nums: number[])",
+          "function addAll(...nums: number[])",
+          "function addAll(args: ...number)",
+          "function addAll(nums: Array<any>)"
+        ],
+        answerIndex: 1
+      },
+      {
+        question: "What is a primary distinction between an Interface and a Type Alias regarding declaration merging?",
+        options: [
+          "Type Aliases support automatic declaration merging when redefined, whereas Interfaces will throw a compile error.",
+          "Interfaces support declaration merging (multiple definitions with the same name are merged by the compiler), whereas Type Aliases do not support declaration merging and will throw an error.",
+          "Only Type Aliases can be used as parameter types inside arrow functions.",
+          "Interfaces are compiled to JavaScript functions, while Type Aliases are omitted entirely."
+        ],
+        answerIndex: 1
+      },
+      {
+        question: "What does 'interface reopening' accomplish in a growing TypeScript application?",
+        options: [
+          "It opens an external WebSocket port to stream interface definitions.",
+          "It allows developers to extend or add new properties to an existing interface progressively as the project grows, promoting modularity and progressive enhancement.",
+          "It bypasses standard class access modifiers at runtime.",
+          "It converts an interface to an abstract class dynamically."
+        ],
+        answerIndex: 1
+      },
+      {
+        question: "Which built-in TypeScript interface represents an HTML <img> element, providing typed access to attributes like alt, src, naturalWidth, and complete?",
+        options: [
+          "HTMLElement",
+          "HTMLImageElement",
+          "HTMLAnchorElement",
+          "ImageTag"
+        ],
+        answerIndex: 1
+      },
+      {
+        question: "What is the difference between private and protected access modifiers in TypeScript classes?",
+        options: [
+          "private variables can be accessed anywhere, whereas protected is restricted to child classes.",
+          "private members are accessible only from within the class they are defined, while protected members are accessible both within the defining class and from any derived subclasses (child classes).",
+          "private variables are stored in local storage, while protected are stored in database models.",
+          "There is no difference; they are exact functional synonyms at runtime."
+        ],
+        answerIndex: 1
+      },
+      {
+        question: "In TypeScript classes, what does the static keyword indicate about a class property or method?",
+        options: [
+          "The member is immutable and cannot be updated after initialization.",
+          "The member belongs to the class itself rather than to individual instances of the class, allowing access without creating an instance.",
+          "The member is strictly asynchronous and returns a Promise.",
+          "The member is saved to static storage inside the index.html bundle."
+        ],
+        answerIndex: 1
+      },
+      {
+        question: "What is a primary characteristic of an Abstract Class in TypeScript?",
+        options: [
+          "It can be instantiated directly using the new keyword and has no subclasses.",
+          "It serves as a blueprint for other classes, cannot be instantiated directly on its own, and can define abstract methods that subclasses MUST implement.",
+          "It compiles into an interface in the resulting JavaScript file.",
+          "It bypasses all static type checks inside the TypeScript compiler."
+        ],
+        answerIndex: 1
+      },
+      {
+        question: "What is the primary advantage of using Generics in TypeScript?",
+        options: [
+          "Generics automatically generate unit tests for all classes.",
+          "Generics allow developers to write flexible, reusable code by passing types as parameters (e.g., <T>), ensuring type safety across multiple data types without resorting to any.",
+          "Generics convert dynamically-typed variables to static variables at runtime.",
+          "Generics force the browser to run code in secondary worker threads."
+        ],
+        answerIndex: 1
+      },
+      {
+        question: "In a TypeScript project setup, what is the role of enabling sourceMap: true in tsconfig.json during debugging?",
+        options: [
+          "It speeds up compile times by avoiding JS compression.",
+          "It generates .js.map files that map lines of compiled JavaScript back to their original TypeScript source lines, allowing debuggers to set breakpoints directly in the .ts files.",
+          "It renders a graphical map of files inside the browser window.",
+          "It connects the client application directly to Google Maps APIs."
+        ],
+        answerIndex: 1
       }
     ]
   }

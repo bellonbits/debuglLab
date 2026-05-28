@@ -6,150 +6,104 @@
 
 ## Overview
 
-> You know *what* React is and you might even have an idea of *where* to use it. Now, it’s time to start figuring out *how*.
->
-> This lesson is going to cover starting a new React project on your machine, as well as some useful tools to help you along the way. We’ll also explain some of the problems that may arise (and how to avoid them).
-
-**You will learn:**
-
-- How React projects can be created.
-- How to use Vite to create new React projects.
-- How to format the code in React projects.
-- What React Developer Tools are.
+Now that you understand what React is and how components shape a web application, it's time to build a robust, premium local development environment on your machine. This lesson will guide you through installing required dependencies, configuring your editor, scaffolding a new project using Vite, and understanding folder layouts.
 
 ---
 
-## Content
+## Setting Up the Development Environment
 
-### Many paths
+To construct high-performance React web applications, we must first assemble our runtime platform and tools:
 
-There are multiple ways to start using React in your projects, from attaching a set of `<script>` tags which serve React from a [CDN](https://en.wikipedia.org/wiki/Content_delivery_network), to robust [toolchains](https://en.wikipedia.org/wiki/Toolchain) and [frameworks](https://en.wikipedia.org/wiki/Web_framework) that are highly configurable and allow for increased scalability and optimization.
+### 1. Install Node.js (Version 16 or Higher Required)
+**Node.js** is a JavaScript runtime environment that compiles and aggregates frontend assets and runs package management tools.
+* **Requirement**: You **MUST** run Node version **16 or higher** on your machine.
+* **Verification Check**: Open up your terminal or command prompt window and run:
+  ```bash
+  node -v
+  ```
+  This will print the currently installed Node.js version (e.g., `v19.4.0` or `v20.11.0`). If the output is a version lower than 16, or if Node is not found:
+* **Installation**: Navigate to [nodejs.org](https://nodejs.org/), download, and run the latest **LTS (Long Term Support)** installer for your specific operating system.
 
-Some examples of these toolchains include:
+### 2. Configure Your Code Editor (VS Code)
+While you are free to write code in any text editor, we strongly recommend using **Visual Studio Code (VS Code)**. 
 
-- [Vite’s React Config](https://vitejs.dev/)
-- [Gatsby](https://www.gatsbyjs.com/)
-- [NextJS](https://nextjs.org/)
-- [Create React App](https://create-react-app.dev/) (Deprecated)
+To maintain clean, consistent, and standard styling across all your project files:
+* **Install Prettier Extension**: 
+  1. Open the **Extensions Panel** in VS Code (shortcut: `Cmd + Shift + X` on Mac, `Ctrl + Shift + X` on Windows/Linux).
+  2. Search for **"Prettier - Code formatter"**.
+  3. Click **Install**.
+* **Auto-Formatting Setup**: Once installed, configure VS Code to automatically format files upon saving:
+  1. Open settings (`Cmd + ,` or `Ctrl + ,`).
+  2. Search for **"Format On Save"** and check the box to enable it.
+  3. Search for **"Default Formatter"** and select `esbenp.prettier-vscode` from the dropdown list.
 
-Why do we need these toolchains? Can’t we just make our own as we see fit?
+---
 
-Yes, but it’s *hard*. React is a complex beast and there are many moving parts. Before you can start writing any sort of code that provides functionality, you would need to configure *at least* the following:
+## Modern Toolchains & Project Scaffolding
 
-- Package Management ([NPM](https://www.npmjs.com/), [Yarn](https://yarnpkg.com/))
-- Module bundling ([Webpack](https://webpack.js.org/), [Parcel](https://parceljs.org/))
-- Compilation ([Babel](https://babeljs.io/))
-- React itself
+Historically, standard React projects were created using **Create React App (CRA)**. However, owing to slow build speeds and legacy Webpack parameters, CRA was deprecated. Today, modern React applications are scaffolded using **Vite**.
 
-All of this, and sometimes *much more*, is required to get a React project and development environment up and running.
+Vite is a fast build tool that provides a premium, high-speed development experience with Hot Module Replacement (HMR).
 
-#### A note on Create React App
-
-Create React App, or CRA, was the official way to scaffold new React projects since its introduction in 2016. Unfortunately, owing to many reasons, [CRA was deprecated in early 2023](https://github.com/reactjs/react.dev/pull/5487#issuecomment-1409720741). Due to CRA’s popularity, you’ll see it mentioned in many tutorials and guides. However, it’s no longer recommended to use it for new projects.
-
-### Simplifying the process
-
-Now that you understand what is involved with starting a React project from scratch, you can breathe a sigh of relief to learn that we can get started with a *single terminal command*. We’ll be using Vite’s own React template to scaffold our project, just like if we made and used our own template repo.
-
-Vite builds frontend tools for developers and it leverages the latest technologies under the hood to provide a great developer experience. Fortunately, it also caters to the React ecosystem. We will use Vite’s CLI to quickly create a template React project. It requires minimal configuration and provides extremely useful tools right out of the box, allowing us to get straight to the learning. Let’s get started!
-
-### Creating a React app
-
-Please make sure that you are using the latest *LTS* version of Node, otherwise errors may occur. Open up the terminal and the folder containing your projects. Then enter the following command (you can replace `my-first-react-app` with any name you want):
-
-```bash
-npm create vite@latest my-first-react-app -- --template react
-
-```
-
-You may be asked if you want to install the `create-vite` package, in which case you should accept by typing `y` then hitting Enter. If it asks you any questions about using experimental features, you can answer no to them. Finally, answer yes to `Install with npm and start now?`.
-
-Once the command has executed, it should output the following:
+### Creating a React App via Vite
+Open your terminal inside the workspace folder where you store coding projects. Run the following command:
 
 ```bash
-➜  Local:   http://localhost:5173/
-➜  Network: use --host to expose
-➜  press h + enter to show help
-
+npm create vite@latest my-first-react-app -- --template react-ts
 ```
+*(Note: We append `-ts` to the template parameter to automatically enable TypeScript compiler configurations inside the React scaffolding!)*
 
-Provided everything has gone according to plan, head over to `localhost:5173`, where you’ll be greeted with the following page:
+Follow the terminal prompts:
+1. `cd my-first-react-app`
+2. Run `npm install` to download all core package dependencies.
+3. Start the high-speed local dev server:
+   ```bash
+   npm run dev
+   ```
 
-[![Vite React template homepage](https://cdn.statically.io/gh/TheOdinProject/curriculum/9200680864d044390aeb1baa838f213addd65cbe/react/introduction/setting_up_a_react_environment/imgs/vite_react_homepage.png)](https://cdn.statically.io/gh/TheOdinProject/curriculum/9200680864d044390aeb1baa838f213addd65cbe/react/introduction/setting_up_a_react_environment/imgs/vite_react_homepage.png)
+Open your browser and navigate to `http://localhost:5173/` to view the running template React homepage.
 
-Congratulations! You’ve created your first React app. You can now exit out of the dev server (Ctrl + C) and `cd` into your project directory. You can start the dev server any time within the project directory by running `npm run dev`.
+---
 
-To link your local project directory to a GitHub repo, create a new **empty** repo on GitHub then follow the instructions in the new repo’s page to connect it to your local project directory.
+## Inspecting the Scaffolding Directory
 
-#### Using an existing repo
+Let's open our new project folder in VS Code to examine the directory layout:
 
-Alternatively, if you created a GitHub repo already and cloned it, you can `cd` into your cloned repo then run the above Vite command, using `.` as the project name:
+* **`package.json`**: Lists all third-party libraries, compile targets, and terminal execution commands (`dev`, `build`, `preview`).
+* **`public/`**: Stores raw static assets like favicons and configuration profiles that are served directly without processing.
+* **`src/`**: The home for your application logic!
+  * **`main.tsx`**: The entry point of your application. It uses `createRoot` to grab an HTML div element (with an ID of `root` inside your `index.html`) and renders your `<App />` component hierarchy inside it:
+    ```typescript
+    import { StrictMode } from "react";
+    import { createRoot } from "react-dom/client";
+    import App from "./App.tsx";
+    import "./index.css";
 
-```bash
-npm create vite@latest . -- --template react
+    createRoot(document.getElementById("root")!).render(
+      <StrictMode>
+        <App />
+      </StrictMode>
+    );
+    ```
+  * **`App.tsx`**: The root component of your application containing visual state and child components.
 
-```
-
-This will tell Vite to use the current directory for the project, instead of creating a new directory with the given project name. This cloned directory will already be initialized as a git repo and connected to the right remote.
-
-### Delving deeper
-
-Let’s take a closer look at our new project. Inside, you will find some folders, as well as `package.json`, `package-lock.json`, `.gitignore`, and `README.md` files. The `README.md` contains some useful information that you should take the time to skim through now.
-
-The `public` folder is where all of the static assets related to your app will go. This could include images, icons, and information files for the browser.
-
-Inside the `src` folder is where you will find the code that runs your app. The `main.jsx` file here serves as the entry point of the application. Let’s open the `main.jsx` file and see if we can understand what’s going on:
-
-```jsx
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import App from "./App.jsx";
-import "./index.css";
-
-createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-);
-
-```
-
-Whoa! There’s quite a lot here. You are not expected to recognize much of this (if any) right now. Here’s a brief rundown of what is happening:
-
-1. We import `StrictMode` and `createRoot` from the `react` and `react-dom` packages respectively.
-2. We import the `App` component from `App.jsx`, so that we may place (render) it within the DOM.
-3. We import some CSS styling (you may recognize this syntax from the Webpack material).
-4. We create a `root` object by invoking `createRoot` with an element from our `index.html`.
-5. We invoke the `render` method, which is attached to our `root` object, with some very interesting-looking syntax inside the parentheses.
-
-All of this may understandably look unlike anything you’ve seen up until now, but have no fear, once you’ve spent the time with this course, you’ll know exactly what all of this does, and *much more*.
-
-### Developer tools
-
-As you progress with React, your projects will undoubtedly become larger and larger and include more and more components, with increasing levels of functionality.
-
-When this happens, it’s useful to be able to track (and make live changes to) the moving parts inside of your app for understanding and debugging your code. To this end, we can use a Chrome extension called [React Developer Tools](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi?hl=en).
-
-We recommend installing this and becoming comfortable using it as early as possible as it’s an invaluable tool for effective React development.
+### Dynamic Inspection: React Developer Tools Extension
+To debug states, props, and component trees inside running browser tabs:
+1. Search your browser's extension store for the **React Developer Tools** extension.
+2. Once installed, open Chrome DevTools (`Cmd + Option + I` on Mac) while running your React app.
+3. You will see two new tabs: **"Components"** (to inspect prop values and states live) and **"Profiler"** (to measure rendering performance).
 
 ---
 
 ## Assignment
 
-1. Review this material by reading through [Vite’s Getting Started Page](https://vitejs.dev/guide/).
-2. Check out this [guide for React Developer Tools](https://www.debugbear.com/blog/react-devtools) to begin learning how to use it (don’t worry if you don’t understand some of the details yet).
-3. Try to clean up your `my-first-react-app` project so that it no longer displays the default page. See if you can get it to display a “Hello, World!” message instead.
+1. **Clean Scaffolding**: Open your newly created Vite React application, delete the default styles inside `App.css` and template logic in `App.tsx`, and make it render a beautiful `<h1>Hello, World!</h1>` header.
+2. **Explore Vite**: Check the [Vite Documentation](https://vitejs.dev/guide/) to understand how Hot Module Replacement accelerates feedback cycles.
 
 ---
 
 ## Knowledge Check
 
-> The following questions are an opportunity to reflect on key topics in this lesson. If you can’t answer a question, click on it to review the material, but keep in mind you are not expected to memorize or master this knowledge.
-
-- [What are some of the ways we can start a new React project?](#many-paths)
-- [Why should we initially be using pre-made toolchains instead of making our own?](#many-paths)
-- [What is Vite and why would we use it?](#simplifying-the-process)
-- [What command can we run to scaffold a new React project using Vite?](#creating-a-react-app)
-- [What is in the `public` folder?](#delving-deeper)
-- [What is in the `src` folder?](#delving-deeper)
-- [Why are the React Developer Tools useful?](#developer-tools)
+* **What terminal commands verify your Node.js setup and run local React servers?** (See [Setting Up the Development Environment](#setting-up-the-development-environment) and [Creating a React App](#creating-a-react-app-via-vite))
+* **Why is Prettier standardly integrated into modern engineering workflows?** (See [Configure Your Code Editor](#2-configure-your-code-editor-vs-code))
+* **What is the entry point file inside a Vite React template and what does it do?** (See [Inspecting the Scaffolding Directory](#inspecting-the-scaffolding-directory))

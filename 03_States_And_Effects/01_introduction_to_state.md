@@ -6,97 +6,235 @@
 
 ## Overview
 
-> Any exciting application you build is likely to change over the time the user is exploring it. The changes could be as basic as toggling a dropdown menu or as complex as fetching data from an API. React provides primitives to manipulate the state of your apps, more specifically components, to make them dynamic. In this lesson, we will learn how to use state in React.
->
-> Read  [What is State? by Academind](https://academind.com/tutorials/what-is-state) before we get started.
+Any exciting application you build is likely to change as the user explores it — toggling themes, selecting filters, fetching new data. React provides **state** — a component's persistent, reactive memory — to make UIs dynamic and responsive. In this lesson, we master state in TypeScript React.
 
 **You will learn:**
-
-- What state in React is.
-- How to use state in React.
-- What happens in React when state is changed.
+- What state is and how it differs from props.
+- How to use `useState` with TypeScript generics for type-safe state.
+- What happens under the hood when state changes (re-rendering & reconciliation).
+- The two essential rules of React Hooks.
 
 ---
 
 ## Content
 
-### What is state in React?
+### What is State in React?
 
-We write components in React, A LOT of components, and many times we want them to undergo visual changes as a result of user or computer interactions. For this purpose, a component needs to “remember” things about itself. This is where state comes in. **State is a component’s memory.**
+**State is a component's memory** — data that the component tracks between renders and can update in response to events. When state changes, React automatically re-renders the component with the new values.
 
-Let’s take a look at how we can use state in our code.
+**Props vs State:**
 
-*If the Codesandbox embed above does not load, you can [open the Codesandbox directly](https://codesandbox.io/p/sandbox/unruffled-pasteur-6h36wf?file=%2Fsrc%2FApp.jsx%3A10%2C27&embed=1).*
+| | Props | State |
+|---|---|---|
+| Who controls it? | Parent component | The component itself |
+| Can it change? | Read-only (immutable) | Yes, via setter function |
+| When does it update the UI? | When parent re-renders | Immediately on change |
+| Example | `title`, `score` passed down | Selected genre, search query |
 
-An app that changes its background color based on the clicked button. Take your time reading the code as we’ll jump right in.
+---
 
-#### The useState hook
+### The `useState` Hook: TypeScript Generics
 
-The `useState` hook is a built-in hook (we’ll talk about hooks later) in React that allows you to define state in a functional component. It takes an initial value as a parameter and returns an array with two elements that we can destructure to get:
+`useState` is the most fundamental React hook. It returns an array with exactly two elements:
+1. The **current state value**
+2. A **setter function** that updates the value and triggers a re-render
 
-1. The current state value
-2. A function to update the state value
-
-State definition with `useState` commonly follows this pattern:
-
-```javascript
+```tsx
 const [stateValue, setStateValue] = useState(initialValue);
-
-// adapted for our use case:
-const [backgroundColor, setBackgroundColor] = useState(initialColor);
-
 ```
 
-Even without much knowledge of React, you can, to some extent, understand what’s going on. The `backgroundColor` state is defined with the hook. Then on every button, we set up a *click* event handler that calls the `setBackgroundColor` function with the corresponding value. Then, magically the new color is applied to the background.
+In TypeScript, `useState` is a **generic function**. You can explicitly annotate the type, which is especially important for complex types like objects or union types:
 
-Adding more state variables should be as easy as adding more `useState` calls.
+```tsx
+import { useState } from "react";
 
-Great, you can now use state! But, what’s going on under the hood?
+// ✅ TypeScript infers the type from the initial value
+const [count, setCount] = useState(0);          // inferred: number
+const [query, setQuery] = useState("");          // inferred: string
+const [isLoading, setIsLoading] = useState(false); // inferred: boolean
 
-### How does state work in React?
+// ✅ Explicit generic when inference isn't enough
+const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
+const [selectedGame, setSelectedGame] = useState<Game | null>(null);
 
-Let’s hit you with some theory.
+// TypeScript will now error if you try to set the wrong type:
+setSelectedGenre(42); // ❌ Error: Argument of type 'number' is not assignable
+setSelectedGenre("RPG"); // ✅ Correct
+```
 
-In React, when a component’s state or props change, React runs your component function again from the beginning to figure out what should be displayed based on the freshly-set state and props. All the calculated changes are then applied to the DOM (committed).
-That is, the entire component is recreated, in a sense, but this time the latest state value will be returned from `useState`. This process is called rerendering. Rerendering is a key feature of React that enables it to efficiently update the user interface in response to changes in the underlying data.
+---
 
-#### React reconciliation algorithm
+### A Practical Example: GameHub Filters
 
-The process of rerendering generates a new virtual DOM (Document Object Model) tree. The virtual DOM is a lightweight representation of the actual DOM that React uses to keep track of the current state of the UI. React then compares the new virtual DOM tree to the previous one and calculates the minimal set of changes needed to update the actual DOM. This is the reconciliation algorithm.
+In GameHub, the user can filter games by genre and platform. We manage these as state in the root `App` component, then pass them down to `GameGrid` as props:
 
-#### Explaining rerendering with the example above
+```tsx
+// App.tsx
+import { useState } from "react";
+import NavBar from "./components/NavBar";
+import GenreList from "./components/GenreList";
+import GameGrid from "./components/GameGrid";
 
-Whenever `setBackgroundColor` is called, our `App` component is rerendered. Essentially, the component is recreated which means the `onButtonClick` function and our `div` and `button`s are recreated as well. You might wonder, shouldn’t the `backgroundColor` state be recreated as well? Well, React takes the responsibility of keeping track of the latest state and providing it to the component. The initial state value is only used for the component’s first render and is ignored on subsequent renders.
+interface Genre {
+  id: number;
+  name: string;
+}
 
-[![code illustration of rerendering](https://cdn.statically.io/gh/TheOdinProject/curriculum/abf5962ab36c951bab907a9952d09400651eab10/react/states_and_effects/introduction_to_state/imgs/00.png)](https://cdn.statically.io/gh/TheOdinProject/curriculum/abf5962ab36c951bab907a9952d09400651eab10/react/states_and_effects/introduction_to_state/imgs/00.png)
+interface Platform {
+  id: number;
+  name: string;
+}
 
-What we covered in this section is just a brief overview of a portion of React internals. You may be curious to learn more, but be advised, this is a deep rabbit hole. What we covered above is enough to get you through the React course.
+function App() {
+  // Filter state — null means "show all"
+  const [selectedGenre, setSelectedGenre] = useState<Genre | null>(null);
+  const [selectedPlatform, setSelectedPlatform] = useState<Platform | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
-### Hooks
+  return (
+    <div>
+      <NavBar onSearch={setSearchQuery} />
+      <div className="layout">
+        <GenreList
+          selectedGenre={selectedGenre}
+          onSelectGenre={setSelectedGenre}
+        />
+        <GameGrid
+          selectedGenre={selectedGenre}
+          selectedPlatform={selectedPlatform}
+          searchQuery={searchQuery}
+        />
+      </div>
+    </div>
+  );
+}
+```
 
-Hooks are functions that let you use React features. All hooks are recognizable by the `use` prefix. For example, `useState` is a hook. We’ll use more of these as we get further into the course. For now, remember that hooks have rules that we need to abide by:
+When the user clicks a genre in `GenreList`, it calls `onSelectGenre(genre)`. This triggers `setSelectedGenre`, which updates state in `App`. React re-renders `App`, and the new `selectedGenre` flows down as a prop to `GameGrid`, which fetches and renders filtered games.
 
-1. Hooks can only be called from the top level of a functional component.
-2. Hooks can’t be called from inside loops or conditions.
+---
+
+### How State Works Under the Hood
+
+#### Rendering and Re-rendering
+When you call a setter (e.g., `setSelectedGenre(newGenre)`):
+1. React queues the state update (multiple updates can be batched).
+2. React **re-runs the entire component function** from the top with the new state value.
+3. It produces a new virtual DOM tree.
+4. The **reconciliation algorithm** diffs the old vs new virtual DOM.
+5. Only the changed DOM nodes are committed to the real browser DOM.
+
+The component re-renders, but the state isn't lost — React preserves the latest state values across re-renders. The initial value passed to `useState(initialValue)` is only used on the **first** render.
+
+#### The Reconciliation Algorithm
+React's reconciliation (also called "the diffing algorithm") is what makes React fast:
+- React compares the old virtual DOM tree with the new one node by node.
+- It identifies the minimum set of real DOM operations needed.
+- Only those specific changes are applied — not a full page repaint.
+
+This is why React apps feel instant even with complex UIs.
+
+---
+
+### State Update Patterns
+
+#### Updating Simple Values
+```tsx
+const [count, setCount] = useState(0);
+
+// ✅ Direct value
+setCount(count + 1);
+
+// ✅ Functional update (use when new value depends on previous)
+setCount(prev => prev + 1);
+```
+
+Always use the **functional form** when the new state depends on the previous value — especially inside event handlers that might fire rapidly.
+
+#### Updating Arrays (Immutably)
+```tsx
+const [games, setGames] = useState<Game[]>([]);
+
+// ✅ Add a game — create new array
+setGames(prev => [...prev, newGame]);
+
+// ✅ Remove a game — filter out by id
+setGames(prev => prev.filter(g => g.id !== removedId));
+
+// ✅ Update a game — map and replace
+setGames(prev =>
+  prev.map(g => g.id === updatedGame.id ? updatedGame : g)
+);
+```
+
+**Never mutate state directly.** Always create a new value:
+```tsx
+// ❌ WRONG — mutates existing state array
+games.push(newGame);
+setGames(games);
+
+// ✅ CORRECT — creates a new array
+setGames([...games, newGame]);
+```
+
+#### Updating Objects
+```tsx
+interface Filters {
+  genre: string | null;
+  platform: string | null;
+  searchQuery: string;
+}
+
+const [filters, setFilters] = useState<Filters>({
+  genre: null,
+  platform: null,
+  searchQuery: "",
+});
+
+// ✅ Spread and override — preserves other fields
+setFilters(prev => ({ ...prev, genre: "RPG" }));
+```
+
+---
+
+### The Rules of Hooks
+
+React hooks must follow two rules. These are enforced by the `eslint-plugin-react-hooks` linter plugin (included in Vite templates):
+
+1. **Only call hooks at the top level of a component function.** Never inside loops, conditions, or nested functions. This ensures hook call order is consistent across every render.
+
+2. **Only call hooks inside React function components (or custom hooks).** Never in plain utility functions or class methods.
+
+```tsx
+// ❌ WRONG — hook inside a condition
+function GameCard({ isLoggedIn }: Props) {
+  if (isLoggedIn) {
+    const [liked, setLiked] = useState(false); // ❌ violates Rule 1
+  }
+}
+
+// ✅ CORRECT — hook always at the top level
+function GameCard({ isLoggedIn }: Props) {
+  const [liked, setLiked] = useState(false); // ✅ always runs
+
+  if (!isLoggedIn) return null;
+  return <div>...</div>;
+}
+```
 
 ---
 
 ## Assignment
 
-1. Read the following articles from the React docs:
-        
-1. [State: A Component’s Memory](https://react.dev/learn/state-a-components-memory)
-2. [Render and Commit](https://react.dev/learn/render-and-commit)
-2. Read this [article on React Reconciliation Algorithm](https://www.geeksforgeeks.org/reactjs-reconciliation/) for a great explanation.
-3. Head back to the color changing background example from earlier in the lesson, and add a new state variable to keep track of the number of times the background color has been changed. Display the number of times the background color has been changed on the page. You will need to fork the codesandbox to do this, which requires a codesandbox account. Click “Open Editor” in the top right of the codesandbox embed, then “Fork” in the top right of the editor.
+1. Read [State: A Component's Memory](https://react.dev/learn/state-a-components-memory) from the React docs.
+2. Read [Render and Commit](https://react.dev/learn/render-and-commit) to understand how React commits updates to the DOM.
+3. Build a `GenreList` and `App` component where clicking a genre button updates a `selectedGenre` state variable (typed as `Genre | null`). Display the selected genre name above the list.
 
 ---
 
 ## Knowledge Check
 
-> The following questions are an opportunity to reflect on key topics in this lesson. If you can’t answer a question, click on it to review the material, but keep in mind you are not expected to memorize or master this knowledge.
-
-- [What is state?](#what-is-state-in-react)
-- [What is the `useState` hook and how would you use it?](#useState-hook)
-- [What happens to a component when one of its states is changed?](#how-does-state-work-in-react)
-- [What are some of the rules of hooks?](#hooks)
+- **What is the difference between props and state?** (See [What is State in React?](#what-is-state-in-react))
+- **How do you use TypeScript generics with `useState` to type complex state?** (See [The `useState` Hook: TypeScript Generics](#the-usestate-hook-typescript-generics))
+- **Why must you never mutate state arrays or objects directly?** (See [Updating Arrays (Immutably)](#updating-arrays-immutably))
+- **What are the two Rules of Hooks and why do they exist?** (See [The Rules of Hooks](#the-rules-of-hooks))

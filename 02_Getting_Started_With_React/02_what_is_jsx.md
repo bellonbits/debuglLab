@@ -6,12 +6,13 @@
 
 ## Overview
 
-> You’re likely somewhat familiar with JSX from previous React lessons, in this lesson we’re going to explain *what* it is, *why* we use it, and *how* to use it in your React apps.
+JSX is the syntax that makes React so visually intuitive. In this lesson we learn exactly what JSX is, why it exists, how it differs from plain HTML, and how to write expressive, dynamic JSX with TypeScript in `.tsx` files.
 
 **You will learn:**
-
-- What JSX is.
-- Differences between JSX and HTML.
+- What JSX is and how it compiles.
+- The core rules that make JSX different from HTML.
+- How to embed dynamic TypeScript expressions inside JSX.
+- File extension conventions (`.tsx` vs `.jsx`).
 
 ---
 
@@ -19,201 +20,174 @@
 
 ### What is JSX?
 
-JSX is a syntax extension for JavaScript that lets you write HTML-like markup inside a JavaScript file. It’s not required to use JSX when writing React components, but it does make writing them more concise.
+**JSX** (JavaScript XML) is a syntax extension that lets you write HTML-like markup directly inside a TypeScript or JavaScript file. It is not valid JavaScript on its own — a compiler (Babel or ESBuild inside Vite) transforms it into `React.createElement()` function calls at build time.
 
-Essentially, JSX is syntactic sugar for the React [createElement function](https://react.dev/reference/react/createElement). This function creates a React element, which is a plain object, so JSX compiles down to plain JavaScript objects.
+```tsx
+// What you write:
+const element = <h1 className="title">Hello, GameHub!</h1>;
 
-Here you can see the logged value of a div JSX element with some text:
+// What the compiler transforms it to:
+const element = React.createElement("h1", { className: "title" }, "Hello, GameHub!");
+```
 
-[![JSX element's logged value](https://cdn.statically.io/gh/TheOdinProject/curriculum/1100fab7884b195379664e41b62dfa95588f3a15/react/getting_started_with_react/what_is_jsx/imgs/00.png)](https://cdn.statically.io/gh/TheOdinProject/curriculum/1100fab7884b195379664e41b62dfa95588f3a15/react/getting_started_with_react/what_is_jsx/imgs/00.png)
+Both produce an identical React element — a plain JavaScript object that describes what to render. JSX is purely syntactic sugar, but it makes components dramatically more readable.
 
-### Why do we use JSX?
+#### File Extensions: `.tsx` vs `.jsx`
+In our TypeScript React project:
+- **`.tsx`** — TypeScript files containing JSX (use this for components)
+- **`.ts`** — TypeScript files with no JSX (use this for utilities, hooks, data)
 
-Most of the time in apps, rendering logic and markup are inherently coupled, but we typically separate them by having our logic and markup in separate files. JSX allows React to separate concerns by containing both rendering logic and content in the same place (a component).
+---
 
-On top of this, it’s a more intuitive, visual way to work with the UI inside your code, and allows React to show more useful error and warning messages.
+### Why Do We Use JSX?
 
-### Rules of JSX
+JSX keeps **rendering logic and UI markup together** in one place: the component. This is intentional — in React, they are inherently coupled. Rather than maintaining a separate HTML template and a JavaScript controller, one component function manages both.
 
-If you were to take some valid HTML and copy it straight into your React component, it would not work. This is due to some of the rules JSX implements, that aren’t present in HTML.
+Additional benefits:
+* **Rich error messages**: React gives precise error descriptions pointing to specific JSX lines.
+* **IDE support**: Full autocomplete, type checking, and inline prop validation.
+* **Natural data binding**: Any JavaScript/TypeScript expression can be embedded directly in markup.
 
-1. Return a single root element.
+---
 
-If you wish to return multiple elements in a component, you can do so by wrapping them in a parent tag. This can be a `<div>`, or, if you don’t want the elements to have a container, you could use a [React fragment](https://react.dev/reference/react/Fragment), like so: `<>Children</>`
+### The Three Rules of JSX
 
-Correct:
+#### Rule 1 — Return a Single Root Element
+A component must return one parent wrapper element. Use a `<div>`, or use a **React Fragment** (`<>...</>`) to avoid adding unnecessary DOM nodes:
 
-```jsx
-function App() {
-  // Could replace <></> with <div></div>
+```tsx
+// ✅ Correct — Fragment wraps multiple elements without extra DOM nodes
+function GameInfo() {
   return (
     <>
-      <h1>Example h1</h1>
-      <h2>Example h2</h2>
+      <h2>Elden Ring</h2>
+      <p>Score: 97</p>
     </>
   );
 }
-```
 
-Incorrect:
-
-```jsx
-function App() {
+// ❌ Incorrect — two root elements will cause a compiler error
+function GameInfo() {
   return (
-    <h1>Example h1</h1>
-    <h2>Example h2</h2>
-  );
-}
-```
-2. Close all tags.
-
-In HTML, many tags are self-closing and self-wrapping. In JSX however, we must explicitly close and wrap these tags.
-
-`<input>` would become `<input />`, and `<li>` would become `<li></li>`
-
-Correct:
-
-```jsx
-function App() {
-  return (
-    <>
-      <input />
-      <li></li>
-    </>
-  );
- }
-```
-
-Incorrect:
-
-```jsx
-function App() {
-  return (
-    <>
-      <input>
-      <li>
-    </>
-  );
-}
-```
-3. camelCase **Most** things.
-
-JSX turns into JavaScript, and attributes of elements become keys of JavaScript objects, so you can’t use dashes or reserved words such as `class`. Because of this, many HTML attributes are written in camelCase. Instead of `stroke-width`, you’d use `strokeWidth`, and instead of `class` you’d use `className`.
-
-Correct:
-
-```jsx
-function App() {
-  return (
-  <div className="container">
-    <svg>
-      <circle cx="25" cy="75" r="20" stroke="green" strokeWidth="2" />
-    </svg>
-  </div>
+    <h2>Elden Ring</h2>
+    <p>Score: 97</p>
   );
 }
 ```
 
-Incorrect:
+#### Rule 2 — Close All Tags
+Unlike HTML, JSX requires **explicit closing** for every element, including self-closing ones:
 
-```jsx
-function App() {
+```tsx
+// ✅ Correct
+<img src={game.imageUrl} alt={game.title} />
+<input type="search" placeholder="Search..." />
+
+// ❌ Incorrect
+<img src={game.imageUrl} alt={game.title}>
+<input type="search" placeholder="Search...">
+```
+
+#### Rule 3 — camelCase Attributes
+Since JSX compiles to JavaScript objects, attribute names follow camelCase conventions. Reserved JavaScript words like `class` become `className`:
+
+| HTML Attribute | JSX Equivalent |
+|---|---|
+| `class` | `className` |
+| `for` | `htmlFor` |
+| `stroke-width` | `strokeWidth` |
+| `onclick` | `onClick` |
+| `tabindex` | `tabIndex` |
+
+```tsx
+// ✅ Correct JSX
+<div className="game-card" onClick={handleClick}>
+  <svg><circle strokeWidth={2} /></svg>
+</div>
+
+// ❌ Incorrect — HTML attributes in JSX
+<div class="game-card" onclick={handleClick}>
+  <svg><circle stroke-width="2" /></svg>
+</div>
+```
+
+---
+
+### Embedding Dynamic Expressions in JSX
+
+Any valid TypeScript expression can be embedded in JSX using **curly braces** `{}`. This is the "window into JavaScript" inside your markup:
+
+```tsx
+interface Props {
+  title: string;
+  score: number;
+  released: number;
+}
+
+function GameCard({ title, score, released }: Props) {
+  const currentYear = new Date().getFullYear();
+  const isNew = released >= currentYear - 1;
+
   return (
-    <div class="container">
-      <svg>
-        <circle cx="25" cy="75" r="20" stroke="green" stroke-width="2" />
-      </svg>
+    <div className={`game-card ${isNew ? "new-release" : ""}`}>
+      <h3>{title.toUpperCase()}</h3>
+      <p>Score: {score}/100</p>
+      <p>Released: {released}</p>
+      {isNew && <span className="badge">🆕 New Release</span>}
     </div>
   );
 }
 ```
 
+Key patterns demonstrated:
+- **String expression**: `{title.toUpperCase()}` — any JS expression resolves inline
+- **Dynamic className**: `className={\`game-card ${isNew ? "new-release" : ""}\`}`
+- **Conditional rendering**: `{isNew && <span>...</span>}` — render only when `true`
+- **Computed values**: `{score}/100` — mix static text and dynamic values
+
+---
+
 ### Converting HTML to JSX
 
-Now that we’ve covered the Rules of JSX, we’ll go through the conversion of a chunk of HTML to JSX.
+Here's a practical HTML snippet and its correct JSX conversion:
 
-```jsx
-<h1>Test title</h1>
-<svg>
-  <circle cx="25" cy="75" r="20" stroke="green" stroke-width="2" />
-</svg>
-<form>
-  <input type="text">
-</form>
-
-```
-
-If you try to return this from a React component, you would get many errors, so we are going to fix that!
-
-Make sure to follow along with this example in your local environment. Alternatively, you can go to [react.new](https://react.new/) to have a quick React environment up and going in your web browser.
-
-The first issue we get is that this would not return a single root element, so let’s give it a container.
-
-```jsx
-<div>
-  <h1>Test title</h1>
-  <svg>
-    <circle cx="25" cy="75" r="20" stroke="green" stroke-width="2" />
-  </svg>
-  <form>
-    <input type="text">
-  </form>
+```html
+<!-- Raw HTML -->
+<div class="card">
+  <img src="cover.jpg">
+  <h2 for="game-title">Hollow Knight</h2>
+  <input type="text" tabindex="1">
 </div>
-
 ```
 
-You should see that another error appears now that we’ve fixed the initial one. This doesn’t mean we created the error with our previous changes, just that React wasn’t showing this one yet.
-
-Now, onto the second issue, which is that we haven’t closed the `<input>` tag.
-
-```jsx
-<div>
-  <h1>Test title</h1>
-  <svg>
-    <circle cx="25" cy="75" r="20" stroke="green" stroke-width="2" />
-  </svg>
-  <form>
-    <input type="text" />
-  </form>
+```tsx
+// ✅ Correct JSX
+<div className="card">
+  <img src="cover.jpg" alt="Hollow Knight cover" />
+  <label htmlFor="game-title">Hollow Knight</label>
+  <input type="text" tabIndex={1} />
 </div>
-
 ```
 
-If you are following along, at this point you will stop seeing an error being rendered on-screen, this time it will be in the console.
-
-The last issue is that we haven’t camelCased our attributes, and so are using invalid DOM properties for JSX, specifically the `stroke-width`.
-
-```jsx
-<div>
-  <h1>Test title</h1>
-  <svg>
-    <circle cx="25" cy="75" r="20" stroke="green" strokeWidth="2" />
-  </svg>
-  <form>
-    <input type="text" />
-  </form>
-</div>
-
-```
-
-Now that we’ve applied all of the fixes to the errors that React gave us, this is fully fledged JSX code that can be used in a React component without any issues.
+Changes made:
+1. `class` → `className`
+2. `<img>` → `<img />` (explicit self-close)
+3. `for` → `htmlFor`
+4. `tabindex` → `tabIndex` with numeric value `{1}`
 
 ---
 
 ## Assignment
 
-In the following lessons, you will spend some time reading the React documentation. Most of them will have small tasks at the end to test what you have read. We will not       mention them explicitly each time, but be sure to do them. Practice makes perfect!
-
-1. Read through the React docs [Writing Markup with JSX](https://react.dev/learn/writing-markup-with-jsx) page to review the content we have covered here.
-2. Read through the React docs [JavaScript in JSX](https://react.dev/learn/javascript-in-jsx-with-curly-braces) page to introduce yourself to writing JavaScript logic and referencing dynamic values inside of your markup.
+1. Read [Writing Markup with JSX](https://react.dev/learn/writing-markup-with-jsx) from the React docs to review JSX rules with interactive examples.
+2. Read [JavaScript in JSX with Curly Braces](https://react.dev/learn/javascript-in-jsx-with-curly-braces) to explore all the places you can embed expressions.
+3. Convert a small HTML layout (a navigation bar with 3 links and a search input) into a valid JSX component in a new `.tsx` file.
 
 ---
 
 ## Knowledge Check
 
-> The following questions are an opportunity to reflect on key topics in this lesson. If you can’t answer a question, click on it to review the material, but keep in mind you are not expected to memorize or master this knowledge.
-
-- [What is JSX?](#what-is-jsx)
-- [Why do we use JSX?](#why-do-we-use-jsx)
-- [What are the three rules of JSX?](#rules-of-jsx)
-- [How do you reference a dynamic value inside of your JSX?](https://beta.reactjs.org/learn/javascript-in-jsx-with-curly-braces#using-curly-braces-a-window-into-the-javascript-world)
+- **What is JSX and how does it get transformed into runnable JavaScript?** (See [What is JSX?](#what-is-jsx))
+- **What is the difference between a `.tsx` and a `.ts` file?** (See [File Extensions](#file-extensions-tsx-vs-jsx))
+- **Name the three core rules of JSX and explain each.** (See [The Three Rules of JSX](#the-three-rules-of-jsx))
+- **How do you embed a conditional TypeScript expression inside JSX markup?** (See [Embedding Dynamic Expressions](#embedding-dynamic-expressions-in-jsx))

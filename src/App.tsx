@@ -9,6 +9,8 @@ import { expressApiLessonsData } from './data/expressApiLessonsData';
 import type { ExpressSection, ExpressLesson } from './data/expressApiLessonsData';
 import { pythonLessonsData } from './data/pythonLessonsData';
 import type { PythonSection, PythonLesson } from './data/pythonLessonsData';
+import { typescriptLessonsData } from './data/typescriptLessonsData';
+import type { TypeScriptSection, TypeScriptLesson } from './data/typescriptLessonsData';
 import { aiAssignmentsData } from './data/assignmentData';
 import { quizzesData } from './data/quizzesData';
 import type { QuizCategory } from './data/quizzesData';
@@ -53,6 +55,13 @@ const RiPython = (props: React.SVGProps<SVGSVGElement>) => (
     <path d="M12 22a10 10 0 0 0 10-10c0-2.25-.75-4.3-2-6l-1.5 1.5c1 1.5 1.5 3 1.5 4.5 0 4.4-3.6 8-8 8s-8-3.6-8-8c0-1.5.5-3 1.5-4.5L4 6c-1.25 1.7-2 3.75-2 6a10 10 0 0 0 10 10z" />
     <circle cx="9" cy="9" r="1" fill="currentColor" />
     <circle cx="15" cy="15" r="1" fill="currentColor" />
+  </svg>
+);
+
+const RiTypeScript = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle' }} {...props}>
+    <rect x="3" y="3" width="18" height="18" rx="2" />
+    <path d="M7 8h4M9 8v8M15 8c1.5 0 2 .5 2 1.5s-.5 1.5-2 1.5c-1.5 0-2 .5-2 1.5s.5 1.5 2 1.5" />
   </svg>
 );
 
@@ -255,7 +264,8 @@ const COURSE_COVERS = {
   sql: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&q=80",
   fastapi: "https://images.unsplash.com/photo-1504639725590-34d0984388bd?auto=format&fit=crop&w=800&q=80",
   express: "https://images.unsplash.com/photo-1629654297299-c8506221ca97?auto=format&fit=crop&w=800&q=80",
-  python: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80"
+  python: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80",
+  typescript: "https://images.unsplash.com/photo-1516116211223-5c359a36298a?auto=format&fit=crop&w=800&q=80"
 };
 
 // Dynamic real-data quiz challenges mapped to standard domains
@@ -432,6 +442,16 @@ export function App() {
   const [selectedPythonLesson, setSelectedPythonLesson] = useState<PythonLesson | null>(null);
   const [selectedPythonSection, setSelectedPythonSection] = useState<PythonSection | null>(null);
 
+  // TypeScript Basics track completion states
+  const [completedTypescriptLessons, setCompletedTypescriptLessons] = useState<string[]>(() => {
+    const saved = localStorage.getItem('debug_society_completed_typescript_lessons');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  // TypeScript Lesson Immersive Reader State
+  const [selectedTypescriptLesson, setSelectedTypescriptLesson] = useState<TypeScriptLesson | null>(null);
+  const [selectedTypescriptSection, setSelectedTypescriptSection] = useState<TypeScriptSection | null>(null);
+
   // SQL sandbox terminal workspace states
   const [sqlQuery, setSqlQuery] = useState<string>('');
   const [sqlSimulatedResults, setSqlSimulatedResults] = useState<any[] | null>(null);
@@ -542,6 +562,7 @@ export function App() {
       completedFastApiLessons,
       completedExpressLessons,
       completedPythonLessons,
+      completedTypescriptLessons,
       completedAssignments,
       studentSubmissions,
       aiFeedback,
@@ -558,7 +579,7 @@ export function App() {
     }
 
     // Auto calculate focus streak count based on lessons completed
-    const days = Math.max(1, Math.ceil(completedLessons.length / 2));
+    const days = Math.max(1, Math.ceil((completedLessons.length + completedTypescriptLessons.length) / 2));
     localStorage.setItem('debug_society_streak', days.toString());
   }, [
     currentUserEmail,
@@ -572,6 +593,7 @@ export function App() {
     completedFastApiLessons,
     completedExpressLessons,
     completedPythonLessons,
+    completedTypescriptLessons,
     completedAssignments,
     studentSubmissions,
     aiFeedback,
@@ -638,6 +660,17 @@ export function App() {
       playSynthesizedSound('reset');
     } else {
       setCompletedPythonLessons([...completedPythonLessons, lessonId]);
+      playSynthesizedSound('success');
+      triggerConfetti();
+    }
+  };
+
+  const handleMarkTypescriptLessonComplete = (lessonId: string) => {
+    if (completedTypescriptLessons.includes(lessonId)) {
+      setCompletedTypescriptLessons(completedTypescriptLessons.filter(id => id !== lessonId));
+      playSynthesizedSound('reset');
+    } else {
+      setCompletedTypescriptLessons([...completedTypescriptLessons, lessonId]);
       playSynthesizedSound('success');
       triggerConfetti();
     }
@@ -897,6 +930,7 @@ export function App() {
             completedFastApiLessons: [],
             completedExpressLessons: [],
             completedPythonLessons: [],
+            completedTypescriptLessons: [],
             completedAssignments: [],
             studentSubmissions: defaults,
             aiFeedback: {},
@@ -928,6 +962,7 @@ export function App() {
           completedFastApiLessons: [],
           completedExpressLessons: [],
           completedPythonLessons: [],
+          completedTypescriptLessons: [],
           completedAssignments: [],
           studentSubmissions: defaults,
           aiFeedback: {},
@@ -954,6 +989,7 @@ export function App() {
     setCompletedFastApiLessons(profile.completedFastApiLessons || []);
     setCompletedExpressLessons(profile.completedExpressLessons || []);
     setCompletedPythonLessons(profile.completedPythonLessons || []);
+    setCompletedTypescriptLessons(profile.completedTypescriptLessons || []);
     setCompletedAssignments(profile.completedAssignments || []);
     setStudentSubmissions(profile.studentSubmissions || {});
     setAiFeedback(profile.aiFeedback || {});
@@ -1568,6 +1604,13 @@ export function App() {
         }
       }
 
+      // If student passes the TypeScript & Static Typing Professional Certification with >= 70%, unlock the TypeScript Certificate!
+      if (activeQuizCategory.id === 'typescript-certification' && percentage >= 70) {
+        if (!completedAssignments.includes('typescript')) {
+          setCompletedAssignments(prev => [...prev, 'typescript']);
+        }
+      }
+
       const newLog: QuizLog = {
         date: new Date().toLocaleDateString(),
         category: activeQuizCategory.title,
@@ -1600,6 +1643,10 @@ export function App() {
   const totalPythonLessons = pythonLessonsData.flatMap(s => s.lessons).length;
   const completedPythonCount = completedPythonLessons.length;
   const pythonProgressPercent = totalPythonLessons ? Math.round((completedPythonCount / totalPythonLessons) * 100) : 0;
+
+  const totalTypescriptLessons = typescriptLessonsData.flatMap(s => s.lessons).length;
+  const completedTypescriptCount = completedTypescriptLessons.length;
+  const typescriptProgressPercent = totalTypescriptLessons ? Math.round((completedTypescriptCount / totalTypescriptLessons) * 100) : 0;
 
   // Active clicked calendar event detail
   const clickedCalendarEvent = calendarEvents.find(e => e.date === selectedCalendarDate);
@@ -1688,6 +1735,20 @@ export function App() {
     });
   });
 
+  // Recent TypeScript lesson completions (last 3)
+  const recentTypescript = completedTypescriptLessons.slice(-3).reverse();
+  recentTypescript.forEach(id => {
+    let title = id;
+    let section = '';
+    typescriptLessonsData.forEach(s => s.lessons.forEach(l => { if (l.id === id) { title = l.title; section = s.sectionTitle; } }));
+    notifications.push({
+      id: `typescript-done-${id}`,
+      title: 'TypeScript Lesson Completed',
+      detail: `${title}${section ? ' — ' + section : ''}`,
+      kind: 'lesson'
+    });
+  });
+
   // Next upcoming milestone (in July 2026)
   const today = new Date();
   const upcoming = calendarEvents.find(e => {
@@ -1704,11 +1765,11 @@ export function App() {
   }
 
   // Streak callout when active
-  if (completedLessons.length + completedSqlLessons.length + completedFastApiLessons.length + completedExpressLessons.length + completedPythonLessons.length > 0) {
+  if (completedLessons.length + completedSqlLessons.length + completedFastApiLessons.length + completedExpressLessons.length + completedPythonLessons.length + completedTypescriptLessons.length > 0) {
     notifications.push({
-      id: `streak-${completedLessons.length}-${completedSqlLessons.length}-${completedFastApiLessons.length}-${completedExpressLessons.length}-${completedPythonLessons.length}`,
+      id: `streak-${completedLessons.length}-${completedSqlLessons.length}-${completedFastApiLessons.length}-${completedExpressLessons.length}-${completedPythonLessons.length}-${completedTypescriptLessons.length}`,
       title: 'Focus Streak Active',
-      detail: `${completedLessons.length} React • ${completedSqlLessons.length} SQL • ${completedFastApiLessons.length} FastAPI • ${completedExpressLessons.length} Express • ${completedPythonLessons.length} Python`,
+      detail: `${completedLessons.length} React • ${completedSqlLessons.length} SQL • ${completedFastApiLessons.length} FastAPI • ${completedExpressLessons.length} Express • ${completedPythonLessons.length} Python • ${completedTypescriptLessons.length} TypeScript`,
       kind: 'streak'
     });
   }
@@ -2269,6 +2330,33 @@ export function App() {
               >
                 <RiReact style={{ color: activeTrack === 'react' ? 'var(--primary-blue)' : 'var(--text-muted)' }} /> React Developer Track
               </button>
+
+              <button 
+                className={`track-select-btn ${activeTrack === 'typescript' ? 'active' : ''}`}
+                onClick={() => {
+                  setActiveTrack('typescript');
+                  playSynthesizedSound('success');
+                }}
+                style={{
+                  flex: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  padding: '10px 16px',
+                  borderRadius: 'var(--radius-sm)',
+                  border: activeTrack === 'typescript' ? '2px solid #0284c7' : '1px solid var(--border-color)',
+                  background: activeTrack === 'typescript' ? 'rgba(2, 132, 199, 0.08)' : 'var(--bg-input)',
+                  color: 'var(--text-dark)',
+                  cursor: 'pointer',
+                  fontSize: '12.5px',
+                  fontWeight: '700',
+                  fontFamily: 'var(--font-display)',
+                  transition: 'all var(--transition-fast)'
+                }}
+              >
+                <RiTypeScript style={{ color: activeTrack === 'typescript' ? '#0284c7' : 'var(--text-muted)' }} /> TypeScript Basics Track
+              </button>
               
               <button
                 className={`track-select-btn ${activeTrack === 'sql' ? 'active' : ''}`}
@@ -2426,6 +2514,37 @@ export function App() {
                         </div>
                         <div className="card-progress-track">
                           <div className="card-progress-fill-val" style={{ width: `${progressPercent}%` }}></div>
+                        </div>
+                        <button className="card-action-btn-classic" onClick={() => {
+                          setActivePage('react-path');
+                          playSynthesizedSound('success');
+                        }}>
+                          Resume Path
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {activeTrack === 'typescript' && (
+                    <div className="course-card-classic">
+                      <div className="course-cover">
+                        <img src={COURSE_COVERS.typescript} alt="TypeScript Basics cover banner" />
+                      </div>
+                      <div className="course-details">
+                        <h5>TypeScript Basics Masterclass</h5>
+                        <div className="lessons-count-meta" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                          <RiTypeScript style={{ color: 'var(--text-muted)' }} />
+                          <span>lessons : {totalTypescriptLessons} (Full Syllabus)</span>
+                        </div>
+                        <div className="instructor-meta">
+                          <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?q=80&w=256&auto=format&fit=crop" alt="Instructor avatar" />
+                          <span>The Debug Society</span>
+                        </div>
+                        <div className="progress-info-row">
+                          <span>{typescriptProgressPercent}% Complete</span>
+                        </div>
+                        <div className="card-progress-track">
+                          <div className="card-progress-fill-val" style={{ width: `${typescriptProgressPercent}%` }}></div>
                         </div>
                         <button className="card-action-btn-classic" onClick={() => {
                           setActivePage('react-path');
@@ -2673,6 +2792,27 @@ export function App() {
                     </div>
                   </div>
                 )}
+                {activeTrack !== 'typescript' && (
+                  <div className="course-card-classic">
+                    <div className="course-cover">
+                      <img src={COURSE_COVERS.typescript} alt="TypeScript cover banner" />
+                    </div>
+                    <div className="course-details">
+                      <h5>TypeScript Basics Masterclass</h5>
+                      <div className="lessons-count-meta" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                        <RiTypeScript style={{ color: 'var(--text-muted)' }} />
+                        <span>lessons : {totalTypescriptLessons} (Full Syllabus)</span>
+                      </div>
+                      <button className="card-action-btn-classic" onClick={() => {
+                        setActiveTrack('typescript');
+                        setActivePage('react-path');
+                        playSynthesizedSound('success');
+                      }}>
+                        Resume Path
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
@@ -2695,11 +2835,14 @@ export function App() {
                   if (pythonProgressPercent === 100) {
                     completedCards.push({ id: 'python', title: 'Python Basics Masterclass', lessons: totalPythonLessons, cover: COURSE_COVERS.python, icon: <RiPython style={{ color: 'var(--text-muted)' }} /> });
                   }
+                  if (typescriptProgressPercent === 100) {
+                    completedCards.push({ id: 'typescript', title: 'TypeScript Basics Masterclass', lessons: totalTypescriptLessons, cover: COURSE_COVERS.typescript, icon: <RiTypeScript style={{ color: 'var(--text-muted)' }} /> });
+                  }
 
                   if (completedCards.length === 0) {
                     return (
                       <div style={{ gridColumn: 'span 3', color: 'var(--text-muted)', fontSize: '12.5px', padding: '24px 0', textAlign: 'center' }}>
-                        No completed paths yet. Graduate by completing all lessons of any course path! (React: {progressPercent}%, SQL: {sqlProgressPercent}%, FastAPI: {fastApiProgressPercent}%, Express: {expressProgressPercent}%, Python: {pythonProgressPercent}%)
+                        No completed paths yet. Graduate by completing all lessons of any course path! (React: {progressPercent}%, TS: {typescriptProgressPercent}%, SQL: {sqlProgressPercent}%, FastAPI: {fastApiProgressPercent}%, Express: {expressProgressPercent}%, Python: {pythonProgressPercent}%)
                       </div>
                     );
                   }
@@ -3227,6 +3370,103 @@ export function App() {
           </div>
         )}
 
+        {/* View 2f. TYPESCRIPT BASICS MODULES PATHWAY (Accordion) */}
+        {activePage === 'react-path' && activeTrack === 'typescript' && (
+          <div>
+            <div className="module-view-header">
+              <div>
+                <h2>The Debug Society - TypeScript Basics Curriculum</h2>
+                <p>Master static types, unions, nullable annotations, objects/functions shape binding, OOP visibility modifiers, generics, and debugging.</p>
+              </div>
+              <div className="module-completion-badge">
+                {typescriptProgressPercent === 100 ? (
+                  <span className="badge-unlocked"><RiAward style={{ marginRight: '6px' }} /> Graduated from TypeScript Track</span>
+                ) : (
+                  <span><RiAward style={{ marginRight: '6px' }} /> Grad. Badge Locked ({completedTypescriptCount}/{totalTypescriptLessons} Lessons)</span>
+                )}
+              </div>
+            </div>
+
+            <div className="accordion-wrapper">
+              {typescriptLessonsData.map((section, sIdx) => {
+                const isExpanded = expandedSectionId === section.sectionId;
+                const completedInSection = section.lessons.filter(l => completedTypescriptLessons.includes(l.id)).length;
+                const sectionPercent = Math.round((completedInSection / section.lessons.length) * 100);
+
+                return (
+                  <div key={section.sectionId} className={`accordion-item ${isExpanded ? 'expanded' : ''}`}>
+                    <button
+                      className="accordion-header"
+                      onClick={() => setExpandedSectionId(isExpanded ? null : section.sectionId)}
+                    >
+                      <div className="accordion-header-left">
+                        <div className="accordion-index">{sIdx + 1}</div>
+                        <div className="accordion-meta">
+                          <h4>{section.sectionTitle}</h4>
+                          <span>{completedInSection} of {section.lessons.length} Completed ({sectionPercent}%)</span>
+                        </div>
+                      </div>
+                      <div className="accordion-header-right">
+                        <svg className="accordion-chevron" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+                      </div>
+                    </button>
+
+                    {isExpanded && (
+                      <div className="accordion-body">
+                        <div className="lessons-list-group">
+                          {section.lessons.map((lesson, lIdx) => {
+                            const isCompleted = completedTypescriptLessons.includes(lesson.id);
+                            let statusTag = <span className="lesson-badge-tag locked">Locked</span>;
+
+                            if (isCompleted) {
+                              statusTag = <span className="lesson-badge-tag completed">Completed</span>;
+                            } else {
+                              const allPriorCompleted = typescriptLessonsData
+                                .slice(0, sIdx + 1)
+                                .flatMap((s, sI) => sI < sIdx ? s.lessons : s.lessons.slice(0, lIdx))
+                                .every(l => completedTypescriptLessons.includes(l.id));
+
+                              if (allPriorCompleted) {
+                                statusTag = <span className="lesson-badge-tag next">Next Up</span>;
+                              }
+                            }
+
+                            return (
+                              <div
+                                key={lesson.id}
+                                className={`lesson-row ${isCompleted ? 'completed-lesson-item' : ''}`}
+                                onClick={() => {
+                                  setSelectedTypescriptLesson(lesson);
+                                  setSelectedTypescriptSection(section);
+                                  playSynthesizedSound('success');
+                                }}
+                              >
+                                <div className="lesson-title-side">
+                                  <svg className="lesson-row-icon" viewBox="0 0 24 24">
+                                    {isCompleted ? (
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+                                    ) : (
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                                    )}
+                                  </svg>
+                                  <span className="lesson-text-title">{lesson.title}</span>
+                                </div>
+                                {statusTag}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* View 3. PRACTICE QUIZ HISTORY LIST */}
         {activePage === 'practice-arena' && (
           <div>
@@ -3243,6 +3483,7 @@ export function App() {
                 <div className="course-quiz-tabs" style={{ display: 'flex', gap: '10px', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', flexWrap: 'wrap' }}>
                   {[
                     { id: 'react', label: 'React Core', icon: <RiReact style={{ marginRight: '6px' }} /> },
+                    { id: 'typescript', label: 'TypeScript', icon: <RiTypeScript style={{ marginRight: '6px' }} /> },
                     { id: 'sql', label: 'SQL Query', icon: <RiDatabase style={{ marginRight: '6px' }} /> },
                     { id: 'fastapi', label: 'FastAPI', icon: <RiFastApi style={{ marginRight: '6px' }} /> },
                     { id: 'express', label: 'Express REST API', icon: <RiServer style={{ marginRight: '6px' }} /> },
@@ -3748,6 +3989,7 @@ export function App() {
                   {(() => {
                     const tracks = [
                       { id: 'react', name: 'React Track', progress: progressPercent, color: '#06b6d4', icon: <RiReact /> },
+                      { id: 'typescript', name: 'TypeScript Track', progress: typescriptProgressPercent, color: '#0284c7', icon: <RiTypeScript /> },
                       { id: 'sql', name: 'SQL Query Track', progress: sqlProgressPercent, color: '#f97316', icon: <RiDatabase /> },
                       { id: 'fastapi', name: 'FastAPI Track', progress: fastApiProgressPercent, color: '#0ea5e9', icon: <RiFastApi /> },
                       { id: 'express', name: 'Express API Track', progress: expressProgressPercent, color: '#22c55e', icon: <RiServer /> },
@@ -5157,11 +5399,110 @@ export function App() {
         </div>
       )}
 
+      {/* FULLSCREEN IMMERSIVE TYPESCRIPT LESSON READER VIEW */}
+      {selectedTypescriptLesson && selectedTypescriptSection && (
+        <div className="reader-overlay-view">
+          
+          {/* Header Bar */}
+          <div className="reader-header-bar">
+            <div className="reader-left-pane">
+              <button 
+                className="reader-back-btn" 
+                onClick={() => {
+                  setSelectedTypescriptLesson(null);
+                  setSelectedTypescriptSection(null);
+                  playSynthesizedSound('reset');
+                }}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                </svg>
+                Back to TypeScript Path
+              </button>
+              <span className="reader-module-tag">
+                {selectedTypescriptSection.sectionTitle}
+              </span>
+            </div>
+
+            <button 
+              className={`reader-complete-btn ${completedTypescriptLessons.includes(selectedTypescriptLesson.id) ? 'completed' : ''}`}
+              onClick={() => handleMarkTypescriptLessonComplete(selectedTypescriptLesson.id)}
+            >
+              <span className="reader-check-box"></span>
+              {completedTypescriptLessons.includes(selectedTypescriptLesson.id) ? 'Completed' : 'Mark Lesson Completed'}
+            </button>
+          </div>
+
+          <div className="reader-body-split">
+            <article className="reader-scroll-article">
+              <h1 className="reader-lesson-heading-title">{selectedTypescriptLesson.title}</h1>
+
+              <div
+                className="reader-html-render"
+                dangerouslySetInnerHTML={{ __html: parseMarkdownToHtml(selectedTypescriptLesson.content) }}
+              />
+
+              <div className="reader-bottom-nav-row">
+                <button className="nav-prev-btn" onClick={() => {
+                  const allLessons = typescriptLessonsData.flatMap(s => s.lessons.map(l => ({ lesson: l, section: s })));
+                  const currIdx = allLessons.findIndex(item => item.lesson.id === selectedTypescriptLesson.id);
+                  if (currIdx > 0) {
+                    const prev = allLessons[currIdx - 1];
+                    setSelectedTypescriptLesson(prev.lesson);
+                    setSelectedTypescriptSection(prev.section);
+                    playSynthesizedSound('success');
+                  }
+                }}>
+                  &larr; Previous Lesson
+                </button>
+                <button className="nav-next-btn" onClick={() => {
+                  const allLessons = typescriptLessonsData.flatMap(s => s.lessons.map(l => ({ lesson: l, section: s })));
+                  const currIdx = allLessons.findIndex(item => item.lesson.id === selectedTypescriptLesson.id);
+                  if (currIdx < allLessons.length - 1) {
+                    const next = allLessons[currIdx + 1];
+                    setSelectedTypescriptLesson(next.lesson);
+                    setSelectedTypescriptSection(next.section);
+                    playSynthesizedSound('success');
+                  } else {
+                    handleMarkTypescriptLessonComplete(selectedTypescriptLesson.id);
+                  }
+                }}>
+                  Next Lesson &rarr;
+                </button>
+              </div>
+            </article>
+
+            <aside className="reader-side-outline-panel">
+              <h4>Module Outline</h4>
+              <div className="reader-outline-links-list">
+                {selectedTypescriptSection.lessons.map(les => {
+                  const isActive = les.id === selectedTypescriptLesson.id;
+                  return (
+                    <button
+                      key={les.id}
+                      className={`reader-link-item-btn ${isActive ? 'active' : ''}`}
+                      onClick={() => {
+                        setSelectedTypescriptLesson(les);
+                        playSynthesizedSound('success');
+                      }}
+                    >
+                      {les.title}
+                    </button>
+                  );
+                })}
+              </div>
+            </aside>
+          </div>
+
+        </div>
+      )}
+
       {/* VERIFIED PROFESSIONAL CERTIFICATE MODAL */}
       {showCertificateModal && (() => {
         const trackId = showCertificateModal;
         const tracks = [
           { id: 'react', name: 'React Component Development & State Management', desc: 'This training provided comprehensive knowledge and practical skills in structuring stateful React applications, using interactive hooks, handling props, and optimizing rendering performance.' },
+          { id: 'typescript', name: 'TypeScript Static Typing & Modern Superset Masterclass', desc: 'This training provided comprehensive knowledge and practical skills in static typing systems, interface reopening, class access modifiers, abstract schemas, polymorphic designs, and generic class/interface operations.' },
           { id: 'sql', name: 'Database Aggregations & Advanced Querying Suite', desc: 'This training provided comprehensive knowledge and practical skills in relational database concepts, aggregate calculations, complex filtering with HAVING clauses, and high-performance querying.' },
           { id: 'fastapi', name: 'FastAPI Model Validations & Exception Operations', desc: 'This training provided comprehensive knowledge and practical skills in structuring paths, handling request bodies with Pydantic BaseModel validation, and robust exception-raising procedures.' },
           { id: 'express', name: 'Express Middleware Pipeline & JWT Authentication', desc: 'This training provided comprehensive knowledge and practical skills in Node.js backend middleware pipelines, extracting authorization headers, and securely verifying JSON Web Tokens.' },

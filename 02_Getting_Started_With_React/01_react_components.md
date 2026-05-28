@@ -6,100 +6,183 @@
 
 ## Overview
 
-> In this lesson we’ll be going over the basics of React components - what they do, and how to write them. Make sure to use the project you set up in the previous lesson, but try not to copy and paste any code while you’re coding along.
+In this lesson we'll be going over the basics of React components — what they are, how to create them, how to type them with TypeScript, and how to combine them into a complete interface.
 
 **You will learn:**
-
-- Learn about React components.
-- Understand how to create components.
-- Describe where components reside in a React project.
+- What React components are and why they are fundamental.
+- How to create typed functional components using TypeScript.
+- How to export and import components to build larger interfaces.
+- How component trees are structured in a real project.
 
 ---
 
 ## Content
 
-### What are components?
+### What are Components?
 
-The beauty of React is that it allows you to break a UI (User Interface) down into independent reusable chunks, which we will refer to as components. The following picture should give you an idea of how to do that when building a very basic app.
+The beauty of React is that it lets you break a UI down into independent, reusable, and composable chunks called **components**. Components are JavaScript (or TypeScript) functions that accept inputs and return JSX — a visual description of what to render on screen.
 
-[![Component Example](https://cdn.statically.io/gh/TheOdinProject/curriculum/91485eec76445d86b29d35894e83324e2967f2fb/react/imgs/00.png)](https://cdn.statically.io/gh/TheOdinProject/curriculum/91485eec76445d86b29d35894e83324e2967f2fb/react/imgs/00.png)
+Think of a real application like our **GameHub** (Video Game Discovery Engine):
 
-For example, this website could be broken into the following components:
+| Component | Responsibility |
+|---|---|
+| `App` | Root — holds the entire application |
+| `NavBar` | Top navigation bar with search input |
+| `GenreList` | Sidebar displaying filterable game genres |
+| `GameGrid` | Main grid of game cards |
+| `GameCard` | Individual game card with image and metadata |
+| `PlatformIconList` | Row of platform SVG icons on each card |
+| `CriticScore` | Colored badge showing the Metacritic score |
 
-- `App`, which represents your main application and will be the parent of all other components.
-- `Navbar`, which will be the navigation bar.
-- `MainArticle`, which will be the component that renders your main content.
-- `NewsletterForm`, which is a form that lets a user input their email to receive the weekly newsletter.
+Every visible element on the screen is a component, and **components compose into a tree** with `App` at the root.
 
-Think of these reusable chunks as JavaScript functions which can take some kind of input and return a React element.
+---
 
-### How to create components
+### How to Create a Functional Component (TypeScript)
 
-To get the feel of working with components, we’re going to practice creating functional components. What are functional components? JavaScript functions! Let’s have a look.
+In TypeScript React projects (`.tsx` files), functional components are plain functions that return JSX. All component names **must be capitalized** — this is how React tells the difference between a native HTML tag (`<div>`) and a custom component (`<GameCard />`).
 
-```jsx
-function Greeting() {
-  return <h1>"I swear by my pretty floral bonnet, I will end you."</h1>;
+```tsx
+// GameCard.tsx
+function GameCard() {
+  return (
+    <div className="game-card">
+      <h3>The Legend of Zelda</h3>
+      <p>Platform: Nintendo Switch</p>
+    </div>
+  );
 }
 
+export default GameCard;
 ```
 
-This might look mostly familiar to you - it’s a JavaScript function, which returns JSX. Open up the project you were working on, create a new file named `Greeting.jsx`, and in that file write your own handmade functional component. Name it whatever you wish, and have it return whatever JSX you wish.
+#### Typing Component Props with Interfaces
 
-Are you done? Check the naming of your function! Is it capitalized? Keep this key difference in mind. **React components must be capitalized** or they will not function as expected, which is why we capitalized `Greeting()`. More about that later.
+In TypeScript, we define a strict **interface** to describe the shape of data passed into a component. This catches mistakes at compile time rather than runtime:
 
-#### What is HTML doing in my JavaScript?
-
-It’s JSX. It looks jarring at first, but soon we’ll realize how cool it is. We’ll learn all about it in the upcoming lessons!
-
-### Where do components live?
-
-So remember how our component is just hanging out in its own dedicated file? This makes it independent from the rest of the codebase! That said, while independence is great, we do want the component to use functionality created elsewhere, and to share itself with other components. How can we do this? `import`ing and `export`ing! For a very long time in React development, it was necessary to `import` React in your JavaScript files that used React components, but since React v17.0 it is no longer required. Let’s `export` our newly created component so that parent components can use it as a child throughout your project.
-
-```jsx
-function Greeting() {
-  return <h1>"I swear by my pretty floral bonnet, I will end you."</h1>;
+```tsx
+// GameCard.tsx
+interface Props {
+  title: string;
+  platform: string;
+  score: number;
+  imageUrl?: string; // optional prop
 }
 
-export default Greeting;
+function GameCard({ title, platform, score, imageUrl }: Props) {
+  return (
+    <div className="game-card">
+      {imageUrl && <img src={imageUrl} alt={title} />}
+      <h3>{title}</h3>
+      <p>Platform: {platform}</p>
+      <span className="score">{score}</span>
+    </div>
+  );
+}
 
+export default GameCard;
 ```
 
-Are we done? Well let’s think about this - we’ve declared our component, and exported it, but does `main.jsx` know about it yet? Nope! Let’s fix that. Let’s look at `main.jsx`, we can see that `render()` is rendering the `App` component. Let’s replace that `App` component with our newly created greeting, which we’ll have to make sure is first imported properly. The end result should look something like this:
+The `?` after `imageUrl` marks it as optional — the component works perfectly even if no image URL is passed in.
 
-```jsx
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import App from "./App.jsx";
-import Greeting from "./Greeting.jsx";
-import "./index.css";
+---
 
-createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <Greeting />
-  </StrictMode>,
-);
+### Where Do Components Live?
 
+Each component lives in its own file inside the `src/` directory. This keeps your codebase **modular and independently testable**.
+
+#### Exporting Components
+
+Use `export default` for the primary export of a file:
+
+```tsx
+// NavBar.tsx
+function NavBar() {
+  return (
+    <nav>
+      <input type="search" placeholder="Search games..." />
+    </nav>
+  );
+}
+
+export default NavBar;
 ```
 
-Remember that `<Greeting />` should be capitalized! Try using lower case for the import, function name and component and see what happens! When the JSX is parsed, React uses the capitalization to tell the difference between an HTML tag and an instance of a React component. `<greeting />` would be interpreted as a normal HTML element with no special meaning, instead of your shiny new React component.
+#### Importing and Composing Components
 
-Otherwise, just like that, you’ve successfully imported and used your first custom-made component, congratulations!
+In your `App.tsx` root component, import child components and compose them:
+
+```tsx
+// App.tsx
+import NavBar from "./components/NavBar";
+import GameGrid from "./components/GameGrid";
+import GenreList from "./components/GenreList";
+
+function App() {
+  return (
+    <div>
+      <NavBar />
+      <div className="layout">
+        <GenreList />
+        <GameGrid />
+      </div>
+    </div>
+  );
+}
+
+export default App;
+```
+
+#### Named Exports vs Default Exports
+
+```tsx
+// utilities.ts
+export const API_BASE_URL = "https://api.rawg.io/api";  // named export
+export function formatScore(score: number): string {     // named export
+  return score.toString();
+}
+
+// Importing named exports
+import { API_BASE_URL, formatScore } from "./utilities";
+
+// Importing a default export
+import GameCard from "./components/GameCard";
+```
+
+---
+
+### The Component Tree in Practice
+
+A React application builds its UI as a **tree structure**:
+
+```
+App
+├── NavBar
+│   └── SearchInput
+├── GenreList
+│   └── GenreItem (× many)
+└── GameGrid
+    └── GameCard (× many)
+        ├── PlatformIconList
+        │   └── PlatformIcon (× many)
+        └── CriticScore
+```
+
+React renders this tree from top to bottom, and when any state changes, only the affected subtree is re-evaluated and committed to the real DOM.
 
 ---
 
 ## Assignment
 
-1. It’s time to create some new components! Use the same project, but play around with it, try displaying something like your favorite food.
-        
-- While components normally get exported as defaults, try using some named exports instead of default exports. If you’re unsure how to do this, consult your best friend: [the MDN documentation about export statements](https://developer.mozilla.org/en-US/docs/web/javascript/reference/statements/export#description)
+1. Create a new component named `GameCard.tsx` that accepts `title`, `score`, and `imageUrl` props typed with a TypeScript interface. Render a card that displays the game's image, title, and score with basic styling.
+2. Create an `App.tsx` that renders three `<GameCard />` components with different game data passed as props.
+3. Experiment with named vs default exports — try exporting your component as both.
 
 ---
 
 ## Knowledge Check
 
-> The following questions are an opportunity to reflect on key topics in this lesson. If you can’t answer a question, click on it to review the material, but keep in mind you are not expected to memorize or master this knowledge.
-
-- [What does a React element look like?](#what-are-components)
-- [How would you create a functional component?](#how-to-create-components)
-- [How do you export and then import a component?](#where-do-components-live)
+- **What is a React component, and how does it differ from a plain HTML element?** (See [What are Components?](#what-are-components))
+- **Why must React component names be capitalized?** (See [How to Create a Functional Component](#how-to-create-a-functional-component-typescript))
+- **How do TypeScript interfaces improve the reliability of component props?** (See [Typing Component Props with Interfaces](#typing-component-props-with-interfaces))
+- **Explain the difference between a named export and a default export.** (See [Named Exports vs Default Exports](#named-exports-vs-default-exports))

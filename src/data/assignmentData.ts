@@ -196,5 +196,40 @@ Robust Error Handling:
       "Think about adding type hints in your function header (e.g. `numbers: list[int | float]`) for enhanced editor support."
     ],
     focusArea: "Robust Python Exception Handling & Iteration"
+  },
+  {
+    id: "assignment-typescript",
+    courseId: "typescript",
+    title: "TypeScript static definitions: Interface & User Array",
+    prompt: `Create a TypeScript structure that manages an array of users safely.
+
+Type Declarations:
+1. Define a TypeScript interface named Member containing four properties:
+   - id: a required number.
+   - name: a required string.
+   - email: a required string.
+   - role: an optional string (using role?: string syntax).
+
+Functional Requirements:
+2. Implement a function named getAdminMembers(members: Member[]): Member[] that filters the members array to only return users whose role is strictly equal to "admin".
+3. Safe defaults: If role is undefined or not provided, it should not match as an admin.`,
+    starterCode: `// 1. Define Member interface here
+
+export function getAdminMembers(members: Member[]): Member[] {
+  // 2. Implement the filter logic here and return the list of admin members
+  
+}`,
+    validationKeywords: ["interface", "Member", "role?:", "getAdminMembers", "members:", "Member[]"],
+    praiseSuggestions: [
+      "Stunning TypeScript interface implementation! Optional fields with the optional operator are exactly correct.",
+      "Perfect signature definitions using typed lists (members: Member[]) and returns (Member[]), fully satisfying compiler safety.",
+      "Superb filtering implementation! Safely handling undefined properties prevents runtime crashes."
+    ],
+    critiqueSuggestions: [
+      "To take this to the next level, you could define roles as a strict Union Type or Enum rather than a generic string.",
+      "Ensure you are using strict compiler checks to enforce proper type resolution of optional fields.",
+      "Consider adding read-only modifiers to freeze key fields like IDs so they cannot be modified after creation."
+    ],
+    focusArea: "TypeScript Type Annotations, Interfaces, and Array Mapping"
   }
 ];
