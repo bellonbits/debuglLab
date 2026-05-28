@@ -87,6 +87,158 @@ export const quizzesData: QuizCategory[] = [
       }
     ]
   },
+  {
+    id: "react-certification",
+    courseId: "react",
+    title: "React & SPA Professional Certification",
+    description: "A comprehensive 15-question certification evaluation covering component rendering, virtual DOM diffing, JSX conversion, hooks rules, state vs props, form control strategies, routing paradigms, and rendering optimization. Passing this with >= 70% unlocks your React Verified Professional Certificate!",
+    questions: [
+      {
+        question: "How does the Virtual DOM reconciliation process work in React?",
+        options: [
+          "It physically duplicates the entire HTML document in secondary threads and replaces the body element on every click.",
+          "It maintains a lightweight JavaScript representation of the real DOM, compares the new Virtual DOM with the previous version using a diffing algorithm (Reconciliation), and batch-updates only the changed elements in the real DOM.",
+          "It compiles all JSX code directly into WebAssembly to query relational databases in real-time.",
+          "It bypasses browser CSS processing to render directly on hardware-accelerated canvas components."
+        ],
+        answerIndex: 1
+      },
+      {
+        question: "How is JSX syntax transpiled and understood by standard browsers?",
+        options: [
+          "JSX runs natively inside all modern HTML5 rendering engines without processing.",
+          "JSX is pre-compiled as standard CSS properties within CSS modules.",
+          "A build compiler (such as Babel or ESBuild) converts JSX elements into executable JavaScript call objects using React.createElement or similar JSX runtime functions.",
+          "It requires an SQLite backend adapter to dynamically parse HTML strings before load."
+        ],
+        answerIndex: 2
+      },
+      {
+        question: "What is the primary architectural difference between functional components and class components in modern React?",
+        options: [
+          "Class components are strictly rendered on the server side, while functional components are executed on the client side.",
+          "Class components are JavaScript ES6 classes extending React.Component that manage state and lifecycles via constructor methods and this.setState, while functional components are pure JavaScript functions that use React Hooks to handle states and side effects.",
+          "Functional components are required to call a render() method returning JSX elements, whereas class components return values directly.",
+          "There is no difference; they are exact syntax synonyms initialized using identical constructors."
+        ],
+        answerIndex: 1
+      },
+      {
+        question: "How do props differ from state in React component data flow?",
+        options: [
+          "Props represent mutable internal component values; state is the immutable metadata received from parent nodes.",
+          "Props can only contain numeric variables, whereas state is restricted to string sequences.",
+          "Props are read-only, immutable configuration values passed down from parent components; state represents mutable internal data managed within the component that triggers re-renders on change.",
+          "Props are processed exclusively within database models, whereas state handles routes."
+        ],
+        answerIndex: 2
+      },
+      {
+        question: "What is the core distinction between Controlled and Uncontrolled input elements in React forms?",
+        options: [
+          "Controlled inputs are managed by direct SQLite sync scripts; uncontrolled inputs run without databases.",
+          "Controlled components have their value properties fully driven and synchronized by React state (via value and onChange), whereas uncontrolled components delegate value tracking to the DOM itself, retrieved via React Refs.",
+          "Controlled components are only allowed inside class components, while uncontrolled components are hook-only.",
+          "There is no functional difference; they are identical rendering models."
+        ],
+        answerIndex: 1
+      },
+      {
+        question: "What does a React Fragment (<>...</> or <React.Fragment>...</React.Fragment>) accomplish?",
+        options: [
+          "It splits a component bundle into asynchronous lazy-loaded files.",
+          "It groups multiple DOM elements together without introducing extra wrapper nodes (like <div>) to the final DOM hierarchy.",
+          "It dynamically caches styling information in localStorage.",
+          "It establishes an active WebSocket connection to database sync pools."
+        ],
+        answerIndex: 1
+      },
+      {
+        question: "Under what conditions does a useEffect cleanup return function execute?",
+        options: [
+          "It executes during static analysis to verify compilation errors.",
+          "It fires synchronously right before the parent component's first mounting step.",
+          "It executes immediately before the component is unmounted or before the effect re-runs (due to changed dependencies), enabling cleanup of timers, subscriptions, or event listeners to prevent memory leaks.",
+          "It only triggers if a subquery database failure occurs."
+        ],
+        answerIndex: 2
+      },
+      {
+        question: "How do useEffect and useLayoutEffect differ in terms of browser painting behavior?",
+        options: [
+          "useLayoutEffect is non-blocking and executes after browser paint; useEffect blocks all rendering tasks.",
+          "useEffect executes asynchronously after DOM updates and browser paint (non-blocking), whereas useLayoutEffect executes synchronously after DOM updates but before the browser paints the screen, making it suitable for blocking DOM layout measurements.",
+          "useEffect operates solely on server environments; useLayoutEffect runs on both mobile and desktop compilers.",
+          "They are compile-time aliases and exhibit identical browser scheduling behaviors."
+        ],
+        answerIndex: 1
+      },
+      {
+        question: "What is the primary benefit of utilizing the useReducer hook over useState in functional components?",
+        options: [
+          "It runs complex state evaluations in background WebWorker threads.",
+          "It automatically saves all state transitions inside cookies and sessionStorage.",
+          "It organizes complex state logic and multiple action transitions using a centralized reducer function, keeping state updates predictable, organized, and scalable.",
+          "It is the only hook allowed to access global contexts."
+        ],
+        answerIndex: 2
+      },
+      {
+        question: "What does the React.memo higher-order component perform?",
+        options: [
+          "It saves the entire component tree structure in indexedDB caches.",
+          "It shallowly compares incoming props and prevents unnecessary re-renders of the wrapped component if the props have not changed, optimizing rendering performance.",
+          "It automatically creates dynamic CSS classes based on tailwind setups.",
+          "It intercepts routing links to force a page reload."
+        ],
+        answerIndex: 1
+      },
+      {
+        question: "Why is using an array index as the key prop in dynamic lists generally discouraged?",
+        options: [
+          "Keys are required to be full URL paths in order for index maps to function.",
+          "If the list items are reordered, inserted, or deleted, using array indices can confuse React's element-matching algorithm, leading to rendering bugs, inconsistent input values, and slower diffing.",
+          "Array index keys are completely ignored by the Virtual DOM compiler, causing a fatal crash.",
+          "It blocks the list from receiving flexbox styles in custom themes."
+        ],
+        answerIndex: 1
+      },
+      {
+        question: "How do the performance hooks useMemo and useCallback differ conceptually?",
+        options: [
+          "useMemo caches a computed value result, whereas useCallback caches the callback function definition itself to prevent unnecessary re-creations across renders.",
+          "useCallback is designed strictly for class constructors, while useMemo is functional-only.",
+          "useMemo connects components to context providers; useCallback handles redirect routes.",
+          "There is no difference; they are exact functional synonyms sharing identical code signatures."
+        ],
+        answerIndex: 0
+      },
+      {
+        question: "In client-side SPAs using React Router, what is the primary benefit of <Link> over the standard HTML <a> tag?",
+        options: [
+          "The <a> tag uses client-side transitions, whereas <Link> forces a server query.",
+          "The <a> tag completely reloads the web page and requests resources from the server, while the <Link> component intercepts navigation, updates the URL, and dynamically swaps components in the browser without a full page reload.",
+          "The <Link> component is required for backend database mutations.",
+          "There is no difference; they reload in the exact same manner."
+        ],
+        answerIndex: 1
+      },
+      {
+        question: "Complete the body of 'handleChange' to dynamically update the 'formState' object state based on the input field's name and value, preserving other fields using the spread operator.",
+        options: [],
+        isCode: true,
+        starterCode: "import React, { useState } from 'react';\n\nexport function Form() {\n  const [formState, setFormState] = useState({ username: '', email: '' });\n\n  const handleChange = (e) => {\n    // Write state setter call here (use ES6 spread and dynamic keys):\n    \n  };\n}",
+        correctAnswerKeywords: ["setFormState", "...formState", "[e.target.name]", "e.target.value"]
+      },
+      {
+        question: "Write a line of code using 'useMemo' to calculate and store the memoized value of 'count * 2', depending on the 'count' state.",
+        options: [],
+        isCode: true,
+        starterCode: "import React, { useMemo } from 'react';\n\nexport function MemoizedCounter({ count }) {\n  // Memoize count * 2 below depending on the count parameter:\n  const doubleValue = \n}",
+        correctAnswerKeywords: ["useMemo", "() =>", "count * 2", "[count]"]
+      }
+    ]
+  },
 
   // ==================== SQL QUERY TRACK ====================
   {

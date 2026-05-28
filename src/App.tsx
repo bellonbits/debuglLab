@@ -1539,6 +1539,13 @@ export function App() {
         }
       }
 
+      // If student passes the React & SPA Professional Certification with >= 70%, unlock the React Certificate!
+      if (activeQuizCategory.id === 'react-certification' && percentage >= 70) {
+        if (!completedAssignments.includes('react')) {
+          setCompletedAssignments(prev => [...prev, 'react']);
+        }
+      }
+
       const newLog: QuizLog = {
         date: new Date().toLocaleDateString(),
         category: activeQuizCategory.title,
