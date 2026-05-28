@@ -249,6 +249,15 @@ class ConfettiParticle {
   }
 }
 
+// Course Cover Banner Thumbnails (Beautiful, premium glowing dark neon tech aesthetics)
+const COURSE_COVERS = {
+  react: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&w=800&q=80",
+  sql: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&q=80",
+  fastapi: "https://images.unsplash.com/photo-1504639725590-34d0984388bd?auto=format&fit=crop&w=800&q=80",
+  express: "https://images.unsplash.com/photo-1629654297299-c8506221ca97?auto=format&fit=crop&w=800&q=80",
+  python: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80"
+};
+
 // Dynamic real-data quiz challenges mapped to standard domains
 const quizCategories: QuizCategory[] = quizzesData;
 
@@ -2365,7 +2374,7 @@ export function App() {
                   {activeTrack === 'react' && (
                     <div className="course-card-classic">
                       <div className="course-cover">
-                        <img src="./src/assets/react_path_banner.png" alt="React Core cover banner" />
+                        <img src={COURSE_COVERS.react} alt="React Core cover banner" />
                       </div>
                       <div className="course-details">
                         <h5>The Complete React Blueprint</h5>
@@ -2396,7 +2405,7 @@ export function App() {
                   {activeTrack === 'sql' && (
                     <div className="course-card-classic">
                       <div className="course-cover">
-                        <img src="https://images.unsplash.com/photo-1544383835-bda2bc66a55d?q=80&w=256&auto=format&fit=crop" alt="SQL Database cover banner" />
+                        <img src={COURSE_COVERS.sql} alt="SQL Database cover banner" />
                       </div>
                       <div className="course-details">
                         <h5>SQL Database Masterclass</h5>
@@ -2427,7 +2436,7 @@ export function App() {
                   {activeTrack === 'fastapi' && (
                     <div className="course-card-classic">
                       <div className="course-cover">
-                        <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=256&auto=format&fit=crop" alt="FastAPI cover banner" />
+                        <img src={COURSE_COVERS.fastapi} alt="FastAPI cover banner" />
                       </div>
                       <div className="course-details">
                         <h5>FastAPI Production Masterclass</h5>
@@ -2458,7 +2467,7 @@ export function App() {
                   {activeTrack === 'express' && (
                     <div className="course-card-classic">
                       <div className="course-cover">
-                        <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?q=80&w=256&auto=format&fit=crop" alt="Express REST API cover banner" />
+                        <img src={COURSE_COVERS.express} alt="Express REST API cover banner" />
                       </div>
                       <div className="course-details">
                         <h5>Express REST APIs (Node)</h5>
@@ -2489,7 +2498,7 @@ export function App() {
                   {activeTrack === 'python' && (
                     <div className="course-card-classic">
                       <div className="course-cover">
-                        <img src="https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&w=256&auto=format&fit=crop" alt="Python Basics cover banner" />
+                        <img src={COURSE_COVERS.python} alt="Python Basics cover banner" />
                       </div>
                       <div className="course-details">
                         <h5>Python Basics Masterclass</h5>
@@ -2527,7 +2536,7 @@ export function App() {
                 {activeTrack !== 'react' && (
                   <div className="course-card-classic">
                     <div className="course-cover">
-                      <img src="./src/assets/react_path_banner.png" alt="React cover" />
+                      <img src={COURSE_COVERS.react} alt="React cover" />
                     </div>
                     <div className="course-details">
                       <h5>The Complete React Blueprint</h5>
@@ -2548,7 +2557,7 @@ export function App() {
                 {activeTrack !== 'sql' && (
                   <div className="course-card-classic">
                     <div className="course-cover">
-                      <img src="https://images.unsplash.com/photo-1544383835-bda2bc66a55d?q=80&w=256&auto=format&fit=crop" alt="SQL cover banner" />
+                      <img src={COURSE_COVERS.sql} alt="SQL cover banner" />
                     </div>
                     <div className="course-details">
                       <h5>SQL Database Masterclass</h5>
@@ -2569,7 +2578,7 @@ export function App() {
                 {activeTrack !== 'fastapi' && (
                   <div className="course-card-classic">
                     <div className="course-cover">
-                      <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=256&auto=format&fit=crop" alt="FastAPI cover banner" />
+                      <img src={COURSE_COVERS.fastapi} alt="FastAPI cover banner" />
                     </div>
                     <div className="course-details">
                       <h5>FastAPI Production Masterclass</h5>
@@ -2590,7 +2599,7 @@ export function App() {
                 {activeTrack !== 'express' && (
                   <div className="course-card-classic">
                     <div className="course-cover">
-                      <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?q=80&w=256&auto=format&fit=crop" alt="Express REST API cover banner" />
+                      <img src={COURSE_COVERS.express} alt="Express REST API cover banner" />
                     </div>
                     <div className="course-details">
                       <h5>Express REST APIs (Node)</h5>
@@ -2611,7 +2620,7 @@ export function App() {
                 {activeTrack !== 'python' && (
                   <div className="course-card-classic">
                     <div className="course-cover">
-                      <img src="https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&w=256&auto=format&fit=crop" alt="Python Basics cover banner" />
+                      <img src={COURSE_COVERS.python} alt="Python Basics cover banner" />
                     </div>
                     <div className="course-details">
                       <h5>Python Basics Masterclass</h5>
@@ -2637,19 +2646,19 @@ export function App() {
                 {(() => {
                   const completedCards: { id: string; title: string; lessons: number; cover: string; icon: React.ReactNode }[] = [];
                   if (progressPercent === 100) {
-                    completedCards.push({ id: 'react', title: 'The Complete React Blueprint', lessons: totalLessons, cover: './src/assets/react_path_banner.png', icon: <RiBookOpen style={{ color: 'var(--text-muted)' }} /> });
+                    completedCards.push({ id: 'react', title: 'The Complete React Blueprint', lessons: totalLessons, cover: COURSE_COVERS.react, icon: <RiBookOpen style={{ color: 'var(--text-muted)' }} /> });
                   }
                   if (sqlProgressPercent === 100) {
-                    completedCards.push({ id: 'sql', title: 'SQL Database Masterclass', lessons: totalSqlLessons, cover: 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?q=80&w=256&auto=format&fit=crop', icon: <RiDatabase style={{ color: 'var(--text-muted)' }} /> });
+                    completedCards.push({ id: 'sql', title: 'SQL Database Masterclass', lessons: totalSqlLessons, cover: COURSE_COVERS.sql, icon: <RiDatabase style={{ color: 'var(--text-muted)' }} /> });
                   }
                   if (fastApiProgressPercent === 100) {
-                    completedCards.push({ id: 'fastapi', title: 'FastAPI Production Masterclass', lessons: totalFastApiLessons, cover: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=256&auto=format&fit=crop', icon: <RiFastApi style={{ color: 'var(--text-muted)' }} /> });
+                    completedCards.push({ id: 'fastapi', title: 'FastAPI Production Masterclass', lessons: totalFastApiLessons, cover: COURSE_COVERS.fastapi, icon: <RiFastApi style={{ color: 'var(--text-muted)' }} /> });
                   }
                   if (expressProgressPercent === 100) {
-                    completedCards.push({ id: 'express', title: 'Express REST APIs (Node)', lessons: totalExpressLessons, cover: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?q=80&w=256&auto=format&fit=crop', icon: <RiServer style={{ color: 'var(--text-muted)' }} /> });
+                    completedCards.push({ id: 'express', title: 'Express REST APIs (Node)', lessons: totalExpressLessons, cover: COURSE_COVERS.express, icon: <RiServer style={{ color: 'var(--text-muted)' }} /> });
                   }
                   if (pythonProgressPercent === 100) {
-                    completedCards.push({ id: 'python', title: 'Python Basics Masterclass', lessons: totalPythonLessons, cover: 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&w=256&auto=format&fit=crop', icon: <RiPython style={{ color: 'var(--text-muted)' }} /> });
+                    completedCards.push({ id: 'python', title: 'Python Basics Masterclass', lessons: totalPythonLessons, cover: COURSE_COVERS.python, icon: <RiPython style={{ color: 'var(--text-muted)' }} /> });
                   }
 
                   if (completedCards.length === 0) {
@@ -4509,10 +4518,7 @@ export function App() {
         <div className="reader-overlay-view">
           
           {/* Header Bar */}
-          <div className="reader-header-bar" style={{
-            background: 'linear-gradient(135deg, #1e1e2e 0%, #11111b 100%)',
-            borderBottom: '1px solid #313244'
-          }}>
+          <div className="reader-header-bar">
             <div className="reader-left-pane">
               <button 
                 className="reader-back-btn" 
@@ -4523,14 +4529,13 @@ export function App() {
                   setSqlSandboxFeedback('');
                   playSynthesizedSound('reset');
                 }}
-                style={{ color: 'white' }}
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                 </svg>
                 Back to SQL Path
               </button>
-              <span className="reader-module-tag" style={{ backgroundColor: '#8b5cf6', color: 'white' }}>
+              <span className="reader-module-tag">
                 {selectedSqlSection.sectionTitle}
               </span>
             </div>
@@ -4813,10 +4818,7 @@ export function App() {
       {selectedFastApiLesson && selectedFastApiSection && (
         <div className="reader-overlay-view">
 
-          <div className="reader-header-bar" style={{
-            background: 'linear-gradient(135deg, #064e3b 0%, #022c22 100%)',
-            borderBottom: '1px solid #065f46'
-          }}>
+          <div className="reader-header-bar">
             <div className="reader-left-pane">
               <button
                 className="reader-back-btn"
@@ -4825,14 +4827,13 @@ export function App() {
                   setSelectedFastApiSection(null);
                   playSynthesizedSound('reset');
                 }}
-                style={{ color: 'white' }}
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                 </svg>
                 Back to FastAPI Path
               </button>
-              <span className="reader-module-tag" style={{ backgroundColor: '#10b981', color: 'white' }}>
+              <span className="reader-module-tag">
                 {selectedFastApiSection.sectionTitle}
               </span>
             </div>
@@ -4914,10 +4915,7 @@ export function App() {
       {selectedExpressLesson && selectedExpressSection && (
         <div className="reader-overlay-view">
 
-          <div className="reader-header-bar" style={{
-            background: 'linear-gradient(135deg, #78350f 0%, #451a03 100%)',
-            borderBottom: '1px solid #b45309'
-          }}>
+          <div className="reader-header-bar">
             <div className="reader-left-pane">
               <button
                 className="reader-back-btn"
@@ -4926,14 +4924,13 @@ export function App() {
                   setSelectedExpressSection(null);
                   playSynthesizedSound('reset');
                 }}
-                style={{ color: 'white' }}
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                 </svg>
                 Back to Express Path
               </button>
-              <span className="reader-module-tag" style={{ backgroundColor: '#f59e0b', color: 'white' }}>
+              <span className="reader-module-tag">
                 {selectedExpressSection.sectionTitle}
               </span>
             </div>
@@ -5011,35 +5008,38 @@ export function App() {
         </div>
       )}
 
-      {/* PYTHON IMMERSIVE READER VIEW */}
+      {/* FULLSCREEN IMMERSIVE PYTHON LESSON READER VIEW */}
       {selectedPythonLesson && selectedPythonSection && (
-        <div className="premium-immersive-reader" style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          background: 'var(--bg-card)',
-          color: 'var(--text-dark)',
-          zIndex: 9999,
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden'
-        }}>
-          {/* Header row */}
+        <div className="reader-overlay-view">
+          
+          {/* Header Bar */}
           <div className="reader-header-bar">
-            <div className="reader-header-left">
-              <span className="reader-course-meta">Python Basics curriculum &rarr; {selectedPythonSection.sectionTitle}</span>
-            </div>
-            <div className="reader-header-right">
-              <button className="reader-close-btn" onClick={() => {
-                setSelectedPythonLesson(null);
-                setSelectedPythonSection(null);
-                playSynthesizedSound('success');
-              }}>
-                Close Reader
+            <div className="reader-left-pane">
+              <button 
+                className="reader-back-btn" 
+                onClick={() => {
+                  setSelectedPythonLesson(null);
+                  setSelectedPythonSection(null);
+                  playSynthesizedSound('reset');
+                }}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                </svg>
+                Back to Python Path
               </button>
+              <span className="reader-module-tag">
+                {selectedPythonSection.sectionTitle}
+              </span>
             </div>
+
+            <button 
+              className={`reader-complete-btn ${completedPythonLessons.includes(selectedPythonLesson.id) ? 'completed' : ''}`}
+              onClick={() => handleMarkPythonLessonComplete(selectedPythonLesson.id)}
+            >
+              <span className="reader-check-box"></span>
+              {completedPythonLessons.includes(selectedPythonLesson.id) ? 'Completed' : 'Mark Lesson Completed'}
+            </button>
           </div>
 
           <div className="reader-body-split">
