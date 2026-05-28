@@ -10,6 +10,8 @@ import type { ExpressSection, ExpressLesson } from './data/expressApiLessonsData
 import { pythonLessonsData } from './data/pythonLessonsData';
 import type { PythonSection, PythonLesson } from './data/pythonLessonsData';
 import { aiAssignmentsData } from './data/assignmentData';
+import { quizzesData } from './data/quizzesData';
+import type { QuizCategory } from './data/quizzesData';
 
 // Premium SVG React Icons (Feather-styled, offline-ready, no emojis)
 const RiReact = (props: React.SVGProps<SVGSVGElement>) => (
@@ -188,19 +190,7 @@ const getRelevantTables = (lessonId: string): string[] => {
 };
 
 
-// Types for Quiz Arena
-interface QuizQuestion {
-  question: string;
-  options: string[];
-  answerIndex: number;
-}
 
-interface QuizCategory {
-  id: string;
-  title: string;
-  description: string;
-  questions: QuizQuestion[];
-}
 
 interface QuizLog {
   date: string;
@@ -259,120 +249,8 @@ class ConfettiParticle {
   }
 }
 
-// Dynamic real-data quiz challenges mapped to standard React domains
-const quizCategories: QuizCategory[] = [
-  {
-    id: "react-core",
-    title: "React Core & Component Architecture",
-    description: "Validate your knowledge on functional components, nesting, JSX compiling, and unidirectional props flows.",
-    questions: [
-      {
-        question: "What is JSX under the hood in React?",
-        options: [
-          "A direct HTML string parsed by the web browser",
-          "Syntactic sugar that compiles to React.createElement orjsx function calls",
-          "A custom XML format requiring separate web sockets to load",
-          "A pre-processed CSS wrapper"
-        ],
-        answerIndex: 1
-      },
-      {
-        question: "How do you pass data from a parent component down to a child component?",
-        options: [
-          "Using browser local storage structures",
-          "Via state hook parameter assignments",
-          "Using props passed as tag attributes",
-          "Through window-global parameters"
-        ],
-        answerIndex: 2
-      },
-      {
-        question: "Why must custom React components start with a capital letter?",
-        options: [
-          "To satisfy compiler check rules built in older standard ESLint systems",
-          "Vite will fail to compile and throw circular reference errors",
-          "To tell React apart from normal HTML tags (which are lowercase)",
-          "Capitalization is optional and only used for styling rules"
-        ],
-        answerIndex: 2
-      }
-    ]
-  },
-  {
-    id: "react-state-effects",
-    title: "States, Effects & Lifecycles",
-    description: "Diagnostic challenges on useState updates, lifecycle triggers, batched state runs, and side effect hooks.",
-    questions: [
-      {
-        question: "What hook is used to introduce reactive state into functional components?",
-        options: [
-          "useEffect",
-          "useRef",
-          "useReducer",
-          "useState"
-        ],
-        answerIndex: 3
-      },
-      {
-        question: "Which hook acts as a merger of componentDidMount, componentDidUpdate, and componentWillUnmount?",
-        options: [
-          "useMemo",
-          "useEffect",
-          "useContext",
-          "useCallback"
-        ],
-        answerIndex: 1
-      },
-      {
-        question: "Why should you avoid mutating React state objects directly?",
-        options: [
-          "It triggers browser compiler execution syntax errors instantly",
-          "Direct mutable states are deleted by browser search index engines",
-          "React relies on reference equality changes to detect updates and trigger re-renders",
-          "Mutating state throws standard CORS validation exceptions"
-        ],
-        answerIndex: 2
-      }
-    ]
-  },
-  {
-    id: "react-ecosystem-advanced",
-    title: "Advanced Ecosystem & Global Context",
-    description: "Test context providers, consumer subscriptions, custom hook extraction, and global reducers.",
-    questions: [
-      {
-        question: "What problem does the Context API primarily solve in complex React apps?",
-        options: [
-          "Prop drilling by providing a global shared state channel",
-          "HTML parser exceptions during server build operations",
-          "Automatic API caching on standard database tables",
-          "Responsive CSS styling rules"
-        ],
-        answerIndex: 0
-      },
-      {
-        question: "In standard React Router setups, which component is used to navigate to routes dynamically?",
-        options: [
-          "<a> tag with direct ref parameters",
-          "<Link> component",
-          "<Redirect> tag",
-          "<NavigatorRouter>"
-        ],
-        answerIndex: 1
-      },
-      {
-        question: "What hook takes a reducer function and an initial state to manage complex state transitions?",
-        options: [
-          "useMemo",
-          "useRef",
-          "useReducer",
-          "useContext"
-        ],
-        answerIndex: 2
-      }
-    ]
-  }
-];
+// Dynamic real-data quiz challenges mapped to standard domains
+const quizCategories: QuizCategory[] = quizzesData;
 
 // Interactive Calendar Events schedule for July 2026 - Mapped to real lesson module checkpoints
 const calendarEvents: CalendarEvent[] = [
@@ -550,6 +428,10 @@ export function App() {
   const [quizSelectedOption, setQuizSelectedOption] = useState<number | null>(null);
   const [quizScore, setQuizScore] = useState<number>(0);
   const [quizFinished, setQuizFinished] = useState<boolean>(false);
+  const [activeQuizTrack, setActiveQuizTrack] = useState<string>('react');
+  const [quizCodeValue, setQuizCodeValue] = useState<string>('');
+  const [quizCodeVerified, setQuizCodeVerified] = useState<boolean | null>(null);
+  const [quizCodeLogs, setQuizCodeLogs] = useState<string[]>([]);
   const [quizLog, setQuizLog] = useState<QuizLog[]>(() => {
     const saved = localStorage.getItem('debug_society_quiz_logs');
     return saved ? JSON.parse(saved) : [];
@@ -1573,12 +1455,64 @@ export function App() {
     }
   };
 
+  const handleVerifyCode = () => {
+    if (!activeQuizCategory) return;
+    const activeQuestion = activeQuizCategory.questions[quizQuestionIndex];
+    if (!activeQuestion.correctAnswerKeywords) return;
+
+    // Trigger compiler logs simulation
+    const logs: string[] = [];
+    logs.push("[SYSTEM] Booting secure sandbox environment...");
+    logs.push("[SYSTEM] Compiling syntax checks...");
+    
+    // Check keywords
+    const code = quizCodeValue || '';
+    const missingKeywords: string[] = [];
+    activeQuestion.correctAnswerKeywords.forEach(kw => {
+      if (!code.toLowerCase().includes(kw.toLowerCase())) {
+        missingKeywords.push(kw);
+      }
+    });
+
+    if (missingKeywords.length === 0) {
+      logs.push("[SUCCESS] Syntax verification complete: 0 errors.");
+      activeQuestion.correctAnswerKeywords.forEach(kw => {
+        logs.push(`[SUCCESS] Verified keyword: "${kw}" found inside solution code.`);
+      });
+      logs.push("[SUCCESS] Runtime test cases: 4/4 passed.");
+      logs.push("[SUCCESS] VERIFICATION SUCCESSFUL. Diagnostic rating updated.");
+      
+      setQuizCodeLogs(logs);
+      setQuizCodeVerified(true);
+      setQuizSelectedOption(1); // Enable next question
+      setQuizScore(prev => prev + 1);
+      playSynthesizedSound('success');
+    } else {
+      logs.push("[SYSTEM] Diagnostic scan in progress...");
+      missingKeywords.forEach(kw => {
+        logs.push(`[ERROR] Verification check failed: Missing keyword or implementation details for "${kw}".`);
+      });
+      logs.push("[ERROR] Runtime check failed: Expected functional behavior not observed.");
+      logs.push("[ERROR] VERIFICATION FAILED. Please revise your syntax and re-verify.");
+      
+      setQuizCodeLogs(logs);
+      setQuizCodeVerified(false);
+      setQuizSelectedOption(0); // Enable next question
+      playSynthesizedSound('incorrect');
+    }
+  };
+
   const handleNextQuizQuestion = () => {
     if (!activeQuizCategory) return;
     
     setQuizSelectedOption(null);
+    setQuizCodeVerified(null);
+    setQuizCodeLogs([]);
+
     if (quizQuestionIndex < activeQuizCategory.questions.length - 1) {
-      setQuizQuestionIndex(prev => prev + 1);
+      const nextIndex = quizQuestionIndex + 1;
+      setQuizQuestionIndex(nextIndex);
+      setQuizCodeValue(activeQuizCategory.questions[nextIndex].starterCode || '');
     } else {
       // Quiz finished
       setQuizFinished(true);
@@ -1587,7 +1521,7 @@ export function App() {
       const percentage = Math.round((quizScore / activeQuizCategory.questions.length) * 100);
       let rating = "Trainee Standard";
       if (percentage === 100) rating = "Grandmaster Core";
-      else if (percentage >= 60) rating = "Expert Core";
+      else if (percentage >= 70) rating = "Expert Core";
       
       const newLog: QuizLog = {
         date: new Date().toLocaleDateString(),
@@ -3255,111 +3189,280 @@ export function App() {
             <div className="quiz-arena-header">
               <h2 className="section-title">Quiz History & Arena</h2>
               <p style={{ color: 'var(--text-muted)', fontSize: '13px', marginBottom: '24px' }}>
-                Test your React architectural alignment below to record metrics inside the diagnostic ledger.
+                Test your engineering alignment across course modules below to record metrics inside the diagnostic ledger.
               </p>
             </div>
 
             {/* Selection Category List Grid */}
             {!activeQuizCategory && !quizFinished && (
-              <div className="arena-quiz-grid">
-                {quizCategories.map(cat => (
-                  <div key={cat.id} className="arena-card" onClick={() => {
-                    setActiveQuizCategory(cat);
-                    setQuizQuestionIndex(0);
-                    setQuizSelectedOption(null);
-                    setQuizScore(0);
-                    setQuizFinished(false);
-                    playSynthesizedSound('success');
-                  }}>
-                    <h4>{cat.title}</h4>
-                    <p>{cat.description}</p>
-                    <span><RiZap style={{ marginRight: '6px' }} /> Launch Diagnostic (3 Questions)</span>
-                  </div>
-                ))}
-              </div>
+              <>
+                <div className="course-quiz-tabs" style={{ display: 'flex', gap: '10px', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px', flexWrap: 'wrap' }}>
+                  {[
+                    { id: 'react', label: 'React Core', icon: <RiReact style={{ marginRight: '6px' }} /> },
+                    { id: 'sql', label: 'SQL Query', icon: <RiDatabase style={{ marginRight: '6px' }} /> },
+                    { id: 'fastapi', label: 'FastAPI', icon: <RiFastApi style={{ marginRight: '6px' }} /> },
+                    { id: 'express', label: 'Express REST API', icon: <RiServer style={{ marginRight: '6px' }} /> },
+                    { id: 'python', label: 'Python Foundations', icon: <RiPython style={{ marginRight: '6px' }} /> }
+                  ].map(track => {
+                    const isTrackActive = activeQuizTrack === track.id;
+                    return (
+                      <button
+                        key={track.id}
+                        onClick={() => {
+                          setActiveQuizTrack(track.id);
+                          playSynthesizedSound('success');
+                        }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          padding: '8px 16px',
+                          borderRadius: '20px',
+                          border: isTrackActive ? '1px solid var(--primary-blue)' : '1px solid var(--border-color)',
+                          backgroundColor: isTrackActive ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
+                          color: isTrackActive ? 'var(--primary-blue)' : 'var(--text-muted)',
+                          fontSize: '11px',
+                          fontWeight: '600',
+                          cursor: 'pointer',
+                          transition: 'all var(--transition-fast)',
+                          boxShadow: isTrackActive ? '0 0 8px rgba(59, 130, 246, 0.2)' : 'none'
+                        }}
+                        className="track-filter-btn"
+                      >
+                        {track.icon}
+                        {track.label}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="arena-quiz-grid">
+                  {quizCategories
+                    .filter(cat => cat.courseId === activeQuizTrack)
+                    .map(cat => (
+                      <div key={cat.id} className="arena-card" onClick={() => {
+                        setActiveQuizCategory(cat);
+                        setQuizQuestionIndex(0);
+                        setQuizSelectedOption(null);
+                        setQuizScore(0);
+                        setQuizFinished(false);
+                        setQuizCodeValue(cat.questions[0].starterCode || '');
+                        setQuizCodeVerified(null);
+                        setQuizCodeLogs([]);
+                        playSynthesizedSound('success');
+                      }}>
+                        <h4>{cat.title}</h4>
+                        <p>{cat.description}</p>
+                        <span><RiZap style={{ marginRight: '6px' }} /> Launch Diagnostic ({cat.questions.length} Questions)</span>
+                      </div>
+                    ))}
+                </div>
+              </>
             )}
 
             {/* Quiz Workspace View */}
-            {activeQuizCategory && !quizFinished && (
-              <div className="quiz-container">
-                {/* Math progress value calculation */}
-                {(() => {
-                  const width = ((quizQuestionIndex + 1) / activeQuizCategory.questions.length) * 100;
-                  return (
-                    <div className="quiz-prog-bar">
-                      <div className="quiz-prog-fill" style={{ width: `${width}%` }}></div>
+            {activeQuizCategory && !quizFinished && (() => {
+              const activeQuestion = activeQuizCategory.questions[quizQuestionIndex];
+              const width = ((quizQuestionIndex + 1) / activeQuizCategory.questions.length) * 100;
+              return (
+                <div className="quiz-container">
+                  <div className="quiz-prog-bar">
+                    <div className="quiz-prog-fill" style={{ width: `${width}%` }}></div>
+                  </div>
+
+                  <div className="quiz-inner">
+                    <div className="quiz-meta-row">
+                      <span className="quiz-cat-badge">{activeQuizCategory.title}</span>
+                      <span className="quiz-cnt-text">Question {quizQuestionIndex + 1} of {activeQuizCategory.questions.length}</span>
                     </div>
-                  );
-                })()}
 
-                <div className="quiz-inner">
-                  <div className="quiz-meta-row">
-                    <span className="quiz-cat-badge">{activeQuizCategory.title}</span>
-                    <span className="quiz-cnt-text">Question {quizQuestionIndex + 1} of {activeQuizCategory.questions.length}</span>
-                  </div>
+                    <h3 className="quiz-question-heading">{activeQuestion.question}</h3>
 
-                  <h3 className="quiz-question-heading">{activeQuizCategory.questions[quizQuestionIndex].question}</h3>
+                    {/* Options / Code editor with color code feedback */}
+                    {activeQuestion.isCode ? (
+                      <div className="quiz-code-workspace" style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
+                        <div className="terminal-header" style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          backgroundColor: 'var(--bg-card)',
+                          border: '1px solid var(--border-color)',
+                          borderBottom: 'none',
+                          padding: '8px 12px',
+                          borderTopLeftRadius: '6px',
+                          borderTopRightRadius: '6px',
+                          fontFamily: 'var(--font-mono, monospace)',
+                          fontSize: '11px',
+                          color: 'var(--text-muted)'
+                        }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ef4444' }}></span>
+                            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#eab308' }}></span>
+                            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#22c55e' }}></span>
+                            <span style={{ marginLeft: '6px', fontWeight: 'bold' }}>sandbox_shell.{activeQuizCategory.courseId === 'sql' ? 'sql' : activeQuizCategory.courseId === 'python' || activeQuizCategory.courseId === 'fastapi' ? 'py' : 'js'}</span>
+                          </div>
+                          <div>IDE SANDBOX v1.0</div>
+                        </div>
 
-                  {/* Options with color code feedback */}
-                  <div className="quiz-options-group">
-                    {activeQuizCategory.questions[quizQuestionIndex].options.map((opt, oIdx) => {
-                      const isSelected = quizSelectedOption === oIdx;
-                      const isCorrectAnswer = oIdx === activeQuizCategory.questions[quizQuestionIndex].answerIndex;
-                      const hasAnswered = quizSelectedOption !== null;
-                      
-                      let optionClass = '';
-                      if (hasAnswered) {
-                        if (isCorrectAnswer) {
-                          optionClass = 'correct'; // Show correct answer in green
-                        } else if (isSelected) {
-                          optionClass = 'incorrect'; // Show selected incorrect in red
-                        } else {
-                          optionClass = 'disabled';
-                        }
-                      } else if (isSelected) {
-                        optionClass = 'selected';
-                      }
+                        <textarea
+                          value={quizCodeValue}
+                          onChange={(e) => setQuizCodeValue(e.target.value)}
+                          placeholder={activeQuestion.starterCode || "// Write your code here..."}
+                          style={{
+                            width: '100%',
+                            minHeight: '150px',
+                            backgroundColor: '#0f172a',
+                            color: '#f8fafc',
+                            fontFamily: 'var(--font-mono, monospace)',
+                            fontSize: '12px',
+                            padding: '12px',
+                            border: '1px solid var(--border-color)',
+                            borderTop: 'none',
+                            borderBottomLeftRadius: '6px',
+                            borderBottomRightRadius: '6px',
+                            resize: 'vertical',
+                            outline: 'none',
+                            lineHeight: '1.5'
+                          }}
+                          className="quiz-code-textarea"
+                          disabled={quizCodeVerified === true}
+                        />
 
-                      return (
-                        <button 
-                          key={oIdx} 
-                          className={`quiz-option-item-btn ${optionClass}`}
-                          onClick={() => handleAnswerSubmit(oIdx)}
-                          disabled={quizSelectedOption !== null}
-                        >
-                          {opt}
-                        </button>
-                      );
-                    })}
-                  </div>
+                        <div className="code-actions" style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                          <button
+                            className="primary-btn"
+                            onClick={handleVerifyCode}
+                            disabled={quizCodeVerified === true}
+                            style={{
+                              padding: '8px 16px',
+                              fontSize: '11.5px',
+                              backgroundColor: quizCodeVerified === true ? 'var(--success-color)' : 'var(--accent-gold, #d4af37)',
+                              borderColor: quizCodeVerified === true ? 'var(--success-color)' : 'var(--accent-gold, #d4af37)',
+                              color: '#1a1a1a',
+                              fontWeight: '600',
+                              borderRadius: '4px',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '6px'
+                            }}
+                          >
+                            <RiZap style={{ width: '12px', height: '12px' }} /> Verify Code Solution
+                          </button>
+                          
+                          {quizCodeVerified !== null && (
+                            <span style={{
+                              fontSize: '11px',
+                              fontWeight: 'bold',
+                              color: quizCodeVerified ? 'var(--success-color)' : '#ef4444',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '4px'
+                            }}>
+                              {quizCodeVerified ? (
+                                <>✓ Solution Accepted!</>
+                              ) : (
+                                <>✗ Verification Failed (Incorrect or Incomplete)</>
+                              )}
+                            </span>
+                          )}
+                        </div>
 
-                  <div className="quiz-footer-actions">
-                    <button className="secondary-btn" onClick={() => {
-                      setActiveQuizCategory(null);
-                      setQuizQuestionIndex(0);
-                      setQuizSelectedOption(null);
-                      playSynthesizedSound('reset');
-                    }}>
-                      Quit Quiz
-                    </button>
+                        {/* Compilation and Test Logs Panel */}
+                        {quizCodeLogs.length > 0 && (
+                          <div className="terminal-logs" style={{
+                            backgroundColor: '#020617',
+                            border: '1px solid #1e293b',
+                            borderRadius: '6px',
+                            padding: '12px',
+                            fontFamily: 'var(--font-mono, monospace)',
+                            fontSize: '11px',
+                            color: '#38bdf8',
+                            maxHeight: '150px',
+                            overflowY: 'auto',
+                            textAlign: 'left'
+                          }}>
+                            <div style={{ color: '#94a3b8', borderBottom: '1px solid #1e293b', paddingBottom: '4px', marginBottom: '8px', fontWeight: 'bold' }}>
+                              CONSOLE DIAGNOSTICS
+                            </div>
+                            {quizCodeLogs.map((log, lIdx) => {
+                              let color = '#38bdf8'; // Blue info log
+                              if (log.startsWith('[SUCCESS]')) color = 'var(--success-color)';
+                              else if (log.startsWith('[ERROR]')) color = '#f87171';
+                              else if (log.startsWith('[SYSTEM]')) color = '#e2e8f0';
 
-                    <button 
-                      className="primary-btn"
-                      onClick={handleNextQuizQuestion}
-                      disabled={quizSelectedOption === null}
-                    >
-                      {quizQuestionIndex === activeQuizCategory.questions.length - 1 ? 'Finish Quiz' : 'Next Question'}
-                    </button>
+                              return (
+                                <div key={lIdx} style={{ color, marginBottom: '4px', whiteSpace: 'pre-wrap' }}>
+                                  {log}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="quiz-options-group">
+                        {activeQuestion.options.map((opt, oIdx) => {
+                          const isSelected = quizSelectedOption === oIdx;
+                          const isCorrectAnswer = oIdx === activeQuestion.answerIndex;
+                          const hasAnswered = quizSelectedOption !== null;
+                          
+                          let optionClass = '';
+                          if (hasAnswered) {
+                            if (isCorrectAnswer) {
+                              optionClass = 'correct'; // Show correct answer in green
+                            } else if (isSelected) {
+                              optionClass = 'incorrect'; // Show selected incorrect in red
+                            } else {
+                              optionClass = 'disabled';
+                            }
+                          } else if (isSelected) {
+                            optionClass = 'selected';
+                          }
+
+                          return (
+                            <button 
+                              key={oIdx} 
+                              className={`quiz-option-item-btn ${optionClass}`}
+                              onClick={() => handleAnswerSubmit(oIdx)}
+                              disabled={quizSelectedOption !== null}
+                            >
+                              {opt}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    <div className="quiz-footer-actions">
+                      <button className="secondary-btn" onClick={() => {
+                        setActiveQuizCategory(null);
+                        setQuizQuestionIndex(0);
+                        setQuizSelectedOption(null);
+                        setQuizCodeVerified(null);
+                        setQuizCodeLogs([]);
+                        playSynthesizedSound('reset');
+                      }}>
+                        Quit Quiz
+                      </button>
+
+                      <button 
+                        className="primary-btn"
+                        onClick={handleNextQuizQuestion}
+                        disabled={quizSelectedOption === null}
+                      >
+                        {quizQuestionIndex === activeQuizCategory.questions.length - 1 ? 'Finish Quiz' : 'Next Question'}
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
 
             {/* Quiz Finished Result Screen */}
-            {quizFinished && (
+            {quizFinished && activeQuizCategory && (
               <div className="quiz-results-card-view">
                 <h3>Diagnostic Alignment Completed</h3>
-                <p>Score: {quizScore} / 3 ({Math.round((quizScore/3)*100)}% Efficiency)</p>
+                <p>Score: {quizScore} / {activeQuizCategory.questions.length} ({Math.round((quizScore / activeQuizCategory.questions.length) * 100)}% Efficiency)</p>
                 <div className="quiz-results-details">
                   Your diagnostic evaluation run is completed. Performance stats have been securely saved and logged into the offline Diagnostic Ledger below.
                 </div>
@@ -3381,7 +3484,7 @@ export function App() {
                   <thead>
                     <tr>
                       <th>Workstation Date</th>
-                      <th>React Domain Domain</th>
+                      <th>Diagnostic Course Track</th>
                       <th>Score Recorded</th>
                       <th>Efficiency Rating</th>
                     </tr>
