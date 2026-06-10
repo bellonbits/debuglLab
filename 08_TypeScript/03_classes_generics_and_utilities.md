@@ -1,6 +1,6 @@
 # Classes, Generics & Utilities
 
-> **Source:** [https://www.theodinproject.com/lessons/node-path-typescript-classes-generics](https://www.theodinproject.com/lessons/node-path-typescript-classes-generics)
+> **Source:** [https://www.thedebuglab.com/lessons/node-path-typescript-classes-generics](https://www.thedebuglab.com/lessons/node-path-typescript-classes-generics)
 
 ---
 

@@ -259,6 +259,8 @@ class ConfettiParticle {
 }
 
 // Course Cover Banner Thumbnails (Beautiful, premium glowing dark neon tech aesthetics)
+const SUPER_ADMIN_EMAIL = 'petergatitu61@gmail.com';
+
 const COURSE_COVERS = {
   react: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&w=800&q=80",
   sql: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&q=80",
@@ -385,7 +387,6 @@ export function App() {
       });
   }, []);
 
-  const [courseCategoryTab, setCourseCategoryTab] = useState<string>('currently-learning');
   
   // Course completion states (stored in localstorage)
   const [completedLessons, setCompletedLessons] = useState<string[]>(() => {
@@ -496,11 +497,24 @@ export function App() {
     return getPersonalState('devTheme', 'studio-aura');
   });
 
-  // Interactive Calendar Date Click State
-  const [selectedCalendarDate, setSelectedCalendarDate] = useState<number>(1); // Defaults to Orientation day
-  // Calendar viewed month/year (events fixed in July 2026)
-  const [calendarYear, setCalendarYear] = useState<number>(2026);
-  const [calendarMonth, setCalendarMonth] = useState<number>(6); // 0-indexed: 6 = July
+  // Interactive Calendar Date Click State — defaults to actual today
+  const [selectedCalendarDate, setSelectedCalendarDate] = useState<number>(() => new Date().getDate());
+  const [calendarYear, setCalendarYear] = useState<number>(() => new Date().getFullYear());
+  const [calendarMonth, setCalendarMonth] = useState<number>(() => new Date().getMonth());
+
+  // Admin Panel State
+  const isSuperAdmin = currentUserEmail === SUPER_ADMIN_EMAIL;
+  type AdminStudent = {
+    email: string; name: string; avatar: string; title: string; theme: string;
+    completedReact: number; completedSql: number; completedFastApi: number;
+    completedExpress: number; completedPython: number; completedTypescript: number;
+    totalCompleted: number; pct: number;
+    quizLog: QuizLog[]; certificates: string[]; timerSessions: number;
+  };
+  const [adminTab, setAdminTab] = useState<'dashboard' | 'students' | 'leaderboard' | 'analytics' | 'content' | 'system'>('dashboard');
+  const [adminStudents, setAdminStudents] = useState<AdminStudent[]>([]);
+  const [adminSelectedStudent, setAdminSelectedStudent] = useState<AdminStudent | null>(null);
+  const [adminSearch, setAdminSearch] = useState('');
 
   // AI Assignment Arena States
   const [assignmentPageTab, setAssignmentPageTab] = useState<'focus-pomodoro' | 'ai-arena'>('ai-arena');
@@ -608,6 +622,38 @@ export function App() {
   useEffect(() => {
     localStorage.setItem('debug_society_noti_seen', JSON.stringify(notiSeenIds));
   }, [notiSeenIds]);
+
+  // Load all registered students whenever admin page opens (super admin only)
+  useEffect(() => {
+    if (activePage !== 'admin' || !isSuperAdmin) return;
+    const emails: string[] = JSON.parse(localStorage.getItem('debug_society_registered_users') || '[]');
+    const loaded: AdminStudent[] = emails.map(email => {
+      const p = JSON.parse(localStorage.getItem(`debug_society_profile_${email}`) || '{}');
+      const rc = (p.completedLessons || []).length;
+      const sc = (p.completedSqlLessons || []).length;
+      const fac = (p.completedFastApiLessons || []).length;
+      const ec = (p.completedExpressLessons || []).length;
+      const pc = (p.completedPythonLessons || []).length;
+      const tc = (p.completedTypescriptLessons || []).length;
+      const tot = rc + sc + fac + ec + pc + tc;
+      return {
+        email,
+        name: p.devName || email.split('@')[0],
+        avatar: p.devAvatar || '',
+        title: p.devTitle || 'Core Engineer',
+        theme: p.devTheme || 'studio-aura',
+        completedReact: rc, completedSql: sc, completedFastApi: fac,
+        completedExpress: ec, completedPython: pc, completedTypescript: tc,
+        totalCompleted: tot,
+        pct: totalAll > 0 ? Math.round((tot / totalAll) * 100) : 0,
+        quizLog: p.quizLog || [],
+        certificates: p.completedAssignments || [],
+        timerSessions: p.timerSessionsCount || 0,
+      };
+    });
+    setAdminStudents(loaded);
+    setAdminSelectedStudent(null);
+  }, [activePage, isSuperAdmin]);
 
   // Close notifications panel on outside click
   useEffect(() => {
@@ -1402,10 +1448,10 @@ export function App() {
       return `<blockquote>${inner}</blockquote>`;
     });
 
-    // List items — wrap consecutive runs of `- ` (ul) or `N. ` (ol) lines.
-    html = html.replace(/(^(?:-\s.*(?:\n|$))+)/gm, (block) => {
+    // List items — wrap consecutive runs of `- ` or `* ` (ul) or `N. ` (ol) lines.
+    html = html.replace(/(^(?:[ \t]*[-*]\s.*(?:\n|$))+)/gm, (block) => {
       const items = block.trim().split('\n')
-        .map(line => line.replace(/^-\s/, '').trim())
+        .map(line => line.replace(/^[ \t]*[-*]\s/, '').trim())
         .map(item => `<li>${item}</li>`)
         .join('');
       return `<ul>${items}</ul>\n`;
@@ -1647,9 +1693,10 @@ export function App() {
   const totalTypescriptLessons = typescriptLessonsData.flatMap(s => s.lessons).length;
   const completedTypescriptCount = completedTypescriptLessons.length;
   const typescriptProgressPercent = totalTypescriptLessons ? Math.round((completedTypescriptCount / totalTypescriptLessons) * 100) : 0;
+  const totalAll = totalLessons + totalSqlLessons + totalFastApiLessons + totalExpressLessons + totalPythonLessons + totalTypescriptLessons;
 
-  // Active clicked calendar event detail
-  const clickedCalendarEvent = calendarEvents.find(e => e.date === selectedCalendarDate);
+  // Active clicked calendar event detail — only valid when viewing the event month (July 2026)
+  const clickedCalendarEvent = isEventMonth ? calendarEvents.find(e => e.date === selectedCalendarDate) : undefined;
 
   // Derived notifications feed (real items from existing state)
   type Notification = { id: string; title: string; detail: string; kind: 'quiz' | 'lesson' | 'milestone' | 'streak' };
@@ -2115,7 +2162,19 @@ export function App() {
             My Assignments
           </button>
 
-          <button 
+          {isSuperAdmin && (
+            <button
+              className={`nav-item ${activePage === 'admin' ? 'active' : ''}`}
+              onClick={() => { setActivePage('admin'); setAdminTab('dashboard'); setAdminSelectedStudent(null); }}
+            >
+              <svg viewBox="0 0 24 24">
+                <path d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+              Admin Panel
+            </button>
+          )}
+
+          <button
             className={`nav-item ${activePage === 'settings' ? 'active' : ''}`}
             onClick={() => setActivePage('settings')}
           >
@@ -2292,589 +2351,210 @@ export function App() {
           <div>
             <h2 className="section-title">My Courses</h2>
 
-            {/* WORKSPACE PATH SELECTOR (no emojis, using our SVG React Icons!) */}
-            <div className="track-selector-bar" style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: '12px',
-              marginBottom: '24px',
-              padding: '12px',
-              borderRadius: 'var(--radius-md)',
-              background: 'var(--bg-card)',
-              border: '1px solid var(--border-color)',
-              boxShadow: 'var(--shadow-sm)'
-            }}>
-              <button 
-                className={`track-select-btn ${activeTrack === 'react' ? 'active' : ''}`}
-                onClick={() => {
-                  setActiveTrack('react');
-                  playSynthesizedSound('success');
-                }}
-                style={{
-                  flex: 1,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  padding: '10px 16px',
-                  borderRadius: 'var(--radius-sm)',
-                  border: activeTrack === 'react' ? '2px solid var(--primary-blue)' : '1px solid var(--border-color)',
-                  background: activeTrack === 'react' ? 'rgba(59, 130, 246, 0.08)' : 'var(--bg-input)',
-                  color: 'var(--text-dark)',
-                  cursor: 'pointer',
-                  fontSize: '12.5px',
-                  fontWeight: '700',
-                  fontFamily: 'var(--font-display)',
-                  transition: 'all var(--transition-fast)'
-                }}
-              >
-                <RiReact style={{ color: activeTrack === 'react' ? 'var(--primary-blue)' : 'var(--text-muted)' }} /> React Developer Track
-              </button>
-
-              <button 
-                className={`track-select-btn ${activeTrack === 'typescript' ? 'active' : ''}`}
-                onClick={() => {
-                  setActiveTrack('typescript');
-                  playSynthesizedSound('success');
-                }}
-                style={{
-                  flex: 1,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  padding: '10px 16px',
-                  borderRadius: 'var(--radius-sm)',
-                  border: activeTrack === 'typescript' ? '2px solid #0284c7' : '1px solid var(--border-color)',
-                  background: activeTrack === 'typescript' ? 'rgba(2, 132, 199, 0.08)' : 'var(--bg-input)',
-                  color: 'var(--text-dark)',
-                  cursor: 'pointer',
-                  fontSize: '12.5px',
-                  fontWeight: '700',
-                  fontFamily: 'var(--font-display)',
-                  transition: 'all var(--transition-fast)'
-                }}
-              >
-                <RiTypeScript style={{ color: activeTrack === 'typescript' ? '#0284c7' : 'var(--text-muted)' }} /> TypeScript Basics Track
-              </button>
-              
-              <button
-                className={`track-select-btn ${activeTrack === 'sql' ? 'active' : ''}`}
-                onClick={() => {
-                  setActiveTrack('sql');
-                  playSynthesizedSound('success');
-                }}
-                style={{
-                  flex: 1,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  padding: '10px 16px',
-                  borderRadius: 'var(--radius-sm)',
-                  border: activeTrack === 'sql' ? '2px solid #8b5cf6' : '1px solid var(--border-color)',
-                  background: activeTrack === 'sql' ? 'rgba(139, 92, 246, 0.08)' : 'var(--bg-input)',
-                  color: 'var(--text-dark)',
-                  cursor: 'pointer',
-                  fontSize: '12.5px',
-                  fontWeight: '700',
-                  fontFamily: 'var(--font-display)',
-                  transition: 'all var(--transition-fast)'
-                }}
-              >
-                <RiDatabase style={{ color: activeTrack === 'sql' ? '#8b5cf6' : 'var(--text-muted)' }} /> SQL Database Track (SQLZoo)
-              </button>
-
-              <button
-                className={`track-select-btn ${activeTrack === 'fastapi' ? 'active' : ''}`}
-                onClick={() => {
-                  setActiveTrack('fastapi');
-                  playSynthesizedSound('success');
-                }}
-                style={{
-                  flex: 1,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  padding: '10px 16px',
-                  borderRadius: 'var(--radius-sm)',
-                  border: activeTrack === 'fastapi' ? '2px solid #10b981' : '1px solid var(--border-color)',
-                  background: activeTrack === 'fastapi' ? 'rgba(16, 185, 129, 0.08)' : 'var(--bg-input)',
-                  color: 'var(--text-dark)',
-                  cursor: 'pointer',
-                  fontSize: '12.5px',
-                  fontWeight: '700',
-                  fontFamily: 'var(--font-display)',
-                  transition: 'all var(--transition-fast)'
-                }}
-              >
-                <RiFastApi style={{ color: activeTrack === 'fastapi' ? '#10b981' : 'var(--text-muted)' }} /> FastAPI Python Track
-              </button>
-
-              <button
-                className={`track-select-btn ${activeTrack === 'express' ? 'active' : ''}`}
-                onClick={() => {
-                  setActiveTrack('express');
-                  playSynthesizedSound('success');
-                }}
-                style={{
-                  flex: 1,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  padding: '10px 16px',
-                  borderRadius: 'var(--radius-sm)',
-                  border: activeTrack === 'express' ? '2px solid #f59e0b' : '1px solid var(--border-color)',
-                  background: activeTrack === 'express' ? 'rgba(245, 158, 11, 0.08)' : 'var(--bg-input)',
-                  color: 'var(--text-dark)',
-                  cursor: 'pointer',
-                  fontSize: '12.5px',
-                  fontWeight: '700',
-                  fontFamily: 'var(--font-display)',
-                  transition: 'all var(--transition-fast)'
-                }}
-              >
-                <RiServer style={{ color: activeTrack === 'express' ? '#f59e0b' : 'var(--text-muted)' }} /> Express REST APIs (Node)
-              </button>
-
-              <button
-                className={`track-select-btn ${activeTrack === 'python' ? 'active' : ''}`}
-                onClick={() => {
-                  setActiveTrack('python');
-                  playSynthesizedSound('success');
-                }}
-                style={{
-                  flex: 1,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  padding: '10px 16px',
-                  borderRadius: 'var(--radius-sm)',
-                  border: activeTrack === 'python' ? '2px solid #3776ab' : '1px solid var(--border-color)',
-                  background: activeTrack === 'python' ? 'rgba(55, 118, 171, 0.08)' : 'var(--bg-input)',
-                  color: 'var(--text-dark)',
-                  cursor: 'pointer',
-                  fontSize: '12.5px',
-                  fontWeight: '700',
-                  fontFamily: 'var(--font-display)',
-                  transition: 'all var(--transition-fast)'
-                }}
-              >
-                <RiPython style={{ color: activeTrack === 'python' ? '#3776ab' : 'var(--text-muted)' }} /> Python Basics Track
-              </button>
-            </div>
-
-            <div className="category-tabs">
-              <button 
-                className={`category-tab-btn ${courseCategoryTab === 'currently-learning' ? 'active' : ''}`}
-                onClick={() => setCourseCategoryTab('currently-learning')}
-              >
-                Currently learning
-              </button>
-              <button 
-                className={`category-tab-btn ${courseCategoryTab === 'recently-enrolled' ? 'active' : ''}`}
-                onClick={() => setCourseCategoryTab('recently-enrolled')}
-              >
-                Recently Enrolled
-              </button>
-              <button 
-                className={`category-tab-btn ${courseCategoryTab === 'completed' ? 'active' : ''}`}
-                onClick={() => setCourseCategoryTab('completed')}
-              >
-                Completed
-              </button>
-            </div>
-
-            {/* Currently learning Grid */}
-            {courseCategoryTab === 'currently-learning' && (
-              <div>
-                <div className="courses-grid-view">
-                  
-                  {/* Active course card */}
-                  {activeTrack === 'react' && (
-                    <div className="course-card-classic">
-                      <div className="course-cover">
-                        <img src={COURSE_COVERS.react} alt="React Core cover banner" />
-                      </div>
-                      <div className="course-details">
-                        <h5>The Complete React Blueprint</h5>
-                        <div className="lessons-count-meta" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                          <RiBookOpen style={{ color: 'var(--text-muted)' }} />
-                          <span>lessons : {totalLessons} (Full Syllabus)</span>
-                        </div>
-                        <div className="instructor-meta">
-                          <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?q=80&w=256&auto=format&fit=crop" alt="Instructor avatar" />
-                          <span>The Debug Society</span>
-                        </div>
-                        <div className="progress-info-row">
-                          <span>{progressPercent}% Complete</span>
-                        </div>
-                        <div className="card-progress-track">
-                          <div className="card-progress-fill-val" style={{ width: `${progressPercent}%` }}></div>
-                        </div>
-                        <button className="card-action-btn-classic" onClick={() => {
-                          setActivePage('react-path');
-                          playSynthesizedSound('success');
-                        }}>
-                          Resume Path
-                        </button>
-                      </div>
+            {/* Web & Frontend Development */}
+            <div style={{ marginBottom: '32px' }}>
+              <h3 style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '14px', fontFamily: 'var(--font-display)' }}>
+                Web &amp; Frontend Development
+              </h3>
+              <div className="courses-grid-view">
+                <div className="course-card-classic">
+                  <div className="course-cover">
+                    <img src={COURSE_COVERS.react} alt="React Core cover banner" />
+                  </div>
+                  <div className="course-details">
+                    <h5>The Complete React Blueprint</h5>
+                    <div className="lessons-count-meta" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                      <RiBookOpen style={{ color: 'var(--text-muted)' }} />
+                      <span>lessons : {totalLessons} (Full Syllabus)</span>
                     </div>
-                  )}
-
-                  {activeTrack === 'typescript' && (
-                    <div className="course-card-classic">
-                      <div className="course-cover">
-                        <img src={COURSE_COVERS.typescript} alt="TypeScript Basics cover banner" />
-                      </div>
-                      <div className="course-details">
-                        <h5>TypeScript Basics Masterclass</h5>
-                        <div className="lessons-count-meta" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                          <RiTypeScript style={{ color: 'var(--text-muted)' }} />
-                          <span>lessons : {totalTypescriptLessons} (Full Syllabus)</span>
-                        </div>
-                        <div className="instructor-meta">
-                          <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?q=80&w=256&auto=format&fit=crop" alt="Instructor avatar" />
-                          <span>The Debug Society</span>
-                        </div>
-                        <div className="progress-info-row">
-                          <span>{typescriptProgressPercent}% Complete</span>
-                        </div>
-                        <div className="card-progress-track">
-                          <div className="card-progress-fill-val" style={{ width: `${typescriptProgressPercent}%` }}></div>
-                        </div>
-                        <button className="card-action-btn-classic" onClick={() => {
-                          setActivePage('react-path');
-                          playSynthesizedSound('success');
-                        }}>
-                          Resume Path
-                        </button>
-                      </div>
+                    <div className="instructor-meta">
+                      <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?q=80&w=256&auto=format&fit=crop" alt="Instructor avatar" />
+                      <span>The Debug Society</span>
                     </div>
-                  )}
-
-                  {activeTrack === 'sql' && (
-                    <div className="course-card-classic">
-                      <div className="course-cover">
-                        <img src={COURSE_COVERS.sql} alt="SQL Database cover banner" />
-                      </div>
-                      <div className="course-details">
-                        <h5>SQL Database Masterclass</h5>
-                        <div className="lessons-count-meta" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                          <RiDatabase style={{ color: 'var(--text-muted)' }} />
-                          <span>lessons : {totalSqlLessons} (Full Syllabus)</span>
-                        </div>
-                        <div className="instructor-meta">
-                          <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?q=80&w=256&auto=format&fit=crop" alt="Instructor avatar" />
-                          <span>The Debug Society</span>
-                        </div>
-                        <div className="progress-info-row">
-                          <span>{sqlProgressPercent}% Complete</span>
-                        </div>
-                        <div className="card-progress-track">
-                          <div className="card-progress-fill-val" style={{ width: `${sqlProgressPercent}%` }}></div>
-                        </div>
-                        <button className="card-action-btn-classic" onClick={() => {
-                          setActivePage('react-path');
-                          playSynthesizedSound('success');
-                        }}>
-                          Resume Path
-                        </button>
-                      </div>
+                    <div className="progress-info-row">
+                      <span>{progressPercent}% Complete</span>
                     </div>
-                  )}
-
-                  {activeTrack === 'fastapi' && (
-                    <div className="course-card-classic">
-                      <div className="course-cover">
-                        <img src={COURSE_COVERS.fastapi} alt="FastAPI cover banner" />
-                      </div>
-                      <div className="course-details">
-                        <h5>FastAPI Production Masterclass</h5>
-                        <div className="lessons-count-meta" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                          <RiFastApi style={{ color: 'var(--text-muted)' }} />
-                          <span>lessons : {totalFastApiLessons} (Full Syllabus)</span>
-                        </div>
-                        <div className="instructor-meta">
-                          <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?q=80&w=256&auto=format&fit=crop" alt="Instructor avatar" />
-                          <span>The Debug Society</span>
-                        </div>
-                        <div className="progress-info-row">
-                          <span>{fastApiProgressPercent}% Complete</span>
-                        </div>
-                        <div className="card-progress-track">
-                          <div className="card-progress-fill-val" style={{ width: `${fastApiProgressPercent}%` }}></div>
-                        </div>
-                        <button className="card-action-btn-classic" onClick={() => {
-                          setActivePage('react-path');
-                          playSynthesizedSound('success');
-                        }}>
-                          Resume Path
-                        </button>
-                      </div>
+                    <div className="card-progress-track">
+                      <div className="card-progress-fill-val" style={{ width: `${progressPercent}%` }}></div>
                     </div>
-                  )}
+                    <button className="card-action-btn-classic" onClick={() => {
+                      setActiveTrack('react');
+                      setActivePage('react-path');
+                      playSynthesizedSound('success');
+                    }}>
+                      {progressPercent === 100 ? 'Review Path' : 'Resume Path'}
+                    </button>
+                  </div>
+                </div>
 
-                  {activeTrack === 'express' && (
-                    <div className="course-card-classic">
-                      <div className="course-cover">
-                        <img src={COURSE_COVERS.express} alt="Express REST API cover banner" />
-                      </div>
-                      <div className="course-details">
-                        <h5>Express REST APIs (Node)</h5>
-                        <div className="lessons-count-meta" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                          <RiServer style={{ color: 'var(--text-muted)' }} />
-                          <span>lessons : {totalExpressLessons} (Full Syllabus)</span>
-                        </div>
-                        <div className="instructor-meta">
-                          <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?q=80&w=256&auto=format&fit=crop" alt="Instructor avatar" />
-                          <span>The Debug Society</span>
-                        </div>
-                        <div className="progress-info-row">
-                          <span>{expressProgressPercent}% Complete</span>
-                        </div>
-                        <div className="card-progress-track">
-                          <div className="card-progress-fill-val" style={{ width: `${expressProgressPercent}%` }}></div>
-                        </div>
-                        <button className="card-action-btn-classic" onClick={() => {
-                          setActivePage('react-path');
-                          playSynthesizedSound('success');
-                        }}>
-                          Resume Path
-                        </button>
-                      </div>
+                <div className="course-card-classic">
+                  <div className="course-cover ts-cover-branded">
+                    <RiTypeScript width={44} height={44} stroke="rgba(255,255,255,0.95)" strokeWidth={1.8} style={{ display: 'block', filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.25))' }} />
+                    <span style={{ color: 'rgba(255,255,255,0.95)', fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '18px', letterSpacing: '-0.3px', textShadow: '0 1px 4px rgba(0,0,0,0.3)', marginLeft: '10px' }}>TypeScript</span>
+                  </div>
+                  <div className="course-details">
+                    <h5>TypeScript Basics Masterclass</h5>
+                    <div className="lessons-count-meta" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                      <RiTypeScript style={{ color: 'var(--text-muted)' }} />
+                      <span>lessons : {totalTypescriptLessons} (Full Syllabus)</span>
                     </div>
-                  )}
-
-                  {activeTrack === 'python' && (
-                    <div className="course-card-classic">
-                      <div className="course-cover">
-                        <img src={COURSE_COVERS.python} alt="Python Basics cover banner" />
-                      </div>
-                      <div className="course-details">
-                        <h5>Python Basics Masterclass</h5>
-                        <div className="lessons-count-meta" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                          <RiPython style={{ color: 'var(--text-muted)' }} />
-                          <span>lessons : {totalPythonLessons} (Full Syllabus)</span>
-                        </div>
-                        <div className="instructor-meta">
-                          <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?q=80&w=256&auto=format&fit=crop" alt="Instructor avatar" />
-                          <span>The Debug Society</span>
-                        </div>
-                        <div className="progress-info-row">
-                          <span>{pythonProgressPercent}% Complete</span>
-                        </div>
-                        <div className="card-progress-track">
-                          <div className="card-progress-fill-val" style={{ width: `${pythonProgressPercent}%` }}></div>
-                        </div>
-                        <button className="card-action-btn-classic" onClick={() => {
-                          setActivePage('react-path');
-                          playSynthesizedSound('success');
-                        }}>
-                          Resume Path
-                        </button>
-                      </div>
+                    <div className="instructor-meta">
+                      <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?q=80&w=256&auto=format&fit=crop" alt="Instructor avatar" />
+                      <span>The Debug Society</span>
                     </div>
-                  )}
-
+                    <div className="progress-info-row">
+                      <span>{typescriptProgressPercent}% Complete</span>
+                    </div>
+                    <div className="card-progress-track">
+                      <div className="card-progress-fill-val" style={{ width: `${typescriptProgressPercent}%` }}></div>
+                    </div>
+                    <button className="card-action-btn-classic" onClick={() => {
+                      setActiveTrack('typescript');
+                      setActivePage('react-path');
+                      playSynthesizedSound('success');
+                    }}>
+                      {typescriptProgressPercent === 100 ? 'Review Path' : 'Resume Path'}
+                    </button>
+                  </div>
                 </div>
               </div>
-            )}
+            </div>
 
-            {courseCategoryTab === 'recently-enrolled' && (
+            {/* Backend Development & APIs */}
+            <div style={{ marginBottom: '32px' }}>
+              <h3 style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '14px', fontFamily: 'var(--font-display)' }}>
+                Backend Development &amp; APIs
+              </h3>
               <div className="courses-grid-view">
-                {/* Show the two tracks that aren't currently active */}
-                {activeTrack !== 'react' && (
-                  <div className="course-card-classic">
-                    <div className="course-cover">
-                      <img src={COURSE_COVERS.react} alt="React cover" />
-                    </div>
-                    <div className="course-details">
-                      <h5>The Complete React Blueprint</h5>
-                      <div className="lessons-count-meta" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                        <RiBookOpen style={{ color: 'var(--text-muted)' }} />
-                        <span>lessons : {totalLessons} (Full Syllabus)</span>
-                      </div>
-                      <button className="card-action-btn-classic" onClick={() => {
-                        setActiveTrack('react');
-                        setActivePage('react-path');
-                        playSynthesizedSound('success');
-                      }}>
-                        Resume Path
-                      </button>
-                    </div>
+                <div className="course-card-classic">
+                  <div className="course-cover">
+                    <img src={COURSE_COVERS.fastapi} alt="FastAPI cover banner" />
                   </div>
-                )}
-                {activeTrack !== 'sql' && (
-                  <div className="course-card-classic">
-                    <div className="course-cover">
-                      <img src={COURSE_COVERS.sql} alt="SQL cover banner" />
+                  <div className="course-details">
+                    <h5>FastAPI Production Masterclass</h5>
+                    <div className="lessons-count-meta" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                      <RiFastApi style={{ color: 'var(--text-muted)' }} />
+                      <span>lessons : {totalFastApiLessons} (Full Syllabus)</span>
                     </div>
-                    <div className="course-details">
-                      <h5>SQL Database Masterclass</h5>
-                      <div className="lessons-count-meta" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                        <RiDatabase style={{ color: 'var(--text-muted)' }} />
-                        <span>lessons : {totalSqlLessons} (Full Syllabus)</span>
-                      </div>
-                      <button className="card-action-btn-classic" onClick={() => {
-                        setActiveTrack('sql');
-                        setActivePage('react-path');
-                        playSynthesizedSound('success');
-                      }}>
-                        Resume Path
-                      </button>
+                    <div className="instructor-meta">
+                      <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?q=80&w=256&auto=format&fit=crop" alt="Instructor avatar" />
+                      <span>The Debug Society</span>
                     </div>
+                    <div className="progress-info-row">
+                      <span>{fastApiProgressPercent}% Complete</span>
+                    </div>
+                    <div className="card-progress-track">
+                      <div className="card-progress-fill-val" style={{ width: `${fastApiProgressPercent}%` }}></div>
+                    </div>
+                    <button className="card-action-btn-classic" onClick={() => {
+                      setActiveTrack('fastapi');
+                      setActivePage('react-path');
+                      playSynthesizedSound('success');
+                    }}>
+                      {fastApiProgressPercent === 100 ? 'Review Path' : 'Resume Path'}
+                    </button>
                   </div>
-                )}
-                {activeTrack !== 'fastapi' && (
-                  <div className="course-card-classic">
-                    <div className="course-cover">
-                      <img src={COURSE_COVERS.fastapi} alt="FastAPI cover banner" />
-                    </div>
-                    <div className="course-details">
-                      <h5>FastAPI Production Masterclass</h5>
-                      <div className="lessons-count-meta" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                        <RiFastApi style={{ color: 'var(--text-muted)' }} />
-                        <span>lessons : {totalFastApiLessons} (Full Syllabus)</span>
-                      </div>
-                      <button className="card-action-btn-classic" onClick={() => {
-                        setActiveTrack('fastapi');
-                        setActivePage('react-path');
-                        playSynthesizedSound('success');
-                      }}>
-                        Resume Path
-                      </button>
-                    </div>
-                  </div>
-                )}
-                {activeTrack !== 'express' && (
-                  <div className="course-card-classic">
-                    <div className="course-cover">
-                      <img src={COURSE_COVERS.express} alt="Express REST API cover banner" />
-                    </div>
-                    <div className="course-details">
-                      <h5>Express REST APIs (Node)</h5>
-                      <div className="lessons-count-meta" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                        <RiServer style={{ color: 'var(--text-muted)' }} />
-                        <span>lessons : {totalExpressLessons} (Full Syllabus)</span>
-                      </div>
-                      <button className="card-action-btn-classic" onClick={() => {
-                        setActiveTrack('express');
-                        setActivePage('react-path');
-                        playSynthesizedSound('success');
-                      }}>
-                        Resume Path
-                      </button>
-                    </div>
-                  </div>
-                )}
-                {activeTrack !== 'python' && (
-                  <div className="course-card-classic">
-                    <div className="course-cover">
-                      <img src={COURSE_COVERS.python} alt="Python Basics cover banner" />
-                    </div>
-                    <div className="course-details">
-                      <h5>Python Basics Masterclass</h5>
-                      <div className="lessons-count-meta" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                        <RiPython style={{ color: 'var(--text-muted)' }} />
-                        <span>lessons : {totalPythonLessons} (Full Syllabus)</span>
-                      </div>
-                      <button className="card-action-btn-classic" onClick={() => {
-                        setActiveTrack('python');
-                        setActivePage('react-path');
-                        playSynthesizedSound('success');
-                      }}>
-                        Resume Path
-                      </button>
-                    </div>
-                  </div>
-                )}
-                {activeTrack !== 'typescript' && (
-                  <div className="course-card-classic">
-                    <div className="course-cover">
-                      <img src={COURSE_COVERS.typescript} alt="TypeScript cover banner" />
-                    </div>
-                    <div className="course-details">
-                      <h5>TypeScript Basics Masterclass</h5>
-                      <div className="lessons-count-meta" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                        <RiTypeScript style={{ color: 'var(--text-muted)' }} />
-                        <span>lessons : {totalTypescriptLessons} (Full Syllabus)</span>
-                      </div>
-                      <button className="card-action-btn-classic" onClick={() => {
-                        setActiveTrack('typescript');
-                        setActivePage('react-path');
-                        playSynthesizedSound('success');
-                      }}>
-                        Resume Path
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
+                </div>
 
-            {courseCategoryTab === 'completed' && (
+                <div className="course-card-classic">
+                  <div className="course-cover">
+                    <img src={COURSE_COVERS.express} alt="Express REST API cover banner" />
+                  </div>
+                  <div className="course-details">
+                    <h5>Express REST APIs (Node)</h5>
+                    <div className="lessons-count-meta" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                      <RiServer style={{ color: 'var(--text-muted)' }} />
+                      <span>lessons : {totalExpressLessons} (Full Syllabus)</span>
+                    </div>
+                    <div className="instructor-meta">
+                      <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?q=80&w=256&auto=format&fit=crop" alt="Instructor avatar" />
+                      <span>The Debug Society</span>
+                    </div>
+                    <div className="progress-info-row">
+                      <span>{expressProgressPercent}% Complete</span>
+                    </div>
+                    <div className="card-progress-track">
+                      <div className="card-progress-fill-val" style={{ width: `${expressProgressPercent}%` }}></div>
+                    </div>
+                    <button className="card-action-btn-classic" onClick={() => {
+                      setActiveTrack('express');
+                      setActivePage('react-path');
+                      playSynthesizedSound('success');
+                    }}>
+                      {expressProgressPercent === 100 ? 'Review Path' : 'Resume Path'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Data & Databases */}
+            <div style={{ marginBottom: '32px' }}>
+              <h3 style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '14px', fontFamily: 'var(--font-display)' }}>
+                Data &amp; Databases
+              </h3>
               <div className="courses-grid-view">
-                {(() => {
-                  const completedCards: { id: string; title: string; lessons: number; cover: string; icon: React.ReactNode }[] = [];
-                  if (progressPercent === 100) {
-                    completedCards.push({ id: 'react', title: 'The Complete React Blueprint', lessons: totalLessons, cover: COURSE_COVERS.react, icon: <RiBookOpen style={{ color: 'var(--text-muted)' }} /> });
-                  }
-                  if (sqlProgressPercent === 100) {
-                    completedCards.push({ id: 'sql', title: 'SQL Database Masterclass', lessons: totalSqlLessons, cover: COURSE_COVERS.sql, icon: <RiDatabase style={{ color: 'var(--text-muted)' }} /> });
-                  }
-                  if (fastApiProgressPercent === 100) {
-                    completedCards.push({ id: 'fastapi', title: 'FastAPI Production Masterclass', lessons: totalFastApiLessons, cover: COURSE_COVERS.fastapi, icon: <RiFastApi style={{ color: 'var(--text-muted)' }} /> });
-                  }
-                  if (expressProgressPercent === 100) {
-                    completedCards.push({ id: 'express', title: 'Express REST APIs (Node)', lessons: totalExpressLessons, cover: COURSE_COVERS.express, icon: <RiServer style={{ color: 'var(--text-muted)' }} /> });
-                  }
-                  if (pythonProgressPercent === 100) {
-                    completedCards.push({ id: 'python', title: 'Python Basics Masterclass', lessons: totalPythonLessons, cover: COURSE_COVERS.python, icon: <RiPython style={{ color: 'var(--text-muted)' }} /> });
-                  }
-                  if (typescriptProgressPercent === 100) {
-                    completedCards.push({ id: 'typescript', title: 'TypeScript Basics Masterclass', lessons: totalTypescriptLessons, cover: COURSE_COVERS.typescript, icon: <RiTypeScript style={{ color: 'var(--text-muted)' }} /> });
-                  }
-
-                  if (completedCards.length === 0) {
-                    return (
-                      <div style={{ gridColumn: 'span 3', color: 'var(--text-muted)', fontSize: '12.5px', padding: '24px 0', textAlign: 'center' }}>
-                        No completed paths yet. Graduate by completing all lessons of any course path! (React: {progressPercent}%, TS: {typescriptProgressPercent}%, SQL: {sqlProgressPercent}%, FastAPI: {fastApiProgressPercent}%, Express: {expressProgressPercent}%, Python: {pythonProgressPercent}%)
-                      </div>
-                    );
-                  }
-
-                  return completedCards.map(course => (
-                    <div key={course.id} className="course-card-classic">
-                      <div className="course-cover">
-                        <img src={course.cover} alt={`${course.title} cover`} />
-                      </div>
-                      <div className="course-details">
-                        <h5>{course.title}</h5>
-                        <div className="lessons-count-meta" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                          {course.icon}
-                          <span>lessons : {course.lessons}</span>
-                        </div>
-                        <div className="instructor-meta">
-                          <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?q=80&w=256&auto=format&fit=crop" alt="Instructor avatar" />
-                          <span>The Debug Society</span>
-                        </div>
-                        <button className="card-action-btn-classic" onClick={() => {
-                          setActiveTrack(course.id);
-                          setActivePage('react-path');
-                          playSynthesizedSound('success');
-                        }}>
-                          Review Path
-                        </button>
-                      </div>
+                <div className="course-card-classic">
+                  <div className="course-cover">
+                    <img src={COURSE_COVERS.sql} alt="SQL Database cover banner" />
+                  </div>
+                  <div className="course-details">
+                    <h5>SQL Database Masterclass</h5>
+                    <div className="lessons-count-meta" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                      <RiDatabase style={{ color: 'var(--text-muted)' }} />
+                      <span>lessons : {totalSqlLessons} (Full Syllabus)</span>
                     </div>
-                  ));
-                })()}
+                    <div className="instructor-meta">
+                      <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?q=80&w=256&auto=format&fit=crop" alt="Instructor avatar" />
+                      <span>The Debug Society</span>
+                    </div>
+                    <div className="progress-info-row">
+                      <span>{sqlProgressPercent}% Complete</span>
+                    </div>
+                    <div className="card-progress-track">
+                      <div className="card-progress-fill-val" style={{ width: `${sqlProgressPercent}%` }}></div>
+                    </div>
+                    <button className="card-action-btn-classic" onClick={() => {
+                      setActiveTrack('sql');
+                      setActivePage('react-path');
+                      playSynthesizedSound('success');
+                    }}>
+                      {sqlProgressPercent === 100 ? 'Review Path' : 'Resume Path'}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="course-card-classic">
+                  <div className="course-cover">
+                    <img src={COURSE_COVERS.python} alt="Python Basics cover banner" />
+                  </div>
+                  <div className="course-details">
+                    <h5>Python Basics Masterclass</h5>
+                    <div className="lessons-count-meta" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                      <RiPython style={{ color: 'var(--text-muted)' }} />
+                      <span>lessons : {totalPythonLessons} (Full Syllabus)</span>
+                    </div>
+                    <div className="instructor-meta">
+                      <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?q=80&w=256&auto=format&fit=crop" alt="Instructor avatar" />
+                      <span>The Debug Society</span>
+                    </div>
+                    <div className="progress-info-row">
+                      <span>{pythonProgressPercent}% Complete</span>
+                    </div>
+                    <div className="card-progress-track">
+                      <div className="card-progress-fill-val" style={{ width: `${pythonProgressPercent}%` }}></div>
+                    </div>
+                    <button className="card-action-btn-classic" onClick={() => {
+                      setActiveTrack('python');
+                      setActivePage('react-path');
+                      playSynthesizedSound('success');
+                    }}>
+                      {pythonProgressPercent === 100 ? 'Review Path' : 'Resume Path'}
+                    </button>
+                  </div>
+                </div>
               </div>
-            )}
+            </div>
 
           </div>
         )}
@@ -4597,6 +4277,481 @@ export function App() {
           </div>
         )}
 
+{/* ── ADMIN PANEL ── */}
+        {activePage === 'admin' && (() => {
+          if (!isSuperAdmin) return null;
+
+          const scored = (log: QuizLog) => {
+            const p = log.score.split('/');
+            return p.length === 2 && parseFloat(p[1]) > 0 ? Math.round((parseFloat(p[0]) / parseFloat(p[1])) * 100) : 0;
+          };
+          const platformTotalCompleted = adminStudents.reduce((s, st) => s + st.totalCompleted, 0);
+          const platformTotalQuizzes   = adminStudents.reduce((s, st) => s + st.quizLog.length, 0);
+          const platformTotalCerts     = adminStudents.reduce((s, st) => s + st.certificates.length, 0);
+          const avgPlatformPct = adminStudents.length ? Math.round(adminStudents.reduce((s, st) => s + st.pct, 0) / adminStudents.length) : 0;
+
+          const courseBreakdown = [
+            { name: 'React',      color: '#61dafb', key: 'completedReact',      total: totalLessons },
+            { name: 'TypeScript', color: '#3178c6', key: 'completedTypescript', total: totalTypescriptLessons },
+            { name: 'SQL',        color: '#f59e0b', key: 'completedSql',        total: totalSqlLessons },
+            { name: 'FastAPI',    color: '#10b981', key: 'completedFastApi',    total: totalFastApiLessons },
+            { name: 'Express',    color: '#8b5cf6', key: 'completedExpress',    total: totalExpressLessons },
+            { name: 'Python',     color: '#f97316', key: 'completedPython',     total: totalPythonLessons },
+          ] as const;
+
+          const filteredStudents = adminStudents.filter(s =>
+            s.name.toLowerCase().includes(adminSearch.toLowerCase()) ||
+            s.email.toLowerCase().includes(adminSearch.toLowerCase())
+          );
+          const sortedLeaderboard = [...adminStudents].sort((a, b) => b.totalCompleted - a.totalCompleted);
+
+          /* ── Student detail view ── */
+          if (adminSelectedStudent) {
+            const s = adminSelectedStudent;
+            const avgScore = s.quizLog.length
+              ? Math.round(s.quizLog.map(l => scored(l)).reduce((a, b) => a + b, 0) / s.quizLog.length)
+              : 0;
+            return (
+              <div className="admin-panel-wrap">
+                <button className="admin-back-btn" onClick={() => setAdminSelectedStudent(null)}>
+                  ← Back to Students
+                </button>
+                <div className="admin-student-profile-card">
+                  <img src={s.avatar} alt={s.name} className="admin-student-big-avatar" />
+                  <div>
+                    <div className="admin-student-big-name">{s.name}</div>
+                    <div className="admin-student-big-meta">{s.title} &bull; {s.email}</div>
+                    <div className="admin-student-big-meta">Theme: {s.theme} &bull; {s.certificates.length} certificate{s.certificates.length !== 1 ? 's' : ''} earned</div>
+                  </div>
+                  <div className="admin-student-score-box">
+                    <div className="admin-student-score-val">{s.pct}%</div>
+                    <div className="admin-student-score-lbl">Overall Progress</div>
+                  </div>
+                </div>
+                <div className="admin-kpi-row" style={{ marginTop: '20px' }}>
+                  {[
+                    { label: 'Lessons Done', value: `${s.totalCompleted} / ${totalAll}`, color: '#3b82f6' },
+                    { label: 'Quiz Sessions', value: s.quizLog.length, color: '#8b5cf6' },
+                    { label: 'Avg Quiz Score', value: `${avgScore}%`, color: '#10b981' },
+                    { label: 'Certificates', value: s.certificates.length, color: '#f59e0b' },
+                  ].map(k => (
+                    <div key={k.label} className="admin-kpi-card" style={{ borderTop: `3px solid ${k.color}` }}>
+                      <span className="admin-kpi-label">{k.label}</span>
+                      <span className="admin-kpi-value" style={{ color: k.color }}>{k.value}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="admin-section-title" style={{ marginTop: '24px' }}>Course Progress</div>
+                <div className="admin-course-grid">
+                  {courseBreakdown.map(c => {
+                    const done = s[c.key as keyof AdminStudent] as number;
+                    const pct  = c.total > 0 ? Math.round((done / c.total) * 100) : 0;
+                    return (
+                      <div key={c.name} className="admin-course-row-card">
+                        <div className="admin-course-row-left">
+                          <span className="admin-course-icon" style={{ background: `${c.color}18`, color: c.color, fontSize: '11px', fontWeight: 800 }}>{c.name.slice(0, 2)}</span>
+                          <div>
+                            <span className="admin-course-name">{c.name}</span>
+                            <span className="admin-course-meta">{done} / {c.total} lessons</span>
+                          </div>
+                        </div>
+                        <div className="admin-course-row-right">
+                          <div className="admin-progress-bar-track">
+                            <div className="admin-progress-bar-fill" style={{ width: `${pct}%`, background: c.color }} />
+                          </div>
+                          <span className="admin-pct-label" style={{ color: c.color }}>{pct}%</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                {s.quizLog.length > 0 && (
+                  <>
+                    <div className="admin-section-title" style={{ marginTop: '24px' }}>Quiz History</div>
+                    <table className="admin-table">
+                      <thead><tr><th>#</th><th>Date</th><th>Category</th><th>Score</th><th>Rating</th></tr></thead>
+                      <tbody>
+                        {s.quizLog.map((log, i) => (
+                          <tr key={i}>
+                            <td style={{ color: 'var(--text-muted)' }}>{i + 1}</td>
+                            <td>{log.date}</td>
+                            <td>{log.category}</td>
+                            <td><span className="admin-score-pill">{log.score}</span></td>
+                            <td>{log.rating}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </>
+                )}
+              </div>
+            );
+          }
+
+          return (
+            <div className="admin-panel-wrap">
+              {/* LMS Admin Header */}
+              <div className="admin-panel-header">
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '3px' }}>
+                    <span className="admin-super-badge">SUPER ADMIN</span>
+                    <h2 className="admin-panel-title" style={{ margin: 0 }}>LMS Control Center</h2>
+                  </div>
+                  <p className="admin-panel-sub">{adminStudents.length} enrolled student{adminStudents.length !== 1 ? 's' : ''} &bull; The Debug Society Platform</p>
+                </div>
+                <div className="admin-tab-bar">
+                  {(['dashboard', 'students', 'leaderboard', 'analytics', 'content', 'system'] as const).map(tab => (
+                    <button key={tab} className={`admin-tab-btn ${adminTab === tab ? 'active' : ''}`} onClick={() => setAdminTab(tab)}>
+                      {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* ── DASHBOARD ── */}
+              {adminTab === 'dashboard' && (
+                <div className="admin-tab-content">
+                  <div className="admin-kpi-row">
+                    {[
+                      { label: 'Total Students', value: adminStudents.length, sub: 'registered accounts', color: '#3b82f6' },
+                      { label: 'Avg Completion', value: `${avgPlatformPct}%`, sub: 'across all courses', color: '#8b5cf6' },
+                      { label: 'Lessons Completed', value: platformTotalCompleted, sub: 'platform-wide total', color: '#10b981' },
+                      { label: 'Quiz Sessions', value: platformTotalQuizzes, sub: `${platformTotalCerts} certificates earned`, color: '#f59e0b' },
+                    ].map(k => (
+                      <div key={k.label} className="admin-kpi-card" style={{ borderTop: `3px solid ${k.color}` }}>
+                        <span className="admin-kpi-label">{k.label}</span>
+                        <span className="admin-kpi-value" style={{ color: k.color }}>{k.value}</span>
+                        <span className="admin-kpi-sub">{k.sub}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="admin-section-title">Platform Course Completion (All Students)</div>
+                  <div className="admin-course-grid">
+                    {courseBreakdown.map(c => {
+                      const totalDone = adminStudents.reduce((s, st) => s + (st[c.key as keyof AdminStudent] as number), 0);
+                      const maxPossible = adminStudents.length * c.total;
+                      const pct = maxPossible > 0 ? Math.round((totalDone / maxPossible) * 100) : 0;
+                      const started = adminStudents.filter(st => (st[c.key as keyof AdminStudent] as number) > 0).length;
+                      return (
+                        <div key={c.name} className="admin-course-row-card">
+                          <div className="admin-course-row-left">
+                            <span className="admin-course-icon" style={{ background: `${c.color}18`, color: c.color, fontSize: '11px', fontWeight: 800 }}>{c.name.slice(0, 2)}</span>
+                            <div>
+                              <span className="admin-course-name">{c.name}</span>
+                              <span className="admin-course-meta">{started}/{adminStudents.length} students started &bull; {totalDone} lessons done</span>
+                            </div>
+                          </div>
+                          <div className="admin-course-row-right">
+                            <div className="admin-progress-bar-track">
+                              <div className="admin-progress-bar-fill" style={{ width: `${pct}%`, background: c.color }} />
+                            </div>
+                            <span className="admin-pct-label" style={{ color: c.color }}>{pct}%</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="admin-section-title" style={{ marginTop: '28px' }}>Top Students</div>
+                  <table className="admin-table">
+                    <thead><tr><th>Rank</th><th>Student</th><th>Progress</th><th>Quizzes</th><th>Certs</th></tr></thead>
+                    <tbody>
+                      {sortedLeaderboard.slice(0, 5).map((st, i) => (
+                        <tr key={st.email} style={{ cursor: 'pointer' }} onClick={() => setAdminSelectedStudent(st)}>
+                          <td><span className="admin-rank-badge" style={{ background: ['#fcd34d','#d1d5db','#fdba74'][i] || 'var(--bg-input)', color: i < 3 ? '#1f2937' : 'var(--text-muted)' }}>#{i + 1}</span></td>
+                          <td>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              {st.avatar ? <img src={st.avatar} alt="" style={{ width: 26, height: 26, borderRadius: '50%', objectFit: 'cover' }} /> : <div style={{ width: 26, height: 26, borderRadius: '50%', background: 'var(--bg-input)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: 'var(--text-muted)' }}>{st.name[0]}</div>}
+                              <div><div style={{ fontWeight: 700, fontSize: 12, color: 'var(--text-dark)' }}>{st.name}</div><div style={{ fontSize: 10, color: 'var(--text-muted)' }}>{st.email}</div></div>
+                            </div>
+                          </td>
+                          <td><div style={{ display: 'flex', alignItems: 'center', gap: 6 }}><div className="admin-progress-bar-track" style={{ width: 80 }}><div className="admin-progress-bar-fill" style={{ width: `${st.pct}%`, background: '#3b82f6' }} /></div><span style={{ fontSize: 11, fontWeight: 700, color: '#3b82f6' }}>{st.pct}%</span></div></td>
+                          <td>{st.quizLog.length}</td>
+                          <td>{st.certificates.length}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {/* ── STUDENTS ── */}
+              {adminTab === 'students' && (
+                <div className="admin-tab-content">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                    <div className="admin-section-title" style={{ margin: 0 }}>Student Roster ({adminStudents.length})</div>
+                    <input
+                      className="admin-search-input"
+                      placeholder="Search by name or email…"
+                      value={adminSearch}
+                      onChange={e => setAdminSearch(e.target.value)}
+                    />
+                  </div>
+                  {filteredStudents.length === 0 ? (
+                    <div className="admin-empty-state">No students match your search.</div>
+                  ) : (
+                    <table className="admin-table">
+                      <thead>
+                        <tr><th>Student</th><th>Re</th><th>TS</th><th>SQL</th><th>FA</th><th>Ex</th><th>Py</th><th>Overall</th><th>Quizzes</th><th>Certs</th></tr>
+                      </thead>
+                      <tbody>
+                        {filteredStudents.map(st => (
+                          <tr key={st.email} className="admin-student-row" onClick={() => setAdminSelectedStudent(st)}>
+                            <td>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                {st.avatar ? <img src={st.avatar} alt="" style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover' }} /> : <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--bg-input)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700 }}>{st.name[0]}</div>}
+                                <div><div style={{ fontWeight: 700, fontSize: 12, color: 'var(--text-dark)' }}>{st.name}</div><div style={{ fontSize: 10, color: 'var(--text-muted)' }}>{st.email}</div></div>
+                              </div>
+                            </td>
+                            <td><span className="admin-mini-score">{st.completedReact}/{totalLessons}</span></td>
+                            <td><span className="admin-mini-score">{st.completedTypescript}/{totalTypescriptLessons}</span></td>
+                            <td><span className="admin-mini-score">{st.completedSql}/{totalSqlLessons}</span></td>
+                            <td><span className="admin-mini-score">{st.completedFastApi}/{totalFastApiLessons}</span></td>
+                            <td><span className="admin-mini-score">{st.completedExpress}/{totalExpressLessons}</span></td>
+                            <td><span className="admin-mini-score">{st.completedPython}/{totalPythonLessons}</span></td>
+                            <td>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                                <div className="admin-progress-bar-track" style={{ width: 60 }}>
+                                  <div className="admin-progress-bar-fill" style={{ width: `${st.pct}%`, background: st.pct >= 75 ? '#10b981' : st.pct >= 40 ? '#3b82f6' : '#f59e0b' }} />
+                                </div>
+                                <span style={{ fontSize: 11, fontWeight: 700 }}>{st.pct}%</span>
+                              </div>
+                            </td>
+                            <td>{st.quizLog.length}</td>
+                            <td>{st.certificates.length}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
+              )}
+
+              {/* ── LEADERBOARD ── */}
+              {adminTab === 'leaderboard' && (
+                <div className="admin-tab-content">
+                  <div className="admin-section-title">Student Leaderboard — Ranked by Total Lessons Completed</div>
+                  {sortedLeaderboard.length === 0 ? (
+                    <div className="admin-empty-state">No students enrolled yet.</div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      {sortedLeaderboard.map((st, i) => (
+                        <div key={st.email} className="admin-lb-card" onClick={() => setAdminSelectedStudent(st)} style={{ cursor: 'pointer' }}>
+                          <span className="admin-lb-rank" style={{ background: i === 0 ? '#fcd34d' : i === 1 ? '#e5e7eb' : i === 2 ? '#fdba74' : 'var(--bg-input)', color: i < 3 ? '#1f2937' : 'var(--text-muted)' }}>
+                            {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i + 1}`}
+                          </span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1 }}>
+                            {st.avatar ? <img src={st.avatar} alt="" style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--border-color)' }} /> : <div style={{ width: 34, height: 34, borderRadius: '50%', background: 'var(--bg-input)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 800 }}>{st.name[0]}</div>}
+                            <div>
+                              <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 13, color: 'var(--text-dark)' }}>{st.name}</div>
+                              <div style={{ fontSize: 10.5, color: 'var(--text-muted)' }}>{st.email} &bull; {st.title}</div>
+                            </div>
+                          </div>
+                          <div style={{ display: 'flex', gap: 20, alignItems: 'center', marginLeft: 'auto' }}>
+                            <div style={{ textAlign: 'center' }}>
+                              <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 18, color: '#3b82f6' }}>{st.totalCompleted}</div>
+                              <div style={{ fontSize: 9.5, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Lessons</div>
+                            </div>
+                            <div style={{ textAlign: 'center' }}>
+                              <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 18, color: '#8b5cf6' }}>{st.quizLog.length}</div>
+                              <div style={{ fontSize: 9.5, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Quizzes</div>
+                            </div>
+                            <div style={{ textAlign: 'center' }}>
+                              <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 18, color: '#10b981' }}>{st.certificates.length}</div>
+                              <div style={{ fontSize: 9.5, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Certs</div>
+                            </div>
+                            <div className="admin-progress-bar-track" style={{ width: 100 }}>
+                              <div className="admin-progress-bar-fill" style={{ width: `${st.pct}%`, background: st.pct >= 75 ? '#10b981' : '#3b82f6' }} />
+                            </div>
+                            <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-dark)', minWidth: 36 }}>{st.pct}%</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* ── ANALYTICS ── */}
+              {adminTab === 'analytics' && (
+                <div className="admin-tab-content">
+                  <div className="admin-kpi-row">
+                    {[
+                      { label: 'Total Enrollments', value: adminStudents.length, color: '#3b82f6' },
+                      { label: 'Platform Lessons Done', value: platformTotalCompleted, color: '#10b981' },
+                      { label: 'Total Quiz Sessions', value: platformTotalQuizzes, color: '#8b5cf6' },
+                      { label: 'Certificates Awarded', value: platformTotalCerts, color: '#f59e0b' },
+                    ].map(k => (
+                      <div key={k.label} className="admin-kpi-card" style={{ borderTop: `3px solid ${k.color}` }}>
+                        <span className="admin-kpi-label">{k.label}</span>
+                        <span className="admin-kpi-value" style={{ color: k.color }}>{k.value}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="admin-section-title">Course Engagement by Track</div>
+                  <table className="admin-table">
+                    <thead><tr><th>Course</th><th>Total Lessons</th><th>Students Started</th><th>Lessons Completed</th><th>Avg per Student</th><th>Completion Rate</th></tr></thead>
+                    <tbody>
+                      {courseBreakdown.map(c => {
+                        const started = adminStudents.filter(st => (st[c.key as keyof AdminStudent] as number) > 0).length;
+                        const totalDone = adminStudents.reduce((s, st) => s + (st[c.key as keyof AdminStudent] as number), 0);
+                        const avg = adminStudents.length > 0 ? (totalDone / adminStudents.length).toFixed(1) : '0';
+                        const rate = (adminStudents.length * c.total) > 0 ? Math.round((totalDone / (adminStudents.length * c.total)) * 100) : 0;
+                        return (
+                          <tr key={c.name}>
+                            <td><span style={{ color: c.color, fontWeight: 700 }}>{c.name}</span></td>
+                            <td>{c.total}</td>
+                            <td>{started} / {adminStudents.length}</td>
+                            <td>{totalDone}</td>
+                            <td>{avg}</td>
+                            <td>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                                <div className="admin-progress-bar-track" style={{ width: 80 }}>
+                                  <div className="admin-progress-bar-fill" style={{ width: `${rate}%`, background: c.color }} />
+                                </div>
+                                <span style={{ fontSize: 11, fontWeight: 700, color: c.color }}>{rate}%</span>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+
+                  <div className="admin-section-title" style={{ marginTop: '28px' }}>Quiz Activity by Student</div>
+                  <table className="admin-table">
+                    <thead><tr><th>Student</th><th>Sessions</th><th>Avg Score</th><th>Latest Quiz</th></tr></thead>
+                    <tbody>
+                      {adminStudents.filter(s => s.quizLog.length > 0).sort((a, b) => b.quizLog.length - a.quizLog.length).map(st => {
+                        const avg = st.quizLog.length ? Math.round(st.quizLog.map(l => scored(l)).reduce((a, b) => a + b, 0) / st.quizLog.length) : 0;
+                        return (
+                          <tr key={st.email} style={{ cursor: 'pointer' }} onClick={() => setAdminSelectedStudent(st)}>
+                            <td><span style={{ fontWeight: 700, color: 'var(--text-dark)' }}>{st.name}</span><span style={{ marginLeft: 6, fontSize: 10, color: 'var(--text-muted)' }}>{st.email}</span></td>
+                            <td>{st.quizLog.length}</td>
+                            <td><span className="admin-score-pill">{avg}%</span></td>
+                            <td style={{ fontSize: 11, color: 'var(--text-muted)' }}>{st.quizLog[0]?.category || '—'}</td>
+                          </tr>
+                        );
+                      })}
+                      {adminStudents.filter(s => s.quizLog.length > 0).length === 0 && (
+                        <tr><td colSpan={4}><div className="admin-empty-state">No quiz activity yet.</div></td></tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {/* ── CONTENT ── */}
+              {adminTab === 'content' && (
+                <div className="admin-tab-content">
+                  <div className="admin-section-title">Content Audit — All Courses &amp; Lessons</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {courseBreakdown.map(c => {
+                      const dataMap: Record<string, { sectionId: string; sectionTitle: string; lessons: { id: string; title: string }[] }[]> = {
+                        completedReact: lessonsData as never,
+                        completedTypescript: typescriptLessonsData as never,
+                        completedSql: sqlLessonsData as never,
+                        completedFastApi: fastApiLessonsData as never,
+                        completedExpress: expressApiLessonsData as never,
+                        completedPython: pythonLessonsData as never,
+                      };
+                      const sections = dataMap[c.key] || [];
+                      return (
+                        <details key={c.name} className="admin-content-details">
+                          <summary className="admin-content-summary">
+                            <span className="admin-course-icon" style={{ background: `${c.color}18`, color: c.color, fontSize: '11px', fontWeight: 800 }}>{c.name.slice(0, 2)}</span>
+                            <strong style={{ color: 'var(--text-dark)' }}>{c.name}</strong>
+                            <span style={{ color: 'var(--text-muted)', fontSize: '11px', marginLeft: 'auto' }}>{c.total} lessons across {sections.length} sections</span>
+                          </summary>
+                          <div className="admin-content-body">
+                            {sections.map((sec, si) => (
+                              <div key={sec.sectionId} className="admin-content-section">
+                                <div className="admin-content-section-title">
+                                  <span className="admin-idx-chip">{si + 1}</span>
+                                  {sec.sectionTitle}
+                                  <span style={{ marginLeft: 'auto', color: 'var(--text-muted)', fontSize: '10px' }}>{sec.lessons.length} lessons</span>
+                                </div>
+                                {sec.lessons.map((l, li) => (
+                                  <div key={l.id} className="admin-content-lesson">
+                                    <span className="admin-lesson-num">{li + 1}</span>
+                                    <span className="admin-lesson-title">{l.title}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            ))}
+                          </div>
+                        </details>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* ── SYSTEM ── */}
+              {adminTab === 'system' && (
+                <div className="admin-tab-content">
+                  <div className="admin-section-title">Super Admin Account</div>
+                  <div className="admin-profile-card">
+                    <img src={devAvatar} alt="avatar" className="admin-avatar" />
+                    <div className="admin-profile-info">
+                      <div className="admin-profile-name">{devName}</div>
+                      <div className="admin-profile-detail">{SUPER_ADMIN_EMAIL}</div>
+                      <div className="admin-profile-detail" style={{ color: '#10b981', fontWeight: 700 }}>✓ Super Administrator</div>
+                    </div>
+                  </div>
+
+                  <div className="admin-section-title" style={{ marginTop: '24px' }}>Platform Overview</div>
+                  <div className="admin-stat-grid">
+                    {([
+                      ['Total Registered Students', adminStudents.length],
+                      ['Total Lessons Available', totalAll],
+                      ['Platform Lessons Completed', platformTotalCompleted],
+                      ['Platform Quiz Sessions', platformTotalQuizzes],
+                      ['Certificates Awarded', platformTotalCerts],
+                      ['Avg Student Progress', `${avgPlatformPct}%`],
+                    ] as [string, string | number][]).map(([label, val]) => (
+                      <div key={String(label)} className="admin-stat-row">
+                        <span className="admin-stat-label">{label}</span>
+                        <span className="admin-stat-val">{val}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="admin-section-title" style={{ marginTop: '24px' }}>Data Management</div>
+                  <div className="admin-data-actions">
+                    <button className="admin-action-btn export" onClick={() => {
+                      const snapshot = {
+                        exportDate: new Date().toISOString(),
+                        platform: { totalStudents: adminStudents.length, totalLessons: totalAll },
+                        students: adminStudents.map(s => ({
+                          email: s.email, name: s.name, totalCompleted: s.totalCompleted,
+                          pct: s.pct, quizSessions: s.quizLog.length, certificates: s.certificates.length,
+                          courses: { react: s.completedReact, typescript: s.completedTypescript, sql: s.completedSql, fastapi: s.completedFastApi, express: s.completedExpress, python: s.completedPython }
+                        }))
+                      };
+                      const blob = new Blob([JSON.stringify(snapshot, null, 2)], { type: 'application/json' });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement('a'); a.href = url; a.download = `lms-export-${Date.now()}.json`; a.click();
+                      URL.revokeObjectURL(url);
+                    }}>Export Platform Data (JSON)</button>
+                    <button className="admin-action-btn export" onClick={() => {
+                      const rows = [['Name','Email','React','TypeScript','SQL','FastAPI','Express','Python','Total','Pct','Quizzes','Certs']];
+                      adminStudents.forEach(s => rows.push([s.name, s.email, String(s.completedReact), String(s.completedTypescript), String(s.completedSql), String(s.completedFastApi), String(s.completedExpress), String(s.completedPython), String(s.totalCompleted), `${s.pct}%`, String(s.quizLog.length), String(s.certificates.length)]));
+                      const csv = rows.map(r => r.join(',')).join('\n');
+                      const blob = new Blob([csv], { type: 'text/csv' });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement('a'); a.href = url; a.download = `students-${Date.now()}.csv`; a.click();
+                      URL.revokeObjectURL(url);
+                    }}>Export Students CSV</button>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })()}
+
       </main>
 
       {/* RIGHT SIDEBAR PANEL */}
@@ -4615,41 +4770,39 @@ export function App() {
             <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
           </div>
           <div className="cal-days-grid">
-            {getDaysInMonth().map((day, dIdx) => {
-              if (day === null) {
-                return <div key={`empty-${dIdx}`} className="cal-day-cell empty-day"></div>;
-              }
-              
-              const isSunday = dIdx % 7 === 0;
-              const isSelectedDay = isEventMonth && day === selectedCalendarDate;
-              const hasEvent = isEventMonth && calendarEvents.some(e => e.date === day);
-
-              return (
-                <div 
-                  key={`day-${day}`} 
-                  className={`cal-day-cell ${isSelectedDay ? 'selected-today' : ''} ${isSunday ? 'sunday-day' : ''} ${hasEvent ? 'has-event' : ''}`}
-                  onClick={() => {
-                    if (isEventMonth) {
+            {(() => {
+              const _now = new Date();
+              const _todayDay = _now.getDate();
+              const _isCurrentMonth = calendarYear === _now.getFullYear() && calendarMonth === _now.getMonth();
+              return getDaysInMonth().map((day, dIdx) => {
+                if (day === null) {
+                  return <div key={`empty-${dIdx}`} className="cal-day-cell empty-day"></div>;
+                }
+                const isSunday = dIdx % 7 === 0;
+                const isSelected = day === selectedCalendarDate;
+                const isActualToday = _isCurrentMonth && day === _todayDay && !isSelected;
+                const hasEvent = isEventMonth && calendarEvents.some(e => e.date === day);
+                return (
+                  <div
+                    key={`day-${day}`}
+                    className={`cal-day-cell ${isSelected ? 'selected-today' : ''} ${isActualToday ? 'cal-today' : ''} ${isSunday ? 'sunday-day' : ''} ${hasEvent ? 'has-event' : ''}`}
+                    onClick={() => {
                       setSelectedCalendarDate(day);
-                    } else {
-                      setCalendarYear(2026);
-                      setCalendarMonth(6);
-                      setSelectedCalendarDate(day);
-                    }
-                    playSynthesizedSound('success');
-                  }}
-                >
-                  {day}
-                </div>
-              );
-            })}
+                      playSynthesizedSound('success');
+                    }}
+                  >
+                    {day}
+                  </div>
+                );
+              });
+            })()}
           </div>
         </div>
 
         {/* Selected Date Event Highlight Card - Real dynamic milestones */}
         <div className="streak-event-card" style={{ marginBottom: '20px', border: '1px solid var(--primary-blue)', boxShadow: '0 0 10px rgba(59, 130, 246, 0.1)' }}>
           <h4>
-            <span>Milestone (July {selectedCalendarDate})</span>
+            <span>Milestone ({MONTH_NAMES[calendarMonth]} {selectedCalendarDate})</span>
             <span style={{ fontSize: '9px', color: 'var(--primary-blue)', textTransform: 'uppercase' }}>Details</span>
           </h4>
           {clickedCalendarEvent ? (
@@ -4664,7 +4817,7 @@ export function App() {
             </div>
           ) : (
             <div style={{ textAlign: 'left', padding: '4px', color: 'var(--text-muted)', fontSize: '10.5px' }}>
-              No scheduled events for July {selectedCalendarDate}, 2026. Keep compiling and completing lessons to stack streaks!
+              No scheduled events for {MONTH_NAMES[calendarMonth]} {selectedCalendarDate}, {calendarYear}. Course milestones are scheduled in July 2026 — navigate there to see the full roadmap.
             </div>
           )}
         </div>
@@ -4677,15 +4830,25 @@ export function App() {
           </div>
           
           <div className="streak-weeks-grid">
-            {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, dIdx) => {
-              const isStreakActive = dIdx < Math.min(completedCount, 7);
-              return (
-                <div key={day} className={`streak-weekday-bubble ${isStreakActive ? 'active-day' : ''}`}>
-                  <span>{day[0]}</span>
-                  <div>{dIdx + 4}</div>
-                </div>
-              );
-            })}
+            {(() => {
+              const _now = new Date();
+              const _dow = _now.getDay(); // 0=Sun
+              const _daysFromMon = _dow === 0 ? 6 : _dow - 1;
+              const _monday = new Date(_now);
+              _monday.setDate(_now.getDate() - _daysFromMon);
+              const totalAllLessons = completedCount + completedSqlCount + completedFastApiCount + completedExpressCount + completedPythonCount + completedTypescriptCount;
+              return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, dIdx) => {
+                const _d = new Date(_monday);
+                _d.setDate(_monday.getDate() + dIdx);
+                const isStreakActive = dIdx < Math.min(totalAllLessons, 7);
+                return (
+                  <div key={day} className={`streak-weekday-bubble ${isStreakActive ? 'active-day' : ''}`}>
+                    <span>{day[0]}</span>
+                    <div>{_d.getDate()}</div>
+                  </div>
+                );
+              });
+            })()}
           </div>
         </div>
 

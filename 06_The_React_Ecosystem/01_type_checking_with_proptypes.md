@@ -1,6 +1,6 @@
 # Type Checking With PropTypes
 
-> **Source:** [https://www.theodinproject.com/lessons/node-path-react-new-type-checking-with-proptypes](https://www.theodinproject.com/lessons/node-path-react-new-type-checking-with-proptypes)
+> **Source:** [https://www.thedebuglab.com/lessons/node-path-react-new-type-checking-with-proptypes](https://www.thedebuglab.com/lessons/node-path-react-new-type-checking-with-proptypes)
 
 ---
 

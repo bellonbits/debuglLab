@@ -1,6 +1,6 @@
 # The Debug Society — React Course Archive
 
-> An offline-ready, beautifully formatted Markdown archive of the **React Course** from **The Odin Project**.
+> An offline-ready, beautifully formatted Markdown archive of the **React Course** from **The Debug Lab**.
 > Twenty-six lessons across eight modules, structured so each file reads the same way: a short **Overview**, the **Content** itself, the **Assignment**, and a **Knowledge Check**.
 
 ---
@@ -109,7 +109,7 @@ body...
 
 ## Reading offline
 
-The lessons are plain GitHub-flavored Markdown — readable anywhere a renderer is available (GitHub, VS Code, Obsidian, a local viewer). External lesson links pointing at `theodinproject.com` are stripped to `#` at parse time so the bundled app stays fully offline.
+The lessons are plain GitHub-flavored Markdown — readable anywhere a renderer is available (GitHub, VS Code, Obsidian, a local viewer). External lesson links pointing at `thedebuglab.com` are stripped to `#` at parse time so the bundled app stays fully offline.
 
 ## Reading inside the app
 

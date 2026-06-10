@@ -1,6 +1,6 @@
 # How This Course Will Work
 
-> **Source:** [https://www.theodinproject.com/lessons/node-path-react-new-how-this-course-will-work](https://www.theodinproject.com/lessons/node-path-react-new-how-this-course-will-work)
+> **Source:** [https://www.thedebuglab.com/lessons/node-path-react-new-how-this-course-will-work](https://www.thedebuglab.com/lessons/node-path-react-new-how-this-course-will-work)
 
 ---
 

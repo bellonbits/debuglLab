@@ -1,6 +1,6 @@
 # Introduction To State
 
-> **Source:** [https://www.theodinproject.com/lessons/node-path-react-new-introduction-to-state](https://www.theodinproject.com/lessons/node-path-react-new-introduction-to-state)
+> **Source:** [https://www.thedebuglab.com/lessons/node-path-react-new-introduction-to-state](https://www.thedebuglab.com/lessons/node-path-react-new-introduction-to-state)
 
 ---
 

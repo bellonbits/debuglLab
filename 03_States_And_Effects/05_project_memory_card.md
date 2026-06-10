@@ -1,6 +1,6 @@
 # Project: Memory Card
 
-> **Source:** [https://www.theodinproject.com/lessons/node-path-react-new-memory-card](https://www.theodinproject.com/lessons/node-path-react-new-memory-card)
+> **Source:** [https://www.thedebuglab.com/lessons/node-path-react-new-memory-card](https://www.thedebuglab.com/lessons/node-path-react-new-memory-card)
 
 ---
 

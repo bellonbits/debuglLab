@@ -25,7 +25,7 @@ export interface SqlSection {
 
 export const sqlLessonsData: SqlSection[] = [
   // ─────────────────────────────────────────────
-  // SECTION 0 — SQL FOUNDATIONS (Odin Project)
+  // SECTION 0 — SQL FOUNDATIONS (Debug Lab)
   // ─────────────────────────────────────────────
   {
     sectionId: "sql-foundations",
@@ -35,7 +35,19 @@ export const sqlLessonsData: SqlSection[] = [
         id: "intro-databases",
         title: "Introduction to Databases",
         description: "Understand what databases are, how relational databases differ from other storage formats, and why SQL is the language used to talk to them.",
-        content: `## What is a Database?
+        content: `## Overview
+
+> Learn what a database is, how relational databases organise data into linked tables, and why SQL is the universal language for querying them.
+
+**You will learn:**
+- What a database is and why applications need one
+- How relational databases differ from XML/JSON storage
+- The core SQL verbs: SELECT, INSERT, UPDATE, DELETE
+- How to retrieve all records and insert a new record
+
+---
+
+## What is a Database?
 
 You might have wondered how websites keep track of all their users' data — who remembers that your login password is \`CatLover1985\`? The answer is the **database**. It sits at the bottom layer of any web application and handles all the remembering for you.
 
@@ -65,6 +77,8 @@ A **relational database** organises data into one or more **tables**. Think of e
 
 XML and JSON store data in a **hierarchical / nested** structure — great for configuration files or API responses. Relational databases store data in **flat, linked tables** — much better for querying, filtering, joining, and aggregating large volumes of records.
 
+> **Note:** Relational databases excel at structured, queryable data. NoSQL formats like JSON documents are better for flexible, schema-less data — both have their place.
+
 ---
 
 ## What is SQL?
@@ -92,6 +106,8 @@ SELECT * FROM users
 - \`*\` means "all columns"
 - \`FROM users\` tells SQL which table to look in
 
+> **Tip:** In production queries, avoid \`SELECT *\` — always name the columns you need. It makes your queries faster and easier to understand.
+
 ---
 
 ## Inserting a Record
@@ -112,7 +128,17 @@ Always specify column names — it makes the query clear and safe.
 - [LaunchSchool: Introduction to SQL](https://launchschool.com/books/sql/read/introduction)
 - [Short video: Intro to Relational Databases](http://www.youtube.com/watch?v=z2kbsG8zsLM)
 - [Khan Academy: Hour of SQL](https://www.khanacademy.org/computing/hour-of-code/hour-of-sql/v/welcome-to-sql)
-- [SQL vs NoSQL](https://circleci.com/blog/SQL-vs-NoSQL-databases/)`,
+- [SQL vs NoSQL](https://circleci.com/blog/SQL-vs-NoSQL-databases/)
+
+---
+
+## Knowledge Check
+
+- What is a database, and why does every web app need one?
+- What is a **relational database**, and how does it differ from JSON/XML storage?
+- What is the difference between a **Primary Key** and a **Foreign Key**?
+- Which SQL verb is used to read data? To add a new row?
+- What does \`SELECT *\` return, and why is it discouraged in production?`,
         assignments: [
           {
             id: "intro-select-all",
@@ -141,7 +167,20 @@ Always specify column names — it makes the query clear and safe.
         id: "sql-basics-deep",
         title: "SQL Basics — Queries, JOINs & Aggregates",
         description: "A complete overview of SQL — from basic SELECT queries through JOINs, aggregate functions, GROUP BY, and the HAVING clause.",
-        content: `## Why Learn SQL Deeply?
+        content: `## Overview
+
+> A deep-dive into all the SQL you need day-to-day: CRUD operations, SELECT queries, every JOIN type, aggregate functions, GROUP BY, and HAVING.
+
+**You will learn:**
+- How to perform all four CRUD operations in SQL
+- How to read and filter data with SELECT and WHERE
+- How to combine tables with JOIN
+- How to summarise data with aggregate functions
+- How GROUP BY and HAVING work together
+
+---
+
+## Why Learn SQL Deeply?
 
 Data is the core of any good web app. A strong understanding of SQL lets you:
 
@@ -209,7 +248,7 @@ SET name = 'barfoo', email = 'bar@foo.com'
 WHERE email = 'foo@bar.com';
 \`\`\`
 
-> **Warning:** Without a \`WHERE\` clause, this updates *every row* in the table.
+> **Warning:** Without a \`WHERE\` clause, this updates *every row* in the table. This is one of the most common and costly SQL mistakes.
 
 ---
 
@@ -219,7 +258,7 @@ WHERE email = 'foo@bar.com';
 DELETE FROM users WHERE id = 1;
 \`\`\`
 
-> **Classic mistake:** \`DELETE FROM users\` with no WHERE clause deletes *all users*. Always add a condition.
+> **Warning:** \`DELETE FROM users\` with no \`WHERE\` clause deletes *all users*. Always add a condition before running DELETE or UPDATE in production.
 
 ---
 
@@ -263,7 +302,7 @@ FROM users
 JOIN posts ON users.id = posts.user_id;
 \`\`\`
 
-\`INNER JOIN\` is what you'll use 95% of the time.
+> **Tip:** \`INNER JOIN\` is what you'll use 95% of the time. Use \`LEFT JOIN\` when you need rows from the left table even if there's no matching row on the right.
 
 ---
 
@@ -300,6 +339,8 @@ GROUP BY users.id, users.name;
 
 This shows how many posts **each user** has written — not the total for everyone.
 
+> **Note:** Every column in your SELECT that is not inside an aggregate function must appear in the GROUP BY clause.
+
 ---
 
 ## HAVING — Filtering on Aggregates
@@ -314,7 +355,7 @@ GROUP BY users.id, users.name
 HAVING COUNT(posts.id) >= 10;
 \`\`\`
 
-> Rule of thumb: Use \`WHERE\` before aggregation, \`HAVING\` after.
+> **Tip:** Rule of thumb — use \`WHERE\` before aggregation, \`HAVING\` after.
 
 ---
 
@@ -339,7 +380,18 @@ SQL has a built-in **query optimizer** that figures out the fastest execution pl
 - [SQL Teaching — Interactive Tutorial](https://www.sqlteaching.com/)
 - [SQL Bolt — In-depth Interactive Tutorial](http://sqlbolt.com/)
 - [W3Schools SQL JOIN](http://www.w3schools.com/sql/sql_join.asp)
-- [Visual Explanation of SQL Joins](http://blog.codinghorror.com/a-visual-explanation-of-sql-joins)`,
+- [Visual Explanation of SQL Joins](http://blog.codinghorror.com/a-visual-explanation-of-sql-joins)
+
+---
+
+## Knowledge Check
+
+- What are the four CRUD operations and their corresponding SQL verbs?
+- What happens if you run \`UPDATE users SET name = 'foo'\` with no WHERE clause?
+- What is the difference between \`INNER JOIN\` and \`LEFT JOIN\`?
+- Which aggregate function counts rows? Which finds the largest value?
+- What is the difference between \`WHERE\` and \`HAVING\`?
+- Why should you use \`GROUP BY\` instead of processing results in application code?`,
         assignments: [
           {
             id: "basics-join",
@@ -368,7 +420,22 @@ SQL has a built-in **query optimizer** that figures out the fastest execution pl
         id: "sqlzoo-practice-guide",
         title: "SQL Zoo — Practice Guide (Tutorials 0–9)",
         description: "Work through SQLZoo's interactive tutorials 0 through 9. Each one teaches a new concept by running real queries against real data.",
-        content: `## About SQL Zoo
+        content: `## Overview
+
+> SQLZoo is an interactive SQL sandbox that runs your queries against real live databases. This guide maps each tutorial to the concept it teaches.
+
+**You will learn:**
+- Basic filtering with WHERE, IN, and BETWEEN (Tutorial 0)
+- Pattern matching with LIKE and wildcards (Tutorial 1)
+- Arithmetic, rounding, and logical operators (Tutorial 2)
+- Aggregation with SUM, COUNT, GROUP BY, and HAVING (Tutorial 5)
+- Combining tables with JOIN (Tutorial 6)
+- Handling missing data with NULL, LEFT JOIN, and COALESCE (Tutorial 8)
+- Self-joining a table to query network relationships (Tutorial 9)
+
+---
+
+## About SQL Zoo
 
 [SQL Zoo](https://sqlzoo.net/wiki/SQL_Tutorial) is one of the best places online to practice SQL — it runs your queries against **real live databases** and shows you actual results instantly.
 
@@ -435,6 +502,8 @@ SELECT name FROM world WHERE name LIKE '%oo%';
 SELECT name FROM world WHERE name LIKE '____';
 \`\`\`
 
+> **Tip:** The \`%\` wildcard matches any number of characters. The \`_\` wildcard matches exactly one character.
+
 [→ Open Tutorial 1](https://sqlzoo.net/wiki/SELECT_names)
 
 ---
@@ -490,19 +559,19 @@ SELECT name FROM teacher WHERE dept IS NULL;
 SELECT name, COALESCE(dept, 0) FROM teacher;
 \`\`\`
 
+> **Warning:** You cannot use \`= NULL\` to test for missing values. You must use \`IS NULL\` or \`IS NOT NULL\`.
+
 [→ Open Tutorial 8](https://sqlzoo.net/wiki/Using_Null)
 
 ---
 
 ## After the Tutorials
 
-Once you've completed all 9, fill out the feedback form linked on the SQL Zoo assignment page. Feedback helps The Odin Project improve the curriculum.
+Once you've completed all 9, fill out the feedback form linked on the SQL Zoo assignment page. Feedback helps The Debug Lab improve the curriculum.
 
 ---
 
 ## Knowledge Check
-
-Before moving on, make sure you can answer:
 
 - What is a database?
 - What are relational databases?
@@ -512,7 +581,8 @@ Before moving on, make sure you can answer:
 - How do you insert a record?
 - What is the difference between WHERE and HAVING?
 - Which JOIN keeps only matching rows from both tables?
-- How do you use an aggregate function like COUNT?`,
+- How do you use an aggregate function like COUNT?
+- Why must you use \`IS NULL\` instead of \`= NULL\`?`,
         assignments: [
           {
             id: "zoo-tutorial-0",
@@ -550,7 +620,19 @@ Before moving on, make sure you can answer:
         id: "select-basics",
         title: "0. SELECT Basics",
         description: "Learn to retrieve data from a table using SELECT, WHERE, IN, and BETWEEN — the building blocks of every SQL query.",
-        content: `## What is SQL?
+        content: `## Overview
+
+> Master the three fundamental SQL clauses — SELECT, FROM, and WHERE — plus IN and BETWEEN for compact filtering conditions.
+
+**You will learn:**
+- How to read the \`world\` table and understand its columns
+- How to filter rows with the \`WHERE\` clause
+- How to match a list of values with \`IN\`
+- How to filter a numeric range with \`BETWEEN\`
+
+---
+
+## What is SQL?
 
 **SQL** (Structured Query Language) is the standard language used to communicate with relational databases. You use it to read data, insert records, update values, and delete rows.
 
@@ -583,6 +665,8 @@ SELECT name FROM world
 - **FROM** — which table to look in
 - **WHERE** — a filter condition (only show matching rows)
 
+> **Tip:** You can select multiple columns by separating them with commas: \`SELECT name, population FROM world\`
+
 ---
 
 ## IN — Matching a List
@@ -596,6 +680,8 @@ SELECT name, population FROM world
 
 This returns all rows where \`name\` is exactly France, Germany, or Italy.
 
+> **Note:** \`IN\` is much cleaner than writing \`WHERE name = 'France' OR name = 'Germany' OR name = 'Italy'\`. Use it whenever you have a list of values.
+
 ---
 
 ## BETWEEN — Range Checking
@@ -607,7 +693,19 @@ SELECT name, area FROM world
   WHERE area BETWEEN 200000 AND 250000
 \`\`\`
 
-This returns countries whose area is at least 200,000 and at most 250,000 sq km.`,
+This returns countries whose area is at least 200,000 and at most 250,000 sq km.
+
+> **Note:** \`BETWEEN x AND y\` is inclusive — it includes both the lower bound \`x\` and the upper bound \`y\`.
+
+---
+
+## Knowledge Check
+
+- What does the \`SELECT\` keyword do?
+- What does the \`WHERE\` clause do?
+- When would you use \`IN\` instead of multiple \`OR\` conditions?
+- Is \`BETWEEN 200000 AND 250000\` inclusive or exclusive on the boundaries?
+- How would you select two columns (name and population) from the world table?`,
         assignments: [
           {
             id: "population-germany",
@@ -636,7 +734,19 @@ This returns countries whose area is at least 200,000 and at most 250,000 sq km.
         id: "select-names",
         title: "1. SELECT Names & Wildcards",
         description: "Use the LIKE operator with wildcard characters to search for patterns inside text columns.",
-        content: `## Pattern Matching with LIKE
+        content: `## Overview
+
+> Use the LIKE operator with \`%\` and \`_\` wildcards to search for partial text matches in string columns.
+
+**You will learn:**
+- How the \`LIKE\` operator works for pattern matching
+- The difference between the \`%\` and \`_\` wildcards
+- How to search for names that start with, end with, or contain a specific string
+- How to match names of an exact character length
+
+---
+
+## Pattern Matching with LIKE
 
 When you don't know the exact value, use \`LIKE\` to search by pattern.
 
@@ -683,9 +793,21 @@ SELECT name FROM world
 ## Important Rules
 
 - Always wrap your pattern in **single quotes**: \`'F%'\`
-- LIKE is **case-insensitive** in most databases
+- \`LIKE\` is **case-insensitive** in most databases (MySQL, SQL Server)
 - \`%\` at the start means "anything before this"
-- \`%\` at the end means "anything after this"`,
+- \`%\` at the end means "anything after this"
+
+> **Note:** In PostgreSQL, \`LIKE\` is case-sensitive. Use \`ILIKE\` for case-insensitive pattern matching in Postgres.
+
+---
+
+## Knowledge Check
+
+- What does \`LIKE 'A%'\` match?
+- What does \`LIKE '%ia'\` match?
+- What is the difference between \`%\` and \`_\`?
+- How would you find all countries whose name is exactly 5 characters long?
+- How would you find countries that contain the substring 'istan'?`,
         assignments: [
           {
             id: "starts-with-y",
@@ -720,7 +842,19 @@ SELECT name FROM world
         id: "select-world",
         title: "2. SELECT from World",
         description: "Perform calculations, rounding, and use compound logic (AND/OR/NOT) on the World countries table.",
-        content: `## Querying and Calculating
+        content: `## Overview
+
+> Go beyond simple filters — perform arithmetic inside SELECT queries, round numbers with ROUND(), and combine multiple conditions using AND, OR, and NOT.
+
+**You will learn:**
+- How to calculate derived values (e.g. GDP per capita) directly in a query
+- How to use the \`ROUND()\` function with positive and negative decimal places
+- All comparison operators (\`=\`, \`<>\`, \`>\`, \`<\`, etc.)
+- How to combine conditions with \`AND\`, \`OR\`, and \`NOT\`
+
+---
+
+## Querying and Calculating
 
 You can do **math inside a SELECT query** — calculating derived values on the fly without changing the database.
 
@@ -736,6 +870,8 @@ SELECT name, gdp/population AS per_capita
 
 Use \`AS\` to give your calculated column a readable name.
 
+> **Tip:** You can use \`+\`, \`-\`, \`*\`, and \`/\` directly inside a SELECT or WHERE clause. SQL evaluates them before returning results.
+
 ---
 
 ## The ROUND Function
@@ -747,7 +883,7 @@ Use \`AS\` to give your calculated column a readable name.
 | \`ROUND(7253.86, 0)\` | 7254 |
 | \`ROUND(7253.86, -3)\` | 7000 |
 
-**Tip:** A **negative** decimal value rounds to the left of the decimal point (thousands, millions, etc.).
+> **Note:** A **negative** decimal value rounds to the left of the decimal point — useful for expressing values in thousands or millions.
 
 ---
 
@@ -778,7 +914,19 @@ SELECT name FROM world
 -- NOT: exclude a condition
 SELECT name FROM world
   WHERE NOT continent = 'Europe'
-\`\`\``,
+\`\`\`
+
+> **Warning:** When mixing \`AND\` and \`OR\` in the same WHERE clause, always use parentheses to make the precedence explicit. \`AND\` binds more tightly than \`OR\`, which can produce unexpected results.
+
+---
+
+## Knowledge Check
+
+- How do you calculate GDP per capita inside a SELECT query?
+- What does \`ROUND(1500000, -6)\` return?
+- Which operator means "not equal to"?
+- What is the difference between \`AND\` and \`OR\`?
+- Why should you use parentheses when mixing \`AND\` and \`OR\`?`,
         assignments: [
           {
             id: "pop-200m",
@@ -807,7 +955,20 @@ SELECT name FROM world
         id: "select-nobel",
         title: "3. SELECT from Nobel",
         description: "Query the Nobel Prize winners table to practice complex AND/OR logic and the IN operator with real historical data.",
-        content: `## The Nobel Prize Table
+        content: `## Overview
+
+> Practice complex filtering conditions using real Nobel Prize data — combining AND/OR, filtering by year and subject, and using IN with multiple winner names.
+
+**You will learn:**
+- How to query the Nobel Prize dataset
+- How to combine AND and OR for multi-condition filters
+- How to filter by both year and subject simultaneously
+- How to look up multiple specific winners with \`IN\`
+- The importance of single-quoting string values
+
+---
+
+## The Nobel Prize Table
 
 Every Nobel Prize ever awarded is stored in this table. It has three columns:
 
@@ -844,8 +1005,13 @@ SELECT * FROM nobel
 ## Quoting Strings
 
 Always wrap text values in **single quotes**:
-- Correct: \`WHERE subject = 'Physics'\`
-- Wrong: \`WHERE subject = Physics\` (will error)
+
+| Correct | Wrong |
+|---------|-------|
+| \`WHERE subject = 'Physics'\` | \`WHERE subject = Physics\` |
+| \`WHERE winner = 'Marie Curie'\` | \`WHERE winner = Marie Curie\` |
+
+> **Warning:** Forgetting quotes around a string value causes a syntax error. The database will try to interpret the unquoted word as a column name.
 
 ---
 
@@ -861,7 +1027,17 @@ Or equivalently:
 \`\`\`sql
 SELECT * FROM nobel
   WHERE NOT subject = 'Peace'
-\`\`\``,
+\`\`\`
+
+---
+
+## Knowledge Check
+
+- What are the three columns in the Nobel Prize table?
+- How do you filter for prizes in a specific year AND subject?
+- What happens if you forget the single quotes around a string value?
+- How would you find all prizes that are NOT in the Economics category?
+- How do you look up multiple specific winners in a single query?`,
         assignments: [
           {
             id: "nobel-1950",
@@ -896,7 +1072,20 @@ SELECT * FROM nobel
         id: "select-nested",
         title: "4. SELECT within SELECT (Subqueries)",
         description: "Write queries inside other queries to compare rows dynamically without hardcoding values.",
-        content: `## What is a Subquery?
+        content: `## Overview
+
+> Nest a complete SELECT statement inside another query to compare rows against dynamically computed values — no hard-coded numbers required.
+
+**You will learn:**
+- What a subquery is and when to use one
+- How to use a subquery in a WHERE clause with \`=\`, \`>\`, \`<\`
+- How to compare against all values in a list using \`ALL\`
+- How to place a correlated subquery inside a SELECT clause
+- The rules for when to use \`IN\` vs \`ALL\` vs \`ANY\`
+
+---
+
+## What is a Subquery?
 
 A **subquery** is a complete SELECT statement placed inside another query — usually in the WHERE clause. It runs first, and its result is used by the outer query.
 
@@ -920,6 +1109,8 @@ SELECT name FROM world
 
 The inner query \`(SELECT population FROM world WHERE name = 'Russia')\` returns a single number. The outer query uses that number as its threshold.
 
+> **Tip:** Subqueries are most powerful when the comparison value could change over time (e.g., today's top-selling product). They keep your queries dynamic and correct without manual updates.
+
 ---
 
 ## Comparing with ALL
@@ -935,6 +1126,8 @@ SELECT name FROM world
 \`\`\`
 
 This finds countries whose GDP is larger than every single European country's GDP.
+
+> **Note:** \`> ALL(subquery)\` means "greater than the maximum value in the subquery result." It is equivalent to \`> (SELECT MAX(...) ...)\`.
 
 ---
 
@@ -952,9 +1145,22 @@ FROM world
 
 ## Key Rules
 
-- The subquery must be wrapped in **parentheses** \`( )\`
-- A subquery that returns **one value** can be used with \`=\`, \`>\`, \`<\`, etc.
-- A subquery that returns **multiple values** must use \`IN\`, \`ALL\`, or \`ANY\``,
+| Rule | Detail |
+|------|--------|
+| Subquery must be in parentheses | \`( SELECT ... )\` |
+| Single-value result | Use with \`=\`, \`>\`, \`<\`, etc. |
+| Multi-value result | Use with \`IN\`, \`ALL\`, or \`ANY\` |
+| Correlated subquery | References the outer query's row — runs once per row |
+
+---
+
+## Knowledge Check
+
+- What is a subquery and where does it appear in a SQL statement?
+- Why is a subquery better than hardcoding a value like \`WHERE population > 144000000\`?
+- When must you use \`IN\` instead of \`=\` with a subquery?
+- What does \`> ALL(...)\` mean in plain English?
+- What is a correlated subquery?`,
         assignments: [
           {
             id: "bigger-than-russia",
@@ -976,7 +1182,20 @@ FROM world
         id: "sum-count",
         title: "5. SUM and COUNT (Aggregation)",
         description: "Summarize data across many rows using aggregate functions: SUM, COUNT, AVG, MAX, MIN, GROUP BY, and HAVING.",
-        content: `## Aggregate Functions
+        content: `## Overview
+
+> Collapse many rows into summary statistics using SQL's built-in aggregate functions, then group and filter those summaries with GROUP BY and HAVING.
+
+**You will learn:**
+- The five core aggregate functions: COUNT, SUM, AVG, MIN, MAX
+- The difference between \`COUNT(*)\` and \`COUNT(col)\`
+- How \`GROUP BY\` runs aggregates per group
+- How \`HAVING\` filters after aggregation
+- The correct mental model for SQL query execution order
+
+---
+
+## Aggregate Functions
 
 Instead of returning individual rows, aggregate functions **summarize** multiple rows into a single result.
 
@@ -992,6 +1211,8 @@ Instead of returning individual rows, aggregate functions **summarize** multiple
 | \`MIN(col)\` | Returns the smallest value |
 | \`MAX(col)\` | Returns the largest value |
 
+> **Note:** \`COUNT(*)\` counts all rows including NULLs. \`COUNT(col)\` only counts rows where that column is not NULL. This distinction matters when your data has missing values.
+
 ---
 
 ## COUNT Examples
@@ -1003,6 +1224,8 @@ SELECT COUNT(*) FROM world
 -- Count only rows where gdp is not NULL
 SELECT COUNT(gdp) FROM world
 \`\`\`
+
+---
 
 ## SUM Example
 
@@ -1024,6 +1247,8 @@ SELECT continent, COUNT(name) AS num_countries
   GROUP BY continent
 \`\`\`
 
+> **Warning:** Any column in your SELECT list that is not inside an aggregate function must be listed in the \`GROUP BY\` clause. Forgetting this causes a SQL error.
+
 ---
 
 ## HAVING — Filtering Groups
@@ -1038,15 +1263,29 @@ SELECT continent, COUNT(name)
   HAVING COUNT(name) > 5
 \`\`\`
 
+> **Tip:** You cannot use a WHERE clause to filter on an aggregate function result. If you write \`WHERE COUNT(name) > 5\`, you will get an error. That is exactly what HAVING is for.
+
 ---
 
 ## Execution Order (Mental Model)
 
-1. \`FROM\` — choose the table
-2. \`WHERE\` — filter rows
-3. \`GROUP BY\` — group the remaining rows
-4. \`HAVING\` — filter the groups
-5. \`SELECT\` — calculate and show results`,
+| Step | Clause | What happens |
+|------|--------|--------------|
+| 1 | \`FROM\` | Choose the table |
+| 2 | \`WHERE\` | Filter rows |
+| 3 | \`GROUP BY\` | Group the remaining rows |
+| 4 | \`HAVING\` | Filter the groups |
+| 5 | \`SELECT\` | Calculate and show results |
+
+---
+
+## Knowledge Check
+
+- What is the difference between \`COUNT(*)\` and \`COUNT(col)\`?
+- What does \`GROUP BY\` do?
+- Why can't you use \`WHERE\` to filter on a \`COUNT()\` result?
+- What is \`HAVING\` used for?
+- In what order does SQL execute FROM, WHERE, GROUP BY, HAVING, and SELECT?`,
         assignments: [
           {
             id: "world-pop",
@@ -1068,7 +1307,20 @@ SELECT continent, COUNT(name)
         id: "joins-basics",
         title: "6. The JOIN Operation",
         description: "Combine data from two tables using JOIN and ON to link related rows by their shared keys.",
-        content: `## Why JOIN?
+        content: `## Overview
+
+> Learn the most important SQL operation: JOIN. Combine rows from two tables by matching a shared key column, then filter the joined result.
+
+**You will learn:**
+- Why JOIN exists and when to use it
+- The structure of the Euro 2012 football database (game + goal tables)
+- How to write a basic \`JOIN ... ON\` query
+- How to filter joined data with WHERE
+- How to use table-prefixed column names to avoid ambiguity
+
+---
+
+## Why JOIN?
 
 Real databases split data across many tables to avoid repetition. To answer questions that span tables, you \`JOIN\` them together.
 
@@ -1110,6 +1362,8 @@ SELECT player, teamid, mdate
 - \`JOIN goal\` — bring in the goal table
 - \`ON (game.id = goal.matchid)\` — the link between rows (primary key = foreign key)
 
+> **Note:** \`JOIN\` is shorthand for \`INNER JOIN\`. It only returns rows where a match exists in both tables. If a game had no goals, it would not appear in this result.
+
 ---
 
 ## Reading the JOIN
@@ -1137,7 +1391,19 @@ If both tables have a column with the same name, prefix it with the table name:
 \`\`\`sql
 SELECT game.id, game.mdate, goal.player
   FROM game JOIN goal ON (game.id = goal.matchid)
-\`\`\``,
+\`\`\`
+
+> **Tip:** Even when there is no ambiguity, prefixing column names with the table name (e.g., \`game.mdate\`) makes complex queries much easier to read and debug.
+
+---
+
+## Knowledge Check
+
+- Why does SQL need a JOIN operation at all?
+- What does the \`ON\` clause specify?
+- What is the difference between a primary key and a foreign key in the context of a JOIN?
+- What happens to rows in \`game\` that have no matching rows in \`goal\` when using \`JOIN\`?
+- How do you avoid column name ambiguity when two joined tables share a column name?`,
         assignments: [
           {
             id: "goals-match",
@@ -1159,7 +1425,20 @@ SELECT game.id, game.mdate, goal.player
         id: "more-joins",
         title: "7. More JOIN Operations",
         description: "Navigate many-to-many relationships in a movie database using junction tables and multiple JOINs.",
-        content: `## The Movie Database
+        content: `## Overview
+
+> Model and query many-to-many relationships using a junction table, chaining multiple JOIN operations to navigate a movie/actor database.
+
+**You will learn:**
+- Why many-to-many relationships require a junction table
+- The structure of the movie, actor, and casting tables
+- How to chain two JOINs in a single query
+- How to filter by billing order to find lead actors
+- How \`DISTINCT\` prevents duplicate rows in JOIN results
+
+---
+
+## The Movie Database
 
 Three tables work together to model movies and their actors:
 
@@ -1195,6 +1474,8 @@ Three tables work together to model movies and their actors:
 
 One movie has many actors. One actor appears in many movies. This **many-to-many** relationship is modelled with a third table (\`casting\`) that holds pairs.
 
+> **Note:** Without the \`casting\` junction table, you would either need to store an array of actor IDs in the movie row (bad — not relational) or duplicate movie rows (also bad). Junction tables are the correct relational solution.
+
 ---
 
 ## Joining All Three Tables
@@ -1221,7 +1502,19 @@ SELECT movie.title, actor.name
   JOIN casting ON (movie.id = casting.movieid)
   JOIN actor ON (casting.actorid = actor.id)
   WHERE casting.ord = 1 AND movie.yr = 2000
-\`\`\``,
+\`\`\`
+
+> **Tip:** When an actor appears in multiple movies, their name will appear multiple times in a JOIN result. Use \`SELECT DISTINCT actor.name\` to deduplicate.
+
+---
+
+## Knowledge Check
+
+- What is a many-to-many relationship?
+- Why is a junction table needed to model it?
+- In the movie database, which table is the junction table?
+- How do you chain two JOINs in a single query?
+- What does \`casting.ord = 1\` mean?`,
         assignments: [
           {
             id: "films-1962",
@@ -1243,7 +1536,20 @@ SELECT movie.title, actor.name
         id: "using-null",
         title: "8. Using NULL",
         description: "Handle missing data in SQL using IS NULL, IS NOT NULL, LEFT JOIN, and RIGHT JOIN.",
-        content: `## What is NULL?
+        content: `## Overview
+
+> NULL represents missing or unknown data in SQL. Learn why standard operators fail on NULL, how to test for it correctly, and how LEFT JOIN preserves rows with no match.
+
+**You will learn:**
+- What NULL means and why it behaves differently from zero or empty string
+- Why \`= NULL\` never works and how \`IS NULL\` / \`IS NOT NULL\` fix it
+- How \`LEFT JOIN\` keeps all rows from the left table even without a match
+- How \`COALESCE\` replaces NULL with a fallback value
+- When to use \`LEFT JOIN\` vs \`INNER JOIN\`
+
+---
+
+## What is NULL?
 
 \`NULL\` means **missing** or **unknown**. It is not zero, not an empty string — it is the complete absence of a value.
 
@@ -1261,6 +1567,8 @@ WHERE dept = NULL      -- Wrong!
 WHERE dept IS NULL     -- Correct
 WHERE dept IS NOT NULL -- Also correct
 \`\`\`
+
+> **Warning:** \`WHERE dept = NULL\` will never match any rows — even rows that actually have a NULL value. This is a very common bug. Always use \`IS NULL\` or \`IS NOT NULL\`.
 
 ---
 
@@ -1304,6 +1612,8 @@ Result:
 | Spiky | Computing |
 | Deap | Design |
 
+> **Tip:** Use \`LEFT JOIN\` whenever you want to include rows even when there is no matching row in the other table — for example, showing all teachers regardless of whether they have a department.
+
 ---
 
 ## COALESCE — Replacing NULL
@@ -1313,7 +1623,17 @@ Result:
 \`\`\`sql
 SELECT COALESCE(dept, 'No Department') AS department
   FROM teacher
-\`\`\``,
+\`\`\`
+
+---
+
+## Knowledge Check
+
+- What does NULL represent in SQL?
+- Why does \`WHERE dept = NULL\` never return results?
+- What is the correct syntax to check for a missing value?
+- What is the difference between \`INNER JOIN\` and \`LEFT JOIN\`?
+- What does \`COALESCE(col, 'default')\` return when \`col\` is NULL?`,
         assignments: [
           {
             id: "null-dept",
@@ -1335,7 +1655,20 @@ SELECT COALESCE(dept, 'No Department') AS department
         id: "self-join",
         title: "9. Self Join",
         description: "Join a table to itself to explore network graphs, bus routes, and tree-structured hierarchical data.",
-        content: `## What is a Self Join?
+        content: `## Overview
+
+> A self join connects a table to itself using aliases — essential for querying networks, hierarchies, and any data where rows relate to other rows in the same table.
+
+**You will learn:**
+- What a self join is and why it is needed
+- The Edinburgh bus network schema (stops and route tables)
+- How to alias the same table twice to join it to itself
+- How to find all stops reachable from a given stop on the same route
+- Real-world use cases for self joins
+
+---
+
+## What is a Self Join?
 
 A **self join** connects a table to itself. This sounds strange, but it's essential for querying data that describes relationships within a single dataset — like a bus network where stops are connected to each other.
 
@@ -1370,6 +1703,8 @@ SELECT a.company, a.num, a.stop AS stop_from, b.stop AS stop_to
   JOIN route b ON (a.company = b.company AND a.num = b.num)
 \`\`\`
 
+> **Note:** You must give each copy of the table a different alias (here \`a\` and \`b\`). SQL cannot distinguish between the two instances without aliases.
+
 ---
 
 ## Finding Connected Stops
@@ -1402,10 +1737,24 @@ SELECT stopa.name AS from_stop, stopb.name AS to_stop
 
 ## Use Cases for Self Joins
 
-- **Bus / Rail networks** — which stations connect?
-- **Org charts** — who reports to whom?
-- **Family trees** — parent-child relationships
-- **Social graphs** — who knows who?`,
+| Use Case | How Self Join Helps |
+|----------|---------------------|
+| Bus / Rail networks | Which stations connect on the same route? |
+| Org charts | Who reports to whom? |
+| Family trees | Parent-child relationships |
+| Social graphs | Who knows who? |
+
+> **Tip:** Any time a table has a column that references another row in the same table (like \`manager_id\` pointing to another employee's \`id\`), a self join is the tool to use.
+
+---
+
+## Knowledge Check
+
+- What is a self join?
+- Why must you use table aliases when self-joining?
+- In the bus database, how does the route table model connections between stops?
+- What does the ON clause look like in a self join?
+- Name two real-world scenarios where a self join would be the right tool.`,
         assignments: [
           {
             id: "bus-stops-count",
@@ -1429,7 +1778,7 @@ SELECT stopa.name AS from_stop, stopb.name AS to_stop
 
 export const getMockSqlData = (table: string, columns: string[], queryText: string) => {
   const normalizedQuery = queryText.toLowerCase().replace(/\s+/g, ' ');
-  
+
   if (table === 'world') {
     const data = [
       { name: "France", continent: "Europe", area: 640679, population: 67000000, gdp: 2715000000000, capital: "Paris" },

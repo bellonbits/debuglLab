@@ -1,6 +1,6 @@
 # React Components
 
-> **Source:** [https://www.theodinproject.com/lessons/node-path-react-new-react-components](https://www.theodinproject.com/lessons/node-path-react-new-react-components)
+> **Source:** [https://www.thedebuglab.com/lessons/node-path-react-new-react-components](https://www.thedebuglab.com/lessons/node-path-react-new-react-components)
 
 ---
 

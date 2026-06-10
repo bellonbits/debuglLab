@@ -1,6 +1,6 @@
 # How To Deal With Side Effects
 
-> **Source:** [https://www.theodinproject.com/lessons/node-path-react-new-how-to-deal-with-side-effects](https://www.theodinproject.com/lessons/node-path-react-new-how-to-deal-with-side-effects)
+> **Source:** [https://www.thedebuglab.com/lessons/node-path-react-new-how-to-deal-with-side-effects](https://www.thedebuglab.com/lessons/node-path-react-new-how-to-deal-with-side-effects)
 
 ---
 

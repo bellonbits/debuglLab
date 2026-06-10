@@ -1,6 +1,6 @@
 # Fetching Data In React
 
-> **Source:** [https://www.theodinproject.com/lessons/node-path-react-new-fetching-data-in-react](https://www.theodinproject.com/lessons/node-path-react-new-fetching-data-in-react)
+> **Source:** [https://www.thedebuglab.com/lessons/node-path-react-new-fetching-data-in-react](https://www.thedebuglab.com/lessons/node-path-react-new-fetching-data-in-react)
 
 ---
 
@@ -196,7 +196,7 @@ const Image = () => {
 
 We can separate out the fetching logic altogether into a custom hook. This will allow us to make the logic reusable and easily testable.
 
-Recall in the [Introduction to state](https://www.theodinproject.com/lessons/node-path-react-new-introduction-to-state) lesson we said that a React hook is just a function that lets you use features of React (like states, effects etc.) and that they follow a naming rule where they begin with `use` followed by a capital letter (e.g. `useState` or `useEffect`). If we tried to put a hook such as `useEffect` inside our own regular helper function like `getImageURL`, React would not be happy about this since it only wants hooks to be called in the top level of a component or another hook. Therefore, we can just turn our helper function into a custom hook by following the hook naming rule - `useImageURL`.
+Recall in the [Introduction to state](https://www.thedebuglab.com/lessons/node-path-react-new-introduction-to-state) lesson we said that a React hook is just a function that lets you use features of React (like states, effects etc.) and that they follow a naming rule where they begin with `use` followed by a capital letter (e.g. `useState` or `useEffect`). If we tried to put a hook such as `useEffect` inside our own regular helper function like `getImageURL`, React would not be happy about this since it only wants hooks to be called in the top level of a component or another hook. Therefore, we can just turn our helper function into a custom hook by following the hook naming rule - `useImageURL`.
 
 Here’s how we would do it for our example:
 
@@ -250,7 +250,7 @@ If we ever needed to fetch images in different components, instead of rewriting 
 
 In a full-scale web app, you’re often going to be making more than one request, and you need to be careful with how you organize them. A common issue that new React developers face when their apps start making multiple requests is called a *waterfall of requests*. Let’s look at an example.
 
-*If the Codesandbox embed above does not load, you can [open the Codesandbox directly](https://codesandbox.io/p/sandbox/github/TheOdinProject/react-examples/tree/main/fetching-data-example?file=%2Fsrc%2FProfile.jsx%3A1%2C1&embed=1).*
+*If the Codesandbox embed above does not load, you can [open the Codesandbox directly](https://codesandbox.io/p/sandbox/github/thedebuglab/react-examples/tree/main/fetching-data-example?file=%2Fsrc%2FProfile.jsx%3A1%2C1&embed=1).*
 
 We have two components making fetch requests: `Profile` and its child component `Bio`. The requests in `Profile` and `Bio` are both firing inside of their respective components. On the surface this looks like a well-organized separation of concerns, but in this case, it comes at a cost in performance.
 

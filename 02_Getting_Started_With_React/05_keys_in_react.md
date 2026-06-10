@@ -1,6 +1,6 @@
 # Keys In React
 
-> **Source:** [https://www.theodinproject.com/lessons/node-path-react-new-keys-in-react](https://www.theodinproject.com/lessons/node-path-react-new-keys-in-react)
+> **Source:** [https://www.thedebuglab.com/lessons/node-path-react-new-keys-in-react](https://www.thedebuglab.com/lessons/node-path-react-new-keys-in-react)
 
 ---
 

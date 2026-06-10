@@ -1,6 +1,6 @@
 # Setting Up A React Environment
 
-> **Source:** [https://www.theodinproject.com/lessons/node-path-react-new-setting-up-a-react-environment](https://www.theodinproject.com/lessons/node-path-react-new-setting-up-a-react-environment)
+> **Source:** [https://www.thedebuglab.com/lessons/node-path-react-new-setting-up-a-react-environment](https://www.thedebuglab.com/lessons/node-path-react-new-setting-up-a-react-environment)
 
 ---
 

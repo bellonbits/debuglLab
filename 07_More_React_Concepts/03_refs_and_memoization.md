@@ -1,6 +1,6 @@
 # Refs And Memoization
 
-> **Source:** [https://www.theodinproject.com/lessons/node-path-react-new-refs-and-memoization](https://www.theodinproject.com/lessons/node-path-react-new-refs-and-memoization)
+> **Source:** [https://www.thedebuglab.com/lessons/node-path-react-new-refs-and-memoization](https://www.thedebuglab.com/lessons/node-path-react-new-refs-and-memoization)
 
 ---
 
@@ -255,7 +255,7 @@ Wrapping the component with a `memo` prevents the downward update that is trigge
 
 With all that said and done, test and break things in our interactive example:
 
-*If the Codesandbox embed above does not load, you can [open the Codesandbox directly](https://codesandbox.io/p/sandbox/github/TheOdinProject/react-examples/tree/main/memoization-lesson-example?embed=1).*
+*If the Codesandbox embed above does not load, you can [open the Codesandbox directly](https://codesandbox.io/p/sandbox/github/thedebuglab/react-examples/tree/main/memoization-lesson-example?embed=1).*
 
 These are the scenarios that could happen:
 

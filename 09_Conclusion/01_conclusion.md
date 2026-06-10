@@ -1,6 +1,6 @@
 # Conclusion
 
-> **Source:** [https://www.theodinproject.com/lessons/node-path-react-conclusion](https://www.theodinproject.com/lessons/node-path-react-conclusion)
+> **Source:** [https://www.thedebuglab.com/lessons/node-path-react-conclusion](https://www.thedebuglab.com/lessons/node-path-react-conclusion)
 
 ---
 
@@ -21,7 +21,7 @@
 
 ### What’s next
 
-After completing The Odin Project, you may be interested in learning about React metaframeworks which build on top of React to allow developers to make full use of React’s latest features such as server components, as well as providing first class support for things like routing and data fetching. Completing the [Databases course](https://www.theodinproject.com/paths/full-stack-javascript/courses/databases) and [Node.js course](https://www.theodinproject.com/paths/full-stack-javascript/courses/nodejs) will give you the perfect foundation for diving deeper into this stuff.
+After completing The Debug Lab, you may be interested in learning about React metaframeworks which build on top of React to allow developers to make full use of React’s latest features such as server components, as well as providing first class support for things like routing and data fetching. Completing the [Databases course](https://www.thedebuglab.com/paths/full-stack-javascript/courses/databases) and [Node.js course](https://www.thedebuglab.com/paths/full-stack-javascript/courses/nodejs) will give you the perfect foundation for diving deeper into this stuff.
 
 You can also keep up with the future of React by following the [React RFC GitHub repository](https://github.com/reactjs/rfcs), which is where new features and changes to React are proposed, discussed, and eventually accepted or rejected. You may also be interested in reading the [official React blog](https://react.dev/blog), which will also keep you up-to-date on the latest features.
 
@@ -31,13 +31,13 @@ You’re at a point in your React journey where you can begin learning about des
 
 As you’ve seen, you can get your apps to do a lot of pretty cool things already, just using client-side JavaScript. You may have noticed, though, that there is still an important piece of the puzzle missing: unless you use [Local Storage](http://coding.smashingmagazine.com/2010/10/11/local-storage-and-how-to-use-it/), your app ‘forgets’ the user’s preferences, as well as any other changes made, as soon as the page gets reloaded.
 
-While Local Storage is great, it’s not ideal: it only stores data on the computer from which the user is accessing the page. This approach does not allow for the app to ‘remember’ anything when the same user tries to access it again from a different device. For that, you’re going to need a real backend, which you’ll learn all about next in our [Databases](https://www.theodinproject.com/paths/full-stack-javascript/courses/databases) course. With a backend, we’ll be able to add a bunch of cool features to your apps like user authentication, data persistence, and more.
+While Local Storage is great, it’s not ideal: it only stores data on the computer from which the user is accessing the page. This approach does not allow for the app to ‘remember’ anything when the same user tries to access it again from a different device. For that, you’re going to need a real backend, which you’ll learn all about next in our [Databases](https://www.thedebuglab.com/paths/full-stack-javascript/courses/databases) course. With a backend, we’ll be able to add a bunch of cool features to your apps like user authentication, data persistence, and more.
 
 You have come very far and you should be proud of yourself for getting to this point.
 
 ### Contribute
 
-The Odin Project wouldn’t exist if not for contributors sharing their precious time and resources. We’d love to hear your ideas and suggestions to improve the React course. You can share your thoughts over on our Discord or better yet, open an issue on the [The Odin Project’s curriculum repository](https://github.com/TheOdinProject/curriculum/issues).
+The Debug Lab wouldn’t exist if not for contributors sharing their precious time and resources. We’d love to hear your ideas and suggestions to improve the React course. You can share your thoughts over on our Discord or better yet, open an issue on the [The Debug Lab’s curriculum repository](https://github.com/thedebuglab/curriculum/issues).
 
 Good luck and happy learning!
 

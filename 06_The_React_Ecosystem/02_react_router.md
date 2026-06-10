@@ -1,6 +1,6 @@
 # React Router
 
-> **Source:** [https://www.theodinproject.com/lessons/node-path-react-new-react-router](https://www.theodinproject.com/lessons/node-path-react-new-react-router)
+> **Source:** [https://www.thedebuglab.com/lessons/node-path-react-new-react-router](https://www.thedebuglab.com/lessons/node-path-react-new-react-router)
 
 ---
 
@@ -32,7 +32,7 @@ Say you are cooking some chicken. If you want to cook it well and nice, you will
 2. Wait till the dish gives out that satisfying smell
 3. Start munching!
 
-This is common to all websites, you set the oven up for what you want (visit any URL, like [https://theodinproject.com/](https://theodinproject.com/)), wait for the oven to be done with the cooking (the loading screen), and tada, enjoy your delicious food (your page is ready for use). But what if you forgot to add some spices before you cooked it up? You have to repeat this flow again:
+This is common to all websites, you set the oven up for what you want (visit any URL, like [https://thedebuglab.com/](https://thedebuglab.com/)), wait for the oven to be done with the cooking (the loading screen), and tada, enjoy your delicious food (your page is ready for use). But what if you forgot to add some spices before you cooked it up? You have to repeat this flow again:
 
 1. Get up from your seat
 2. Add the spices to the chicken
@@ -474,7 +474,7 @@ Take a look at React Router’s [documentation on `useOutletContext`](https://re
 
 ### Protected routes and navigation
 
-Often, you will need to decide whether a certain route should be rendered or not. One example is authentication, where you render certain routes based on if the user is logged in or not. If they are logged in, you show some information about the user like here at [The Odin Project dashboard page](https://www.theodinproject.com/dashboard). Otherwise, they are redirected to the sign-in page (this could be any page). While there are many ways to do so, one of the easiest ways is to conditionally create a config for the router.
+Often, you will need to decide whether a certain route should be rendered or not. One example is authentication, where you render certain routes based on if the user is logged in or not. If they are logged in, you show some information about the user like here at [The Debug Lab dashboard page](https://www.thedebuglab.com/dashboard). Otherwise, they are redirected to the sign-in page (this could be any page). While there are many ways to do so, one of the easiest ways is to conditionally create a config for the router.
 
 You will often come across the need to reroute the user to a different URL programmatically. This is where we can use [the useNavigate hook](https://reactrouter.com/api/hooks/useNavigate) which lets you navigate to URLs or even go back down the user’s history.
 

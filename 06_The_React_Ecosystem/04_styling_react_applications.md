@@ -1,6 +1,6 @@
 # Styling React Applications
 
-> **Source:** [https://www.theodinproject.com/lessons/node-path-react-new-styling-react-applications](https://www.theodinproject.com/lessons/node-path-react-new-styling-react-applications)
+> **Source:** [https://www.thedebuglab.com/lessons/node-path-react-new-styling-react-applications](https://www.thedebuglab.com/lessons/node-path-react-new-styling-react-applications)
 
 ---
 

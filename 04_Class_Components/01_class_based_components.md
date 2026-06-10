@@ -1,6 +1,6 @@
 # Class Based Components
 
-> **Source:** [https://www.theodinproject.com/lessons/node-path-react-new-class-based-components](https://www.theodinproject.com/lessons/node-path-react-new-class-based-components)
+> **Source:** [https://www.thedebuglab.com/lessons/node-path-react-new-class-based-components](https://www.thedebuglab.com/lessons/node-path-react-new-class-based-components)
 
 ---
 
@@ -268,7 +268,7 @@ For the purposes of this assignment, we take the class-based component that we b
 2. Implement a new class component, `Count` that displays the number of todos, at any given time.
 3. Implement an edit button for each task. It should replace the todo with an input field, and change the button itself to ‘Resubmit’, so the edits can be saved. This is a comparatively harder task, kudos for when you finish it!
 
-*If the Codesandbox embed above does not load, you can [open the Codesandbox directly](https://codesandbox.io/p/sandbox/github/TheOdinProject/react-examples/tree/main/class-component-example?embed=1).*
+*If the Codesandbox embed above does not load, you can [open the Codesandbox directly](https://codesandbox.io/p/sandbox/github/thedebuglab/react-examples/tree/main/class-component-example?embed=1).*
 
 ---
 

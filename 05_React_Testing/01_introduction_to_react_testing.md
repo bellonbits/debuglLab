@@ -1,6 +1,6 @@
 # Introduction To React Testing
 
-> **Source:** [https://www.theodinproject.com/lessons/node-path-react-new-introduction-to-react-testing](https://www.theodinproject.com/lessons/node-path-react-new-introduction-to-react-testing)
+> **Source:** [https://www.thedebuglab.com/lessons/node-path-react-new-introduction-to-react-testing](https://www.thedebuglab.com/lessons/node-path-react-new-introduction-to-react-testing)
 
 ---
 

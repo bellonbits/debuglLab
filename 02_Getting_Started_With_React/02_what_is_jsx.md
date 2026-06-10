@@ -1,6 +1,6 @@
 # What Is JSX?
 
-> **Source:** [https://www.theodinproject.com/lessons/node-path-react-new-what-is-jsx](https://www.theodinproject.com/lessons/node-path-react-new-what-is-jsx)
+> **Source:** [https://www.thedebuglab.com/lessons/node-path-react-new-what-is-jsx](https://www.thedebuglab.com/lessons/node-path-react-new-what-is-jsx)
 
 ---
 

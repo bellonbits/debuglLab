@@ -1,6 +1,6 @@
 # Project: Shopping Cart
 
-> **Source:** [https://www.theodinproject.com/lessons/node-path-react-new-shopping-cart](https://www.theodinproject.com/lessons/node-path-react-new-shopping-cart)
+> **Source:** [https://www.thedebuglab.com/lessons/node-path-react-new-shopping-cart](https://www.thedebuglab.com/lessons/node-path-react-new-shopping-cart)
 
 ---
 

@@ -1,6 +1,6 @@
 # Rendering Techniques
 
-> **Source:** [https://www.theodinproject.com/lessons/node-path-react-new-rendering-techniques](https://www.theodinproject.com/lessons/node-path-react-new-rendering-techniques)
+> **Source:** [https://www.thedebuglab.com/lessons/node-path-react-new-rendering-techniques](https://www.thedebuglab.com/lessons/node-path-react-new-rendering-techniques)
 
 ---
 

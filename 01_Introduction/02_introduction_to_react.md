@@ -1,6 +1,6 @@
 # Introduction To React
 
-> **Source:** [https://www.theodinproject.com/lessons/node-path-react-new-introduction-to-react](https://www.theodinproject.com/lessons/node-path-react-new-introduction-to-react)
+> **Source:** [https://www.thedebuglab.com/lessons/node-path-react-new-introduction-to-react](https://www.thedebuglab.com/lessons/node-path-react-new-introduction-to-react)
 
 ---
 

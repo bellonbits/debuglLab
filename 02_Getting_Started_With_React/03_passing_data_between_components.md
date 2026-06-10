@@ -1,6 +1,6 @@
 # Passing Data Between Components
 
-> **Source:** [https://www.theodinproject.com/lessons/node-path-react-new-passing-data-between-components](https://www.theodinproject.com/lessons/node-path-react-new-passing-data-between-components)
+> **Source:** [https://www.thedebuglab.com/lessons/node-path-react-new-passing-data-between-components](https://www.thedebuglab.com/lessons/node-path-react-new-passing-data-between-components)
 
 ---
 

@@ -1,5 +1,5 @@
 // Express REST API Curriculum — The Debug Society
-// Source: The Odin Project — NodeJS Path (APIs section)
+// Source: The Debug Lab — NodeJS Path (APIs section)
 
 export interface ExpressLesson {
   id: string;
@@ -23,62 +23,90 @@ export const expressApiLessonsData: ExpressSection[] = [
         id: "express-apis-intro",
         title: "APIs Introduction",
         url: "",
-        content: `### Introduction
+        content: `## Overview
 
-In recent years, a new pattern for developing websites has been gaining popularity. Instead of creating an app that hosts both the database and view templates, many developers are separating these concerns into separate projects, hosting their backend and database on a server (either on something like Heroku or on a VPS like Digital Ocean), then using a service such as GitHub Pages or Netlify to host their frontend. This technique is sometimes referred to as the **Jamstack**.
+> A **REST API** is the architectural backbone of modern web development — it lets any frontend (web, mobile, CLI) talk to your server through clean, resource-based URLs and standard HTTP verbs.
 
-Organizing your project this way can be beneficial because it allows your project to be more modular instead of combining business logic with view logic. This also allows you to use a single backend source for multiple frontend applications, such as a website, a desktop app, or a mobile app. Other developers enjoy this pattern because they like using frontend frameworks such as React or Vue to create nice frontend-only, single-page applications.
+**You will learn:**
 
-Frontend and backend applications usually talk to each other using **JSON**. So at this point, all you really need to learn is how to get your Express application to speak JSON instead of HTML. Essentially all you have to do is pass your information into \`res.json()\` instead of \`res.send()\` or \`res.render()\`. How easy is that?
-
-If you think back to the organization of the routes in the Routes lesson, we grouped related routes together and extracted each group into its own file. This approach allowed us to more easily modify specific routes without impacting others.
-
----
-
-### Lesson overview
-
-This section contains a general overview of topics that you will learn in this lesson.
-
-- Know what REST stands for.
-- Explain the purpose of using REST when structuring an API.
-- Detail the REST naming conventions for your API endpoints.
-- Have a reinforced understanding of the HTTP Methods/Verbs.
-- Describe the Same Origin Policy.
-- Explain the purpose of CORS.
-- Use CORS as middleware in Express (globally and on a single route).
-- Configure CORS to only allow certain origins to access our API.
-- Explain CORS headers.
+- What REST stands for and why it exists
+- How to design endpoints using resource-based URI conventions
+- The five HTTP verbs and their CRUD roles
+- What the Same-Origin Policy is and how CORS solves it
+- How to add and configure CORS middleware in Express
 
 ---
 
-### REST
+## Content
 
-The structure of an API can take many forms. For example, you could have routes named \`/api/getAllPostComments/:postid\` or \`/api/posts/:postid/comments\`. However, it's conventional to follow **REST** (an acronym for **Representational State Transfer**), a popular and common organizational method for your APIs which corresponds with CRUD actions. Following established patterns like REST makes your API more maintainable and easier for other developers to integrate with. Software development is often about clear communication — which is aided by following expectations.
+### The Jamstack Pattern
 
-The actual technical definition of REST is a little complicated, but for our purposes most of the elements (statelessness, cacheability, etc.) are covered by default just by using Express to output JSON. The piece that we specifically want to think about is how to organize our **endpoint URIs** (Uniform Resource Identifiers).
+Modern web applications separate the **frontend** (served on Netlify, Vercel, or GitHub Pages) from the **backend** (hosted on Render, Heroku, or a VPS). These two halves communicate exclusively through **JSON over HTTP** — and that interface is your API.
 
-REST APIs are **resource based**, which means that instead of having names like \`/getPostComments\` or \`/savePostInDatabase\`, we refer directly to the resource (in this case, the blog post) and use HTTP verbs such as GET, POST, PUT, and DELETE to determine the action. Typically this takes the form of **2 URIs per resource** — one for the whole collection and one for a single object in that collection. For example, you might get a list of blog posts from \`/posts\` and then get a specific post from \`/posts/:postid\`. You can nest collections in the same way: to get the list of comments on a single post you'd access \`/posts/:postid/comments\`, and to get a single comment, \`/posts/:postid/comments/:commentid\`.
+> **Why separate concerns?** A single backend can power a web app, a mobile app, and a desktop client simultaneously — all reading from the same API, without duplicating any business logic.
+
+Switching from template rendering to an API is literally one word:
+
+\`\`\`javascript
+// Serving HTML (traditional MVC)
+app.get('/posts', (req, res) => {
+  res.render('posts', { posts });
+});
+
+// Serving JSON (API-first)
+app.get('/posts', (req, res) => {
+  res.json(posts);
+});
+\`\`\`
 
 ---
 
-### HTTP Verbs Table
+### REST: Resource-Based Routing
 
-| Verb | Action | Example |
-|------|--------|---------|
-| POST | Create | \`POST /posts\` — creates a new blog post |
-| GET | Read | \`GET /posts/:postid\` — fetches a single post |
-| PUT | Update | \`PUT /posts/:postid\` — updates a single post |
-| DELETE | Delete | \`DELETE /posts/:postid\` — deletes a single post |
+**REST** (Representational State Transfer) is the most widely adopted convention for structuring API endpoints. Instead of action-based names, you name endpoints after the **resource** and let the HTTP verb express the action.
 
-Each part of an API URI specifies the resource. For example, \`GET /posts\` returns the entire list of blog posts, while \`GET /posts/:postid\` specifies the exact blog post we want. We can nest further: \`GET /posts/:postid/comments\` returns the list of comments for that blog post, or \`GET /posts/:postid/comments/:commentid\` returns one specific comment.
+| Anti-Pattern (action-based) | REST Style (resource-based) |
+|---|---|
+| \`GET /getAllPosts\` | \`GET /posts\` |
+| \`POST /createPost\` | \`POST /posts\` |
+| \`GET /getPostById?id=5\` | \`GET /posts/5\` |
+| \`PUT /updatePost?id=5\` | \`PUT /posts/5\` |
+| \`DELETE /deletePost?id=5\` | \`DELETE /posts/5\` |
+
+#### Nested URI Patterns
+
+Resources nest naturally to express relationships:
+
+| URI | Meaning |
+|---|---|
+| \`GET /posts\` | All blog posts |
+| \`GET /posts/:id\` | One specific post |
+| \`POST /posts\` | Create a new post |
+| \`GET /posts/:id/comments\` | All comments on a post |
+| \`POST /posts/:id/comments\` | Add a comment to a post |
+| \`GET /posts/:id/comments/:cid\` | One specific comment |
 
 ---
 
-### CORS
+### The Five HTTP Verbs
 
-The **Same Origin Policy** is an important security measure for browsers that restricts web pages from making requests to a different origin than the one that served the page.
+| Verb | CRUD Role | Safe? | Idempotent? |
+|---|---|---|---|
+| **GET** | Read | Yes | Yes |
+| **POST** | Create | No | No |
+| **PUT** | Replace (full update) | No | Yes |
+| **PATCH** | Partial update | No | No |
+| **DELETE** | Delete | No | Yes |
 
-In a typical project, we will be deploying our REST API and front end **separately** (different domains), meaning we need to enable **Cross-Origin Resource Sharing (CORS)** on the server to allow our separate front end to access its resources. Express has a CORS middleware package that lets us set everything up.
+> **Safe** means the request never changes server state. **Idempotent** means calling it twice has the same result as calling it once — useful for retries.
+
+---
+
+### CORS: Cross-Origin Resource Sharing
+
+When your frontend (\`https://myapp.netlify.app\`) calls your API (\`https://api.myapp.com\`), the browser blocks it by default. This is the **Same-Origin Policy** — a critical browser security feature.
+
+**CORS** is the HTTP header mechanism that lets your server declare which origins it trusts.
 
 \`\`\`bash
 npm install cors
@@ -89,77 +117,97 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 
-// Allow any origin (fine for development)
+// Allow any origin — acceptable during development
 app.use(cors());
 
-// Or restrict to specific origins for production
+// Restrict to your frontend domain — required for production
 app.use(cors({
-  origin: 'https://my-frontend.example.com'
+  origin: 'https://myapp.netlify.app',
 }));
+
+// CORS on a single route only
+app.get('/public-data', cors(), (req, res) => {
+  res.json({ message: 'This endpoint accepts any origin' });
+});
 \`\`\`
 
-For now, it is acceptable to just allow access from any origin. This makes development quite a bit easier. But for any real project, once you deploy to a production environment you will probably want to specifically block access from any origin except your frontend website.
+> **Warning:** Never ship \`cors()\` with no restrictions to production. Any website could make authenticated requests on behalf of your users. Always whitelist specific origins before deploying.
 
 ---
 
-### Assignment
+## Assignment
 
-1. Read about RESTful API design. If you want to code along with the first article, note this used to include the \`body-parser\` middleware — since Express 4.16.0 this parsing functionality has been incorporated directly into the Express package itself.
-2. Read and code along with a tutorial on setting up a REST API in Express. Look for one that also talks about **modular code organization** and **writing middleware**.
+1. Create a minimal Express app with a \`GET /posts\` endpoint that returns a hardcoded array of post objects as JSON. Test it with \`curl http://localhost:3000/posts\`.
+2. Install the \`cors\` package and configure it to allow requests only from \`http://localhost:5173\` (a typical Vite frontend dev server).
+3. Open your browser console on a different port and run \`fetch('http://localhost:3000/posts')\` — observe the CORS error, then fix it by adjusting the origin config.
 
 ---
 
-### Knowledge check
+## Knowledge Check
 
-- What does REST stand for?
-- What are HTTP verbs and why are they important to an API?
-- What is the Same-Origin Policy?
-- How do you enable CORS in your Express app?
-- Which HTTP verb does each letter in CRUD (Create, Read, Update, Delete) correspond to?`
+- What does REST stand for and what makes an API "RESTful"?
+- Given the resource \`/articles/:id/tags\`, write the URIs for listing all tags and for adding a new tag.
+- Which HTTP verb is both **safe** and **idempotent** — meaning it only reads data and can be retried safely?
+- What is the Same-Origin Policy and why does the browser enforce it?
+- What is the difference between applying \`cors()\` globally versus on a single specific route?`
       },
       {
         id: "express-apis-auth-jwt",
         title: "Authentication with JWT",
         url: "",
-        content: `### Introduction
+        content: `## Overview
 
-Securing your API is an important step. When we were using Express to serve view templates we used **PassportJS** along with a username and password to authenticate users, but that is not the only way to secure an Express app, and in the context of an API it often makes sense to use a different strategy. The username/password session pattern that we learned previously will still work of course, though it is made a little more complicated by the fact that we've separated our front-end code from the back-end.
+> **JSON Web Tokens (JWT)** are the standard authentication mechanism for stateless REST APIs — the server issues a cryptographically signed token on login, and the client attaches it to every subsequent request in the \`Authorization\` header.
 
-Another strategy is to generate and pass a secure **token** between our back-end and front-end code. Doing so will make sure that our user's username and password are not compromised, and will also give us the ability to **expire** our user's session for added security. The basic idea: when a user signs in to our app, a secure token is created, and then for all subsequent requests **that token is passed in the header of our request object**. In the end, the process is straightforward since you should already be comfortable with using Passport to authenticate users.
+**You will learn:**
 
-This strategy, while particularly useful with APIs, can be used with a traditional view-template project as well. The main difference here is that instead of setting and checking a **cookie** we're passing a special token in the header of our request. In our previous Authentication Tutorial, the Passport middleware checked the cookie that was sent and then either authenticated or denied our user. In this case, we're going to do something very similar — but instead of using cookies, we're going to pass the token.
-
----
-
-### Lesson overview
-
-- Explain how token authentication differs from session-based authentication.
-- Learn about JSON Web Tokens.
-- Read about an Authorization header and how to use it.
-- Identify and explain the methods used to sign and verify tokens.
-- Write custom middleware to verify tokens on a given route.
-- Have familiarity with token expiration with JWT.
-- Expand PassportJS implementations to use JSON Web Tokens.
+- How token-based auth differs from session/cookie auth
+- The three-part structure of a JWT (header, payload, signature)
+- How to sign a token on login with \`jsonwebtoken\`
+- How to write middleware that verifies and decodes the token
+- Best practices for token expiration
 
 ---
 
-### JWT in a nutshell
+## Content
 
-A **JSON Web Token (JWT)** is a compact, URL-safe string with three parts separated by dots:
+### Sessions vs. Tokens
+
+| Feature | Session Auth (Cookie) | Token Auth (JWT) |
+|---|---|---|
+| State stored on | Server (session store) | Client (localStorage / memory) |
+| Stateless? | No — server tracks each session | Yes — server only needs the secret |
+| Works across domains | Requires extra config | Built-in via header |
+| Scales horizontally | Hard — sessions must be shared | Easy — any server can verify the token |
+| Best for | Same-origin, full-stack apps | Separate frontend / backend |
+
+When your frontend and backend live on **different domains**, JWT is the natural choice.
+
+---
+
+### JWT Anatomy
+
+A JWT is three **Base64URL-encoded** JSON objects separated by dots:
 
 \`\`\`
-header.payload.signature
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9    ← Header
+.
+eyJ1c2VySWQiOjQyLCJleHAiOjE3MDAwMDB9     ← Payload
+.
+SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQ  ← Signature
 \`\`\`
 
-- **Header** — algorithm + token type.
-- **Payload** — the claims (e.g. user id, role, expiration).
-- **Signature** — \`HMAC(header + payload, secret)\` — proves the token wasn't tampered with.
+| Part | Contains | Purpose |
+|---|---|---|
+| **Header** | Algorithm (\`HS256\`) + type (\`JWT\`) | Describes how to verify |
+| **Payload** | Claims: user ID, role, expiry | Carries the actual data |
+| **Signature** | \`HMAC(header + payload, SECRET)\` | Proves the token is authentic |
 
-The server signs the token with a secret only it knows. Anyone can read the payload, but no one can modify it without invalidating the signature.
+> **Note:** The payload is only Base64-encoded — it is **not encrypted**. Anyone can decode and read it. Never put passwords, credit card numbers, or sensitive secrets in a JWT payload. Only store IDs and non-sensitive metadata.
 
 ---
 
-### Signing & verifying with jsonwebtoken
+### Signing & Verifying Tokens
 
 \`\`\`bash
 npm install jsonwebtoken
@@ -167,127 +215,248 @@ npm install jsonwebtoken
 
 \`\`\`javascript
 const jwt = require('jsonwebtoken');
+const SECRET = process.env.JWT_SECRET; // always store in .env — never hardcode
 
-// On successful login, sign and return a token
+// ─── On successful login: sign and return a token ───────────────
 function login(req, res) {
-  const user = { id: 42, username: 'opus' };
-  const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '1h' });
+  const { username, password } = req.body;
+  // validate credentials against your DB here...
+
+  const user = { id: 42, username, role: 'author' };
+
+  const token = jwt.sign(
+    user,                  // payload embedded in the token
+    SECRET,                // secret used to sign and later verify
+    { expiresIn: '2h' }    // token becomes invalid after 2 hours
+  );
+
   res.json({ token });
 }
 
-// Middleware: verify the token on protected routes
+// ─── Middleware: verify the token on every protected route ───────
 function authenticate(req, res, next) {
-  const auth = req.headers.authorization;          // "Bearer <token>"
-  if (!auth) return res.status(401).json({ error: 'no token' });
+  const authHeader = req.headers.authorization; // "Bearer <token>"
 
-  const token = auth.split(' ')[1];
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Authentication required' });
+  }
+
+  const token = authHeader.split(' ')[1];
+
   try {
-    req.user = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = jwt.verify(token, SECRET); // throws if expired or tampered
     next();
   } catch (err) {
-    return res.status(403).json({ error: 'invalid token' });
+    return res.status(403).json({ error: 'Token invalid or expired' });
   }
 }
 
-app.get('/posts', authenticate, (req, res) => {
-  res.json({ message: \`Hello \${req.user.username}\` });
+// ─── Apply middleware to protected routes ────────────────────────
+app.get('/dashboard', authenticate, (req, res) => {
+  res.json({ message: \`Welcome, \${req.user.username}\` });
 });
 \`\`\`
 
 ---
 
-### The Authorization header
+### The Authorization Header
 
-Clients attach the token on every request using a standard header with the **Bearer** schema:
+The client sends the token with every request using the standard **Bearer schema**:
 
 \`\`\`
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6...
 \`\`\`
 
-Your middleware reads this header, verifies the signature, and either calls \`next()\` or returns 401/403.
+Your middleware reads \`req.headers.authorization\`, splits on the space, and passes the token string to \`jwt.verify()\`.
 
 ---
 
-### Assignment
+### Token Expiration Strategy
 
-1. Watch a video that explains everything you need to know about [creating and verifying JSON Web Tokens](https://www.youtube.com/watch?v=7nafaH9SddU).
-2. Watch a video that presents [different ways in which JWTs can be useful](https://www.youtube.com/watch?v=7Q17ubqLfaM).
+Always set an expiry — a token that never expires is a permanent backdoor if it's stolen.
+
+| Scenario | Recommended Expiry |
+|---|---|
+| Standard web session | \`2h\` |
+| "Remember me" / long session | \`7d\` – \`30d\` |
+| High-security app (access + refresh) | Access: \`15m\`, Refresh: \`7d\` |
+
+> **Tip:** The access + refresh token pattern is the gold standard for production. A short-lived access token limits exposure if stolen. A refresh token (stored in an HttpOnly cookie) silently issues a new access token without requiring the user to log in again.
 
 ---
 
-### Knowledge check
+## Assignment
 
-- What is a JSON Web Token?
-- What are two things a secure token will do?
-- Where in the code is a secure token passed?
+1. Create a \`POST /login\` route that accepts \`{ username, password }\` in the body, validates credentials against a hardcoded user object, and returns a signed JWT.
+2. Write an \`authenticate\` middleware that reads the \`Authorization: Bearer\` header and attaches the decoded payload to \`req.user\` on success.
+3. Protect a \`GET /profile\` route with the middleware — it should return \`req.user\` only when a valid token is present.
+4. Test the full login → token → protected route flow using \`curl\` or Postman.
 
 ---
 
-### Additional resources
+## Knowledge Check
 
-- A guide for **JWT Authentication Using Node.js and Express**.
-- A more concise guide for using JWTs in Express.
-- Not everyone agrees that JWTs are the best way to store authentication data — there are valid arguments against them, and some pitfalls to be aware of when using them.`
+- What is the key architectural difference between session-based and token-based authentication?
+- Which part of a JWT prevents tampering — and what would happen if someone modified the payload?
+- Why must you never store sensitive data like passwords in the JWT payload?
+- What HTTP status code should a **missing** token return vs. a **tampered or expired** token?
+- What is the benefit of using short-lived access tokens combined with a refresh token?`
       },
       {
         id: "express-apis-blog-project",
         title: "Blog API Capstone Project",
         url: "",
-        content: `### Introduction
+        content: `## Overview
 
-Do you know what you need? You need a blog. Or maybe you don't, or maybe you already have one. In any case, this project will be a great way to practice and see the benefits of creating an **API-only backend**. We're actually going to create the backend and **two different front-ends** for accessing and editing your blog posts. One front-end site will be for people who want to read and comment on your posts, while the other will be just for you to write, edit, and publish your posts.
+> Build a complete, production-structured blog platform: one REST API backend, a public reader frontend, and an authenticated author dashboard — three apps communicating purely through JSON.
 
-Why are we setting it up like this? Because we can! The important exercise here is setting up the API and then accessing it from the outside. There are some security benefits to setting up separate websites for blog consumption and blog editing, but really we're just doing it like this to demonstrate the **power and flexibility of separating your backend code from your frontend code**.
+**You will learn:**
 
----
-
-### Assignment
-
-1. **Project structure** — How you structure this project is up to you. Some people prefer separate GitHub repos for each of the three apps to keep them and their commit histories separate. Others prefer a **monorepo** with each app in its own directory.
-
-2. **Design your models & schemas** — Begin by designing your back-end models. How you design it is up to you, but think through a few things:
-   - Your blog should have **posts** and **comments**, so think about the fields you'll want to include for each.
-   - Are you going to require users to leave a username or email with their comments?
-   - Are you going to display a date or timestamp for posts and comments?
-   - Posts should probably have a title — but should comments?
-   - A useful feature is the ability to have posts that are in the database but **not published** for the public to read. How might you designate published vs unpublished posts in your DB?
-   - You'll want a **user model** for blog authors (and optionally normal user accounts). Even with a single author, a minimal user model makes route protection via authentication much easier.
-
-3. **Set up Express** — Define the models in **Prisma** (or your ORM of choice).
-
-4. **Set up routes and controllers** — Think about RESTful organization for this one. Most of the examples in the previous lesson centered around posts and comments, so this shouldn't be too tricky.
-   - You can test your routes however you want. Using \`curl\` in a terminal is one handy way, but it can be just as effective to use a web browser. There are also platforms that allow you to send \`PUT\` and \`POST\` requests without needing to set up HTML forms — [Postman](https://www.postman.com/downloads/) is probably the most popular.
-
-5. **Protect routes with authentication** — Certain routes will need to be protected. You wouldn't want any random stranger online to edit your articles! If you also implement normal user accounts, you may want to protect some routes behind being logged in too.
-   - Though there are many ways to handle auth, in this project use **JWTs**.
-   - You can use [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken) to create and verify JWTs. You may wish to use [Passport's JWT strategy](https://github.com/mikenicholson/passport-jwt) for verifying tokens, especially if you already have Passport set up with a local strategy.
-   - A successful login grants the user a JWT. That user attaches their JWT to future requests, where your API verifies it to allow or deny access. When the user logs out, the client removes the JWT from storage.
-   - There are many ways to send and store JWTs — cookies, localStorage, access/refresh tokens, etc. Some are more complicated (and potentially more secure). For now, keep it simple: send JWTs via the **\`Authorization\` header with the \`Bearer\` schema**, and have the client store the JWT in localStorage.
-
-6. **Build the public front-end** — Once your API is working, focus on the front-end. How you go about this is up to you. If you're comfortable with React, go for it. If you're happier using plain HTML, CSS, and vanilla JavaScript, that's fine too. To get posts into a website, \`fetch\` the correct API endpoint and display the results.
-
-7. **Build the author dashboard** — Create a second website for **authoring and editing** posts. Useful features:
-   - A list of all posts showing whether or not they have been published.
-   - A button to publish unpublished posts (or unpublish published ones!).
-   - A "NEW POST" form. If you want to get fancy, use a rich text editor such as [TinyMCE](https://www.tiny.cloud/docs/tinymce/6/cloud-quick-start/).
-   - The ability to **manage comments** (delete or edit them).
-
-8. **Front-end depth is your call** — How much work you want to put into the front-end code is up to you. Technically this is a backend-focused course, so if you would prefer, focus on the REST API.
-
-9. **Deploy separately** — Deploy your API to a PaaS like Heroku/Render, and deploy the two front-ends to GitHub Pages, Netlify, or Vercel. If you used React, recall the hosting options from the CV Application project.
+- Design data models for a real content platform (posts, comments, users)
+- Structure a REST API with public and protected route groups
+- Apply JWT authentication end-to-end across a multi-app project
+- Deploy three separate apps and wire them together over CORS
 
 ---
 
-### Why this project matters
+## Content
 
-You'll come out of this with:
+### Architecture Overview
 
-- A clean **REST API** that follows resource-based URI conventions.
-- Hands-on experience with **JWT auth** end-to-end (sign on login, attach in header, verify in middleware).
-- A practical mental model for how **frontend ↔ backend** communicate purely over JSON across **different origins** (with CORS configured).
-- A reusable backend that can power any number of additional clients later — mobile, CLI, third-party integration.
+This project puts the Jamstack pattern into practice: **one backend, two frontends**.
 
-This is the architecture pattern that dominates modern web development. Build it once here and the next ten projects come together faster.`
+| App | Purpose | Who Accesses It |
+|---|---|---|
+| **Backend API** | Express + Database | Serves JSON to both frontends |
+| **Public Reader Site** | Displays published posts | Any visitor |
+| **Author Dashboard** | Create, edit, manage posts | Authenticated authors only |
+
+---
+
+### Designing Your Data Models
+
+Plan the data layer before writing a single route — it shapes everything else.
+
+#### Post Model
+
+| Field | Type | Notes |
+|---|---|---|
+| \`id\` | Integer (PK) | Auto-incremented |
+| \`title\` | String | Required |
+| \`body\` | Text | Full article content |
+| \`published\` | Boolean | Defaults to \`false\` (draft) |
+| \`createdAt\` | DateTime | Auto-set on creation |
+| \`authorId\` | FK → User | Required |
+
+#### Comment Model
+
+| Field | Type | Notes |
+|---|---|---|
+| \`id\` | Integer (PK) | Auto-incremented |
+| \`body\` | Text | Required |
+| \`authorName\` | String | Optional — allow anonymous comments |
+| \`createdAt\` | DateTime | Auto-set |
+| \`postId\` | FK → Post | Required |
+
+#### User Model
+
+| Field | Type | Notes |
+|---|---|---|
+| \`id\` | Integer (PK) | |
+| \`username\` | String | Unique |
+| \`passwordHash\` | String | Always hash — never store plaintext |
+| \`role\` | Enum | \`author\` or \`admin\` |
+
+> **Note:** Even with a single author, a User model makes authentication far simpler — you validate credentials *against* the record, and the JWT payload carries the user ID.
+
+---
+
+### REST Route Design
+
+Separate public routes (no auth) from protected routes (JWT required) from the start.
+
+\`\`\`
+── Public Routes (no authentication) ──────────────────────────
+GET    /posts                   list all published posts
+GET    /posts/:id               one published post + its comments
+POST   /posts/:id/comments      submit a comment on a post
+
+── Auth Route ──────────────────────────────────────────────────
+POST   /auth/login              returns a signed JWT
+
+── Protected Routes (JWT required) ────────────────────────────
+GET    /posts/all               list ALL posts including drafts
+POST   /posts                   create a new post
+PUT    /posts/:id               update a post (full replace)
+PATCH  /posts/:id/publish       toggle the published flag
+DELETE /posts/:id               delete a post
+DELETE /posts/:id/comments/:cid delete a specific comment
+\`\`\`
+
+> **Tip:** Apply the \`authenticate\` middleware to a dedicated protected router rather than repeating it on each route. This ensures no protected route is accidentally left open.
+
+---
+
+### Testing Your API
+
+Verify every route works before building the frontends.
+
+| Tool | Best For |
+|---|---|
+| \`curl\` (terminal) | Quick, scriptable tests from the command line |
+| **Postman** | Full GUI with saved collections and environments |
+| **Thunder Client** | VS Code extension — same idea, no separate app |
+| **Insomnia** | Clean GUI, great for REST + GraphQL |
+
+\`\`\`bash
+# Create a new post (replace YOUR_TOKEN with the JWT from /auth/login)
+curl -X POST http://localhost:3000/posts \\
+  -H "Authorization: Bearer YOUR_TOKEN" \\
+  -H "Content-Type: application/json" \\
+  -d '{"title":"Hello World","body":"My first post.","published":false}'
+\`\`\`
+
+---
+
+### Frontend Features
+
+#### Public Reader Site
+- List of published posts with title, date, and excerpt
+- Full post detail page (body + comments)
+- Comment submission form at the bottom of each post
+
+#### Author Dashboard
+- All posts list with draft / published status badges
+- Publish / Unpublish toggle per post
+- New Post form — consider a rich text editor like TinyMCE for the body
+- Comment moderation (edit or delete)
+- Logout button that clears the JWT from localStorage
+
+---
+
+## Assignment
+
+Work through these steps in order — each stage builds on the previous.
+
+1. **Design your schema** — Write your Prisma schema (or plain SQL) for \`User\`, \`Post\`, and \`Comment\`.
+2. **Bootstrap Express** — Create the project, install \`express\`, \`cors\`, \`bcrypt\`, and \`jsonwebtoken\`.
+3. **Auth route** — Implement \`POST /auth/login\`: hash check + JWT sign, returning the token.
+4. **Public routes** — Build \`GET /posts\` (published only) and \`GET /posts/:id\`.
+5. **Protected routes** — Add \`POST /posts\`, \`PUT /posts/:id\`, \`PATCH /posts/:id/publish\`, \`DELETE /posts/:id\` — all behind the \`authenticate\` middleware.
+6. **Comments** — Add \`POST /posts/:id/comments\` (public) and \`DELETE /posts/:id/comments/:cid\` (protected).
+7. **Public frontend** — Fetch and display posts; implement the comment submission form.
+8. **Author dashboard** — Login → store JWT → build the full CRUD management interface.
+9. **Deploy** — API to Render or Heroku; both frontends to Netlify or Vercel with the correct CORS origin set.
+
+---
+
+## Knowledge Check
+
+- What does the \`published\` boolean field enable architecturally — why not just delete draft posts?
+- How do you ensure the author dashboard routes are inaccessible without a valid token?
+- Why must passwords be hashed before storing, and which Node.js library handles bcrypt hashing?
+- What CORS configuration does your backend need when you have two separate frontend origins?
+- What is the trade-off between a monorepo and three separate repositories for this project?`
       }
     ]
   }

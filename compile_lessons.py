@@ -17,7 +17,7 @@ def parse_md_file(filepath, filename):
             title = line[2:].strip()
             break
             
-    # Clean up Odin Project links and headers from content
+    # Clean up Debug Lab links and headers from content
     lines = content.split('\n')
     cleaned_lines = []
     skip_header = True
@@ -30,9 +30,9 @@ def parse_md_file(filepath, filename):
                 continue
             skip_header = False
         
-        # Replace any other Odin Project lesson links with dummy anchors to keep it purely offline
+        # Replace any other Debug Lab lesson links with dummy anchors to keep it purely offline
         import re
-        line = re.sub(r'https?://(?:www\.)?theodinproject\.com/lessons/[a-zA-Z0-9\-]+', '#', line)
+        line = re.sub(r'https?://(?:www\.)?thedebuglab\.com/lessons/[a-zA-Z0-9\-]+', '#', line)
         cleaned_lines.append(line)
         
     cleaned_content = "\n".join(cleaned_lines).strip()

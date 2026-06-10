@@ -1,6 +1,6 @@
 # Advanced Types, Functions & Interfaces
 
-> **Source:** [https://www.theodinproject.com/lessons/node-path-typescript-advanced-types](https://www.theodinproject.com/lessons/node-path-typescript-advanced-types)
+> **Source:** [https://www.thedebuglab.com/lessons/node-path-typescript-advanced-types](https://www.thedebuglab.com/lessons/node-path-typescript-advanced-types)
 
 ---
 

@@ -1,6 +1,6 @@
 # Project: CV Application
 
-> **Source:** [https://www.theodinproject.com/lessons/node-path-react-new-cv-application](https://www.theodinproject.com/lessons/node-path-react-new-cv-application)
+> **Source:** [https://www.thedebuglab.com/lessons/node-path-react-new-cv-application](https://www.thedebuglab.com/lessons/node-path-react-new-cv-application)
 
 ---
 

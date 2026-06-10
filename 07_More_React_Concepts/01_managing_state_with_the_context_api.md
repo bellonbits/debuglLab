@@ -1,12 +1,12 @@
 # Managing State With The Context API
 
-> **Source:** [https://www.theodinproject.com/lessons/node-path-react-new-managing-state-with-the-context-api](https://www.theodinproject.com/lessons/node-path-react-new-managing-state-with-the-context-api)
+> **Source:** [https://www.thedebuglab.com/lessons/node-path-react-new-managing-state-with-the-context-api](https://www.thedebuglab.com/lessons/node-path-react-new-managing-state-with-the-context-api)
 
 ---
 
 ## Overview
 
-> Throughout the lessons, we’ve learned how to manage state, and pass data and props between components. However, as our application grows in size, not only will this process of managing states and passing data around become repetitive and inconvenient, but it will also be hard to manage. In the [React Router lesson](https://www.theodinproject.com/lessons/node-path-react-new-react-router#outlets-and-state), we mentioned how we could use outlet context to pass data from a parent component through an `<Outlet />` to a child component. This lesson will cover how we can use the Context API to do similar things outside of outlet scenarios.
+> Throughout the lessons, we’ve learned how to manage state, and pass data and props between components. However, as our application grows in size, not only will this process of managing states and passing data around become repetitive and inconvenient, but it will also be hard to manage. In the [React Router lesson](https://www.thedebuglab.com/lessons/node-path-react-new-react-router#outlets-and-state), we mentioned how we could use outlet context to pass data from a parent component through an `<Outlet />` to a child component. This lesson will cover how we can use the Context API to do similar things outside of outlet scenarios.
 
 **You will learn:**
 
@@ -24,7 +24,7 @@ The Context API in React is a feature that allows you to manage the global state
 
 To give a more concrete example, let’s go back to a project that we’ve already built previously. In the Shopping Cart project, you might have a Product Detail Page that might or might not look like this very awesome shop:
 
-[![Rough layout of a shopping website product page](https://cdn.statically.io/gh/TheOdinProject/curriculum/e6a43abb8ad6836796159e0ab6160045293e2a27/react/more-react-concepts/managing-state-with-context-api/imgs/00.png)](https://cdn.statically.io/gh/TheOdinProject/curriculum/e6a43abb8ad6836796159e0ab6160045293e2a27/react/more-react-concepts/managing-state-with-context-api/imgs/00.png)
+[![Rough layout of a shopping website product page](https://cdn.statically.io/gh/thedebuglab/curriculum/e6a43abb8ad6836796159e0ab6160045293e2a27/react/more-react-concepts/managing-state-with-context-api/imgs/00.png)](https://cdn.statically.io/gh/thedebuglab/curriculum/e6a43abb8ad6836796159e0ab6160045293e2a27/react/more-react-concepts/managing-state-with-context-api/imgs/00.png)
 
 You have a counter in the header that displays the number of items currently in the cart. You can add items to the cart through the “Add to Cart” button.
 

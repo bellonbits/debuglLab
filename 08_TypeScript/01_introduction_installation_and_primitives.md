@@ -1,6 +1,6 @@
 # Introduction, Installation & Primitives
 
-> **Source:** [https://www.theodinproject.com/lessons/node-path-typescript-primitives](https://www.theodinproject.com/lessons/node-path-typescript-primitives)
+> **Source:** [https://www.thedebuglab.com/lessons/node-path-typescript-primitives](https://www.thedebuglab.com/lessons/node-path-typescript-primitives)
 
 ---
 

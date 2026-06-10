@@ -1,6 +1,6 @@
 # Component Lifecycle Methods
 
-> **Source:** [https://www.theodinproject.com/lessons/node-path-react-new-component-lifecycle-methods](https://www.theodinproject.com/lessons/node-path-react-new-component-lifecycle-methods)
+> **Source:** [https://www.thedebuglab.com/lessons/node-path-react-new-component-lifecycle-methods](https://www.thedebuglab.com/lessons/node-path-react-new-component-lifecycle-methods)
 
 ---
 

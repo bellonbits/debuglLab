@@ -1,6 +1,6 @@
 # Reducing State
 
-> **Source:** [https://www.theodinproject.com/lessons/node-path-react-new-reducing-state](https://www.theodinproject.com/lessons/node-path-react-new-reducing-state)
+> **Source:** [https://www.thedebuglab.com/lessons/node-path-react-new-reducing-state](https://www.thedebuglab.com/lessons/node-path-react-new-reducing-state)
 
 ---
 
