@@ -13,6 +13,8 @@ import { typescriptLessonsData } from './data/typescriptLessonsData';
 import type { TypeScriptSection, TypeScriptLesson } from './data/typescriptLessonsData';
 import { rQualitativeLessonsData } from './data/rQualitativeLessonsData';
 import type { RQualitativeSection, RQualitativeLesson } from './data/rQualitativeLessonsData';
+import { nvivoLessonsData } from './data/nvivoLessonsData';
+import type { NvivoSection, NvivoLesson } from './data/nvivoLessonsData';
 import { aiAssignmentsData } from './data/assignmentData';
 import { quizzesData } from './data/quizzesData';
 import type { QuizCategory } from './data/quizzesData';
@@ -279,7 +281,8 @@ const COURSE_COVERS = {
   express: "https://images.unsplash.com/photo-1629654297299-c8506221ca97?auto=format&fit=crop&w=800&q=80",
   python: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80",
   typescript: "https://images.unsplash.com/photo-1516116211223-5c359a36298a?auto=format&fit=crop&w=800&q=80",
-  rqualitative: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80"
+  rqualitative: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80",
+  nvivo: "https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?auto=format&fit=crop&w=800&q=80"
 };
 
 // Dynamic real-data quiz challenges mapped to standard domains
@@ -475,6 +478,16 @@ export function App() {
   const [selectedRQualitativeLesson, setSelectedRQualitativeLesson] = useState<RQualitativeLesson | null>(null);
   const [selectedRQualitativeSection, setSelectedRQualitativeSection] = useState<RQualitativeSection | null>(null);
 
+  // NVivo track completion states
+  const [completedNvivoLessons, setCompletedNvivoLessons] = useState<string[]>(() => {
+    const saved = localStorage.getItem('debug_society_completed_nvivo_lessons');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  // NVivo Lesson Immersive Reader State
+  const [selectedNvivoLesson, setSelectedNvivoLesson] = useState<NvivoLesson | null>(null);
+  const [selectedNvivoSection, setSelectedNvivoSection] = useState<NvivoSection | null>(null);
+
   // SQL sandbox terminal workspace states
   const [sqlQuery, setSqlQuery] = useState<string>('');
   const [sqlSimulatedResults, setSqlSimulatedResults] = useState<any[] | null>(null);
@@ -600,6 +613,7 @@ export function App() {
       completedPythonLessons,
       completedTypescriptLessons,
       completedRQualitativeLessons,
+      completedNvivoLessons,
       completedAssignments,
       studentSubmissions,
       aiFeedback,
@@ -616,7 +630,7 @@ export function App() {
     }
 
     // Auto calculate focus streak count based on lessons completed
-    const days = Math.max(1, Math.ceil((completedLessons.length + completedTypescriptLessons.length + completedRQualitativeLessons.length) / 2));
+    const days = Math.max(1, Math.ceil((completedLessons.length + completedTypescriptLessons.length + completedRQualitativeLessons.length + completedNvivoLessons.length) / 2));
     localStorage.setItem('debug_society_streak', days.toString());
   }, [
     currentUserEmail,
@@ -632,6 +646,7 @@ export function App() {
     completedPythonLessons,
     completedTypescriptLessons,
     completedRQualitativeLessons,
+    completedNvivoLessons,
     completedAssignments,
     studentSubmissions,
     aiFeedback,
@@ -647,7 +662,7 @@ export function App() {
   useEffect(() => {
     const el = document.querySelector('.reader-scroll-article');
     if (el) el.scrollTop = 0;
-  }, [selectedLesson, selectedSqlLesson, selectedFastApiLesson, selectedExpressLesson, selectedPythonLesson, selectedTypescriptLesson, selectedRQualitativeLesson]);
+  }, [selectedLesson, selectedSqlLesson, selectedFastApiLesson, selectedExpressLesson, selectedPythonLesson, selectedTypescriptLesson, selectedRQualitativeLesson, selectedNvivoLesson]);
 
   useEffect(() => {
     localStorage.setItem('debug_society_noti_seen', JSON.stringify(notiSeenIds));
@@ -760,6 +775,17 @@ export function App() {
       playSynthesizedSound('reset');
     } else {
       setCompletedRQualitativeLessons([...completedRQualitativeLessons, lessonId]);
+      playSynthesizedSound('success');
+      triggerConfetti();
+    }
+  };
+
+  const handleMarkNvivoLessonComplete = (lessonId: string) => {
+    if (completedNvivoLessons.includes(lessonId)) {
+      setCompletedNvivoLessons(completedNvivoLessons.filter(id => id !== lessonId));
+      playSynthesizedSound('reset');
+    } else {
+      setCompletedNvivoLessons([...completedNvivoLessons, lessonId]);
       playSynthesizedSound('success');
       triggerConfetti();
     }
@@ -1021,6 +1047,7 @@ export function App() {
             completedPythonLessons: [],
             completedTypescriptLessons: [],
             completedRQualitativeLessons: [],
+            completedNvivoLessons: [],
             completedAssignments: [],
             studentSubmissions: defaults,
             aiFeedback: {},
@@ -1081,6 +1108,7 @@ export function App() {
     setCompletedPythonLessons(profile.completedPythonLessons || []);
     setCompletedTypescriptLessons(profile.completedTypescriptLessons || []);
     setCompletedRQualitativeLessons(profile.completedRQualitativeLessons || []);
+    setCompletedNvivoLessons(profile.completedNvivoLessons || []);
     setCompletedAssignments(profile.completedAssignments || []);
     setStudentSubmissions(profile.studentSubmissions || {});
     setAiFeedback(profile.aiFeedback || {});
@@ -1743,7 +1771,11 @@ export function App() {
   const completedRQualitativeCount = completedRQualitativeLessons.length;
   const rQualitativeProgressPercent = totalRQualitativeLessons ? Math.round((completedRQualitativeCount / totalRQualitativeLessons) * 100) : 0;
 
-  const totalAll = totalLessons + totalSqlLessons + totalFastApiLessons + totalExpressLessons + totalPythonLessons + totalTypescriptLessons + totalRQualitativeLessons;
+  const totalNvivoLessons = nvivoLessonsData.flatMap(s => s.lessons).length;
+  const completedNvivoCount = completedNvivoLessons.length;
+  const nvivoProgressPercent = totalNvivoLessons ? Math.round((completedNvivoCount / totalNvivoLessons) * 100) : 0;
+
+  const totalAll = totalLessons + totalSqlLessons + totalFastApiLessons + totalExpressLessons + totalPythonLessons + totalTypescriptLessons + totalRQualitativeLessons + totalNvivoLessons;
 
   // Active clicked calendar event detail — only valid when viewing the event month (July 2026)
   const clickedCalendarEvent = isEventMonth ? calendarEvents.find(e => e.date === selectedCalendarDate) : undefined;
@@ -1866,7 +1898,7 @@ export function App() {
     notifications.push({
       id: `streak-${completedLessons.length}-${completedSqlLessons.length}-${completedFastApiLessons.length}-${completedExpressLessons.length}-${completedPythonLessons.length}-${completedTypescriptLessons.length}-${completedRQualitativeLessons.length}`,
       title: 'Focus Streak Active',
-      detail: `${completedLessons.length} React • ${completedSqlLessons.length} SQL • ${completedFastApiLessons.length} FastAPI • ${completedExpressLessons.length} Express • ${completedPythonLessons.length} Python • ${completedTypescriptLessons.length} TypeScript • ${completedRQualitativeLessons.length} R Qualitative`,
+      detail: `${completedLessons.length} React • ${completedSqlLessons.length} SQL • ${completedFastApiLessons.length} FastAPI • ${completedExpressLessons.length} Express • ${completedPythonLessons.length} Python • ${completedTypescriptLessons.length} TypeScript • ${completedRQualitativeLessons.length} R Qualitative • ${completedNvivoLessons.length} NVivo`,
       kind: 'streak'
     });
   }
@@ -2641,6 +2673,37 @@ export function App() {
                     </button>
                   </div>
                 </div>
+
+                {/* NVivo 14 Course Card */}
+                <div className="course-card-classic">
+                  <div className="course-cover">
+                    <img src={COURSE_COVERS.nvivo} alt="NVivo 14 course cover" />
+                  </div>
+                  <div className="course-details">
+                    <h5>NVivo 14: Complete Practical Course</h5>
+                    <div className="lessons-count-meta" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                      <RiBarChart style={{ color: 'var(--text-muted)' }} />
+                      <span>lessons : {totalNvivoLessons} (Full Syllabus)</span>
+                    </div>
+                    <div className="instructor-meta">
+                      <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?q=80&w=256&auto=format&fit=crop" alt="Instructor avatar" />
+                      <span>The Debug Society</span>
+                    </div>
+                    <div className="progress-info-row">
+                      <span>{nvivoProgressPercent}% Complete</span>
+                    </div>
+                    <div className="card-progress-track">
+                      <div className="card-progress-fill-val" style={{ width: `${nvivoProgressPercent}%` }}></div>
+                    </div>
+                    <button className="card-action-btn-classic" onClick={() => {
+                      setActiveTrack('nvivo');
+                      setActivePage('react-path');
+                      playSynthesizedSound('success');
+                    }}>
+                      {nvivoProgressPercent === 100 ? 'Review Path' : 'Resume Path'}
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -3305,6 +3368,103 @@ export function App() {
                                 onClick={() => {
                                   setSelectedRQualitativeLesson(lesson);
                                   setSelectedRQualitativeSection(section);
+                                  playSynthesizedSound('success');
+                                }}
+                              >
+                                <div className="lesson-title-side">
+                                  <svg className="lesson-row-icon" viewBox="0 0 24 24">
+                                    {isCompleted ? (
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+                                    ) : (
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0118 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                                    )}
+                                  </svg>
+                                  <span className="lesson-text-title">{lesson.title}</span>
+                                </div>
+                                {statusTag}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* NVIVO TRACK VIEW */}
+        {activePage === 'react-path' && activeTrack === 'nvivo' && (
+          <div>
+            <div className="module-view-header">
+              <div>
+                <h2>The Debug Society — NVivo 14: Complete Practical Course</h2>
+                <p>From raw transcripts to published findings. Master CAQDAS, inductive coding, thematic analysis, queries, and qualitative reporting.</p>
+              </div>
+              <div className="module-completion-badge">
+                {nvivoProgressPercent === 100 ? (
+                  <span className="badge-unlocked"><RiAward style={{ marginRight: '6px' }} /> Graduated from NVivo 14 Track</span>
+                ) : (
+                  <span><RiAward style={{ marginRight: '6px' }} /> Grad. Badge Locked ({completedNvivoCount}/{totalNvivoLessons} Lessons)</span>
+                )}
+              </div>
+            </div>
+
+            <div className="accordion-wrapper">
+              {nvivoLessonsData.map((section, sIdx) => {
+                const isExpanded = expandedSectionId === section.sectionId;
+                const completedInSection = section.lessons.filter(l => completedNvivoLessons.includes(l.id)).length;
+                const sectionPercent = Math.round((completedInSection / section.lessons.length) * 100);
+
+                return (
+                  <div key={section.sectionId} className={`accordion-item ${isExpanded ? 'expanded' : ''}`}>
+                    <button
+                      className="accordion-header"
+                      onClick={() => setExpandedSectionId(isExpanded ? null : section.sectionId)}
+                    >
+                      <div className="accordion-header-left">
+                        <div className="accordion-index">{sIdx + 1}</div>
+                        <div className="accordion-meta">
+                          <h4>{section.sectionTitle}</h4>
+                          <span>{completedInSection} of {section.lessons.length} Completed ({sectionPercent}%)</span>
+                        </div>
+                      </div>
+                      <div className="accordion-header-right">
+                        <svg className="accordion-chevron" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+                      </div>
+                    </button>
+
+                    {isExpanded && (
+                      <div className="accordion-body">
+                        <div className="lessons-list-group">
+                          {section.lessons.map((lesson, lIdx) => {
+                            const isCompleted = completedNvivoLessons.includes(lesson.id);
+                            let statusTag = <span className="lesson-badge-tag locked">Locked</span>;
+
+                            if (isCompleted) {
+                              statusTag = <span className="lesson-badge-tag completed">Completed</span>;
+                            } else {
+                              const allPriorCompleted = nvivoLessonsData
+                                .slice(0, sIdx + 1)
+                                .flatMap((s, sI) => sI < sIdx ? s.lessons : s.lessons.slice(0, lIdx))
+                                .every(l => completedNvivoLessons.includes(l.id));
+
+                              if (allPriorCompleted) {
+                                statusTag = <span className="lesson-badge-tag next">Next Up</span>;
+                              }
+                            }
+
+                            return (
+                              <div
+                                key={lesson.id}
+                                className={`lesson-row ${isCompleted ? 'completed-lesson-item' : ''}`}
+                                onClick={() => {
+                                  setSelectedNvivoLesson(lesson);
+                                  setSelectedNvivoSection(section);
                                   playSynthesizedSound('success');
                                 }}
                               >
@@ -5021,7 +5181,7 @@ export function App() {
               const _daysFromMon = _dow === 0 ? 6 : _dow - 1;
               const _monday = new Date(_now);
               _monday.setDate(_now.getDate() - _daysFromMon);
-              const totalAllLessons = completedCount + completedSqlCount + completedFastApiCount + completedExpressCount + completedPythonCount + completedTypescriptCount + completedRQualitativeCount;
+              const totalAllLessons = completedCount + completedSqlCount + completedFastApiCount + completedExpressCount + completedPythonCount + completedTypescriptCount + completedRQualitativeCount + completedNvivoCount;
               return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, dIdx) => {
                 const _d = new Date(_monday);
                 _d.setDate(_monday.getDate() + dIdx);
@@ -5929,6 +6089,104 @@ export function App() {
                       className={`reader-link-item-btn ${isActive ? 'active' : ''}`}
                       onClick={() => {
                         setSelectedRQualitativeLesson(les);
+                        playSynthesizedSound('success');
+                      }}
+                    >
+                      {les.title}
+                    </button>
+                  );
+                })}
+              </div>
+            </aside>
+          </div>
+
+        </div>
+      )}
+
+      {/* FULLSCREEN IMMERSIVE NVIVO LESSON READER VIEW */}
+      {selectedNvivoLesson && selectedNvivoSection && (
+        <div className="reader-overlay-view">
+
+          {/* Header Bar */}
+          <div className="reader-header-bar">
+            <div className="reader-left-pane">
+              <button
+                className="reader-back-btn"
+                onClick={() => {
+                  setSelectedNvivoLesson(null);
+                  setSelectedNvivoSection(null);
+                  playSynthesizedSound('reset');
+                }}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                </svg>
+                Back to NVivo Path
+              </button>
+              <span className="reader-module-tag">
+                {selectedNvivoSection.sectionTitle}
+              </span>
+            </div>
+
+            <button
+              className={`reader-complete-btn ${completedNvivoLessons.includes(selectedNvivoLesson.id) ? 'completed' : ''}`}
+              onClick={() => handleMarkNvivoLessonComplete(selectedNvivoLesson.id)}
+            >
+              <span className="reader-check-box"></span>
+              {completedNvivoLessons.includes(selectedNvivoLesson.id) ? 'Completed' : 'Mark Lesson Completed'}
+            </button>
+          </div>
+
+          <div className="reader-body-split">
+            <article className="reader-scroll-article">
+              <h1 className="reader-lesson-heading-title">{selectedNvivoLesson.title}</h1>
+
+              <div
+                className="reader-html-render"
+                dangerouslySetInnerHTML={{ __html: parseMarkdownToHtml(selectedNvivoLesson.content) }}
+              />
+
+              <div className="reader-bottom-nav-row">
+                <button className="nav-prev-btn" onClick={() => {
+                  const allLessons = nvivoLessonsData.flatMap(s => s.lessons.map(l => ({ lesson: l, section: s })));
+                  const currIdx = allLessons.findIndex(item => item.lesson.id === selectedNvivoLesson.id);
+                  if (currIdx > 0) {
+                    const prev = allLessons[currIdx - 1];
+                    setSelectedNvivoLesson(prev.lesson);
+                    setSelectedNvivoSection(prev.section);
+                    playSynthesizedSound('success');
+                  }
+                }}>
+                  &larr; Previous Lesson
+                </button>
+                <button className="nav-next-btn" onClick={() => {
+                  const allLessons = nvivoLessonsData.flatMap(s => s.lessons.map(l => ({ lesson: l, section: s })));
+                  const currIdx = allLessons.findIndex(item => item.lesson.id === selectedNvivoLesson.id);
+                  if (currIdx < allLessons.length - 1) {
+                    const next = allLessons[currIdx + 1];
+                    setSelectedNvivoLesson(next.lesson);
+                    setSelectedNvivoSection(next.section);
+                    playSynthesizedSound('success');
+                  } else {
+                    handleMarkNvivoLessonComplete(selectedNvivoLesson.id);
+                  }
+                }}>
+                  Next Lesson &rarr;
+                </button>
+              </div>
+            </article>
+
+            <aside className="reader-side-outline-panel">
+              <h4>Module Outline</h4>
+              <div className="reader-outline-links-list">
+                {selectedNvivoSection.lessons.map(les => {
+                  const isActive = les.id === selectedNvivoLesson.id;
+                  return (
+                    <button
+                      key={les.id}
+                      className={`reader-link-item-btn ${isActive ? 'active' : ''}`}
+                      onClick={() => {
+                        setSelectedNvivoLesson(les);
                         playSynthesizedSound('success');
                       }}
                     >
